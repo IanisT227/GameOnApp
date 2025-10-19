@@ -56,21 +56,10 @@ fun WearApp(greetingName: String) {
             startDestination = "main"
         ) {
             composable("main") { MainScreen(navController) }
-            composable("color/{color}") { backStackEntry ->
-                val color = backStackEntry.arguments?.getString("color")?.toLong() ?: 0xFF000000
-                ColorScreen(Color(color))
+            composable("selectSports") { backStackEntry ->
+                SelectSportsScreen()
             }
         }
-
-//        Box(
-//            modifier = Modifier
-//                .fillMaxSize()
-//                .background(MaterialTheme.colors.background),
-//            contentAlignment = Alignment.Center
-//        ) {
-//            TimeText()
-//            Greeting(greetingName = greetingName)
-//        }
     }
 }
 

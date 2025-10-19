@@ -12,11 +12,11 @@ import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.TimeText
 
 @Composable
-fun ColorScreen(color: Color) {
+fun SelectSportsScreen() {
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
-            .background(color),
+            .background(Color.Blue),
         timeText = { TimeText() }
     ) {
         Box(

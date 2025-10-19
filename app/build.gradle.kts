@@ -51,6 +51,7 @@ dependencies {
     implementation(libs.activity.compose)
     implementation(libs.core.splashscreen)
     implementation(libs.compose.navigation)
+    implementation(libs.compose.material3)
     androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(libs.ui.test.junit4)
     debugImplementation(libs.ui.tooling)
@@ -63,4 +64,6 @@ dependencies {
     implementation(libs.koin.androidx.navigation)
     implementation(libs.koin.androidx.compose)
     implementation(libs.gson)
+    implementation(libs.horologist.compose.layout)
+
 }
