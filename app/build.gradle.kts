@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.example.gameonapp"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.gameonapp"
@@ -52,6 +52,7 @@ dependencies {
     implementation(libs.core.splashscreen)
     implementation(libs.compose.navigation)
     implementation(libs.compose.material3)
+    implementation(libs.material3)
     androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(libs.ui.test.junit4)
     debugImplementation(libs.ui.tooling)

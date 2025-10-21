@@ -1,4 +1,4 @@
-package com.example.gameonapp.presentation
+package com.example.gameonapp.presentation.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
