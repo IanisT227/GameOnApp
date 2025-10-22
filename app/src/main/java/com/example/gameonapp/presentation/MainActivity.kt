@@ -17,6 +17,8 @@ import androidx.wear.compose.navigation.rememberSwipeDismissableNavController
 import androidx.wear.tooling.preview.devices.WearDevices
 import com.example.gameonapp.presentation.screens.MainScreen
 import com.example.gameonapp.presentation.screens.SelectSportsScreen
+import com.example.gameonapp.presentation.screens.SelectStatisticsScreen
+import com.example.gameonapp.presentation.screens.SettingsScreen
 import com.example.gameonapp.presentation.theme.GameOnAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -44,6 +46,12 @@ fun WearApp() {
             composable("main") { MainScreen(navController) }
             composable("selectSports") { backStackEntry ->
                 SelectSportsScreen()
+            }
+            composable("selectStatistics") {
+                SelectStatisticsScreen()
+            }
+            composable("settings") {
+                SettingsScreen()
             }
         }
     }
