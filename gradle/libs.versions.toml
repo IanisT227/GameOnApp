@@ -1,9 +1,11 @@
 [versions]
 agp = "8.10.0"
+animation = "1.9.4"
 datastorePreferences = "1.1.7"
 gson = "2.13.2"
 kotlin = "2.0.21"
 materialIconsExtended = "1.7.8"
+navigationCompose = "2.9.5"
 playServicesWearable = "18.0.0"
 composeBom = "2024.09.00"
 composeMaterial = "1.2.1"
@@ -18,6 +20,7 @@ horologist = "0.6.19"
 material3 = "1.4.0"
 
 [libraries]
+animation = { module = "androidx.compose.animation:animation", version.ref = "animation" }
 horologist-compose-layout = { module = "com.google.android.horologist:horologist-compose-layout", version.ref = "horologist" }
 datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
@@ -25,6 +28,7 @@ koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
 koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koin" }
 koin-androidx-navigation = { module = "io.insert-koin:koin-androidx-navigation", version.ref = "koin" }
 material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
+navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 play-services-wearable = { group = "com.google.android.gms", name = "play-services-wearable", version.ref = "playServicesWearable" }
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
 ui = { group = "androidx.compose.ui", name = "ui" }

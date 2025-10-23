@@ -15,9 +15,6 @@ import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -31,6 +28,7 @@ import androidx.wear.compose.material3.lazy.rememberTransformationSpec
 import com.example.gameonapp.R
 import com.example.gameonapp.presentation.components.MainScreenButton
 import com.example.gameonapp.presentation.components.MainScreenOutlinedButon
+import com.example.gameonapp.presentation.theme.backgroundGradient
 import com.google.android.horologist.compose.layout.responsivePaddingDefaults
 
 @Composable
@@ -50,11 +48,7 @@ fun MainScreen(navController: NavController) {
         modifier = Modifier
             .fillMaxSize()
             .background(
-                brush = Brush.linearGradient(
-                    colors = listOf(Color(0xFF333750), Color(0xFF555555)),
-                    start = Offset(0f, 0f),
-                    end = Offset(1000f, 1000f)
-                )
+                brush = backgroundGradient
             )
     ) {
         TransformingLazyColumn(
@@ -68,7 +62,7 @@ fun MainScreen(navController: NavController) {
         ) {
             item {
                 Image(
-                    painter = painterResource(id = R.drawable.game_on_logo),
+                    painter = painterResource(id = R.drawable.game_on_logo_blue),
                     contentDescription = "Logo",
                     contentScale = ContentScale.Fit,
                     modifier = Modifier.size(80.dp)

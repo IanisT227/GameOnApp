@@ -8,13 +8,14 @@ package com.example.gameonapp.presentation
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.wear.compose.navigation.SwipeDismissableNavHost
 import androidx.wear.compose.navigation.composable
 import androidx.wear.compose.navigation.rememberSwipeDismissableNavController
 import androidx.wear.tooling.preview.devices.WearDevices
+import com.example.gameonapp.presentation.screens.FootballScreen
 import com.example.gameonapp.presentation.screens.MainScreen
 import com.example.gameonapp.presentation.screens.SelectSportsScreen
 import com.example.gameonapp.presentation.screens.SelectStatisticsScreen
@@ -44,14 +45,17 @@ fun WearApp() {
             startDestination = "main"
         ) {
             composable("main") { MainScreen(navController) }
-            composable("selectSports") { backStackEntry ->
-                SelectSportsScreen()
+            composable("selectSports") {
+                SelectSportsScreen(navController)
             }
             composable("selectStatistics") {
                 SelectStatisticsScreen()
             }
             composable("settings") {
                 SettingsScreen()
+            }
+            composable("football"){
+                FootballScreen()
             }
         }
     }

@@ -66,5 +66,7 @@ dependencies {
     implementation(libs.koin.androidx.compose)
     implementation(libs.gson)
     implementation(libs.horologist.compose.layout)
+    implementation(libs.navigation.compose)
+    implementation(libs.animation)
 
 }

@@ -28,7 +28,7 @@ fun MainScreenButton(
     onClickMethod: () -> Unit,
     icon: ImageVector,
     buttonText: String,
-    transformation: SurfaceTransformation
+    transformation: SurfaceTransformation,
 ) {
     Button(
         modifier = Modifier
@@ -42,7 +42,8 @@ fun MainScreenButton(
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.primary,
             contentColor = MaterialTheme.colorScheme.onPrimary,
-        )
+        ),
+        transformation = transformation
     ) {
         ButtonContent(icon = icon, buttonText = buttonText)
     }
@@ -53,7 +54,7 @@ fun MainScreenOutlinedButon(
     onClickMethod: () -> Unit,
     icon: ImageVector,
     buttonText: String,
-    transformation: SurfaceTransformation
+    transformation: SurfaceTransformation,
 ) {
     OutlinedButton(
         modifier = Modifier
@@ -69,7 +70,7 @@ fun MainScreenOutlinedButon(
         ),
         border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary),
         transformation = transformation,
-        ) {
+    ) {
         ButtonContent(icon = icon, buttonText = buttonText)
     }
 }
