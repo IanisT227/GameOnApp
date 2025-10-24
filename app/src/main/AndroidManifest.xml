@@ -2,10 +2,19 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.BODY_SENSORS" />
 
     <uses-feature android:name="android.hardware.type.watch" />
 
+<!--    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />-->
+
+<!--    <service-->
+<!--        android:name=".MyExerciseSessionRecorder"-->
+<!--        android:foregroundServiceType="health|location">-->
+<!--    </service>-->
+
     <application
+        android:name=".presentation.GameOnApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"

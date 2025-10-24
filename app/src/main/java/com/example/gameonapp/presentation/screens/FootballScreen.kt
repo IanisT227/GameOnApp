@@ -1,5 +1,8 @@
 package com.example.gameonapp.presentation.screens
 
+import android.Manifest
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -25,7 +28,11 @@ import androidx.wear.compose.material3.TimeText
 import com.example.gameonapp.presentation.components.FitnessComponent
 import com.example.gameonapp.presentation.components.FootballScoreComponent
 import com.example.gameonapp.presentation.theme.backgroundGradient
+import com.example.gameonapp.presentation.viewModels.FitnessViewModel
+import com.example.gameonapp.utils.FITNESS_SCREEN
+import com.example.gameonapp.utils.SCORE_SCREEN
 import kotlinx.coroutines.delay
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun FootballScreen(modifier: Modifier = Modifier) {
@@ -33,9 +40,23 @@ fun FootballScreen(modifier: Modifier = Modifier) {
     val pagerState = rememberPagerState { 2 }
     var isChronometerRunning by rememberSaveable { mutableStateOf(true) }
     var timeInSeconds by rememberSaveable { mutableStateOf(0L) }
+    val fitnessViewModel = koinViewModel<FitnessViewModel>()
+    var sensorsPermissionGranted by rememberSaveable { mutableStateOf(false) }
+    val permissionToRequest = Manifest.permission.BODY_SENSORS
 
-    // Run the chronometer in the background if running
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        sensorsPermissionGranted = granted
+    }
+
+    // Kick off one-time permission request (only if needed)
+    LaunchedEffect(Unit) {
+        permissionLauncher.launch(permissionToRequest)
+    }
+
     LaunchedEffect(isChronometerRunning) {
+        fitnessViewModel.registerHeartRateSensor()
         if (isChronometerRunning) {
             while (true) {
                 delay(1000L)
@@ -63,14 +84,15 @@ fun FootballScreen(modifier: Modifier = Modifier) {
                 .fillMaxSize()
                 .padding(bottom = 2.dp)
         ) { page ->
-            if (page == 0) {
-                FootballScoreComponent()
-            } else {
-                FitnessComponent(
+            when (page) {
+                SCORE_SCREEN -> FootballScoreComponent()
+                FITNESS_SCREEN -> FitnessComponent(
                     timeInSeconds = timeInSeconds,
                     isRunning = isChronometerRunning,
                     onPause = { isChronometerRunning = it },
-                    onReset = { timeInSeconds = 0L })
+                    onReset = { timeInSeconds = 0L },
+                    fitnessViewModel = fitnessViewModel
+                )
             }
         }
 

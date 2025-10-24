@@ -1,8 +1,8 @@
 <resources>
 
     <style name="MainActivityTheme.Starting" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">@android:color/holo_orange_dark</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/game_on_logo</item>
+        <item name="windowSplashScreenBackground">@android:color/holo_blue_bright</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/game_on_logo_blue</item>
         <item name="postSplashScreenTheme">@android:style/Theme.DeviceDefault</item>
     </style>
 </resources>

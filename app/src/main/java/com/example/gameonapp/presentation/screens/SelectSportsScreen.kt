@@ -17,7 +17,6 @@ import androidx.compose.material.icons.outlined.SportsVolleyball
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -40,14 +39,13 @@ fun SelectSportsScreen(navController: NavController) {
     val context = LocalContext.current
     val listState = rememberTransformingLazyColumnState()
     val transformationSpec = rememberTransformationSpec()
-    val sportsList = listOf<Pair<String, ImageVector>>(
+    val sportsList = listOf(
         Pair("Football", Icons.Outlined.SportsSoccer),
         Pair("Tennis", Icons.Outlined.SportsTennis),
         Pair("Padel", Icons.Outlined.SportsTennis),
         Pair("Volleyball", Icons.Outlined.SportsVolleyball),
         Pair("Basketball", Icons.Outlined.SportsBasketball),
     )
-
 
     ScreenScaffold(
         scrollState = listState,
