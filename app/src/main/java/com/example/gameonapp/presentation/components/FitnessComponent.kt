@@ -2,19 +2,27 @@ package com.example.gameonapp.presentation.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Check
+import androidx.compose.material.icons.outlined.Pause
+import androidx.compose.material.icons.outlined.PlayArrow
+import androidx.compose.material.icons.rounded.LocalFireDepartment
+import androidx.compose.material.icons.rounded.MonitorHeart
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.wear.compose.material3.Button
-import androidx.wear.compose.material3.MaterialTheme
 import com.example.gameonapp.presentation.viewModels.FitnessViewModel
+import com.example.gameonapp.utils.PULSE_METER
+import com.google.android.horologist.compose.layout.fillMaxRectangle
 import kotlin.math.roundToInt
 
 @Composable
@@ -31,39 +39,53 @@ fun FitnessComponent(
 
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxRectangle(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceEvenly
     ) {
-        Spacer(Modifier.height(20.dp))
-        Text(
-            text = formatTime(timeInSeconds),
-            style = MaterialTheme.typography.displaySmall.copy(
-                color = MaterialTheme.colorScheme.primary
-            )
+        Spacer(modifier = Modifier.height(6.dp))
+        FitnessTimerChip(
+            modifier = Modifier.fillMaxWidth(),
+            timeValue = timeInSeconds,
         )
-        Spacer(Modifier.height(12.dp))
-        Text(
-            text = "HR: ${hr?.roundToInt() ?: "--"} bpm",
-            style = MaterialTheme.typography.displaySmall.copy(
-                color = MaterialTheme.colorScheme.primary
+        Spacer(modifier = Modifier.height(8.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            FitnessChip(
+                modifier = Modifier.weight(1f),
+                value = hr?.roundToInt() ?: 20,
+                icon = Icons.Rounded.MonitorHeart,
+                type = PULSE_METER
             )
-        )
-        Spacer(Modifier.height(12.dp))
-        Button(onClick = { onPause(!isRunning) }) {
-            Text(if (isRunning) "Stop" else "Start")
+            Spacer(modifier = Modifier.width(4.dp))
+            FitnessChip(
+                modifier = Modifier.weight(1f),
+                value = hr?.roundToInt() ?: 111,
+                icon = Icons.Rounded.LocalFireDepartment
+            )
         }
-        Spacer(Modifier.height(8.dp))
-        Button(onClick = {
-            onReset()
-        }) {
-            Text("Reset")
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            FitnessButton(
+                modifier = Modifier.weight(1f),
+                onClick = { onPause(!isRunning) },
+                buttonImage = if (isRunning) Icons.Outlined.Pause else Icons.Outlined.PlayArrow
+            )
+            Spacer(modifier = Modifier.width(4.dp))
+            FitnessButton(
+                modifier = Modifier.weight(1f),
+                onClick = {
+                    onReset()
+                }, buttonImage = Icons.Outlined.Check
+            )
         }
     }
-}
-
-fun formatTime(seconds: Long): String {
-    val minutes = seconds / 60
-    val secs = seconds % 60
-    return String.format("%02d:%02d", minutes, secs)
 }

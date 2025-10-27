@@ -64,9 +64,15 @@ dependencies {
     implementation(libs.koin.android)
     implementation(libs.koin.androidx.navigation)
     implementation(libs.koin.androidx.compose)
+
+    //GSON
     implementation(libs.gson)
+
+    //Compose libraries
     implementation(libs.horologist.compose.layout)
     implementation(libs.navigation.compose)
     implementation(libs.animation)
+    implementation(libs.core.splashscreen)
+
 
 }

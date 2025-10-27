@@ -1,8 +1,3 @@
-/* While this template provides a good starting point for using Wear Compose, you can always
- * take a look at https://github.com/android/wear-os-samples/tree/main/ComposeStarter to find the
- * most up to date changes to the libraries and their usages.
- */
-
 package com.example.gameonapp.presentation
 
 import android.os.Bundle
@@ -11,12 +6,14 @@ import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 import androidx.wear.compose.navigation.SwipeDismissableNavHost
 import androidx.wear.compose.navigation.composable
 import androidx.wear.compose.navigation.rememberSwipeDismissableNavController
 import androidx.wear.tooling.preview.devices.WearDevices
-import com.example.gameonapp.presentation.screens.FootballScreen
 import com.example.gameonapp.presentation.screens.MainScreen
+import com.example.gameonapp.presentation.screens.ScoringScreen
 import com.example.gameonapp.presentation.screens.SelectSportsScreen
 import com.example.gameonapp.presentation.screens.SelectStatisticsScreen
 import com.example.gameonapp.presentation.screens.SettingsScreen
@@ -54,8 +51,13 @@ fun WearApp() {
             composable("settings") {
                 SettingsScreen()
             }
-            composable("football"){
-                FootballScreen()
+            composable(
+                route = "scoring/{sportName}",
+                arguments = listOf(
+                    navArgument("sportName") { type = NavType.StringType }
+                )) { backStackEntry ->
+                val sportName = backStackEntry.arguments?.getString("sportName") ?: ""
+                ScoringScreen(sportName = sportName)
             }
         }
     }

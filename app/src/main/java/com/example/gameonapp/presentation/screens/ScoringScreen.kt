@@ -29,13 +29,18 @@ import com.example.gameonapp.presentation.components.FitnessComponent
 import com.example.gameonapp.presentation.components.FootballScoreComponent
 import com.example.gameonapp.presentation.theme.backgroundGradient
 import com.example.gameonapp.presentation.viewModels.FitnessViewModel
-import com.example.gameonapp.utils.FITNESS_SCREEN
-import com.example.gameonapp.utils.SCORE_SCREEN
+import com.example.gameonapp.utils.BASKETBALL
+import com.example.gameonapp.utils.FITNESS_COMPONENT
+import com.example.gameonapp.utils.FOOTBALL
+import com.example.gameonapp.utils.PADEL
+import com.example.gameonapp.utils.SCORE_COMPONENT
+import com.example.gameonapp.utils.TENNIS
+import com.example.gameonapp.utils.VOLLEYBALL
 import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun FootballScreen(modifier: Modifier = Modifier) {
+fun ScoringScreen(modifier: Modifier = Modifier, sportName: String) {
     val context = LocalContext.current
     val pagerState = rememberPagerState { 2 }
     var isChronometerRunning by rememberSaveable { mutableStateOf(true) }
@@ -49,14 +54,15 @@ fun FootballScreen(modifier: Modifier = Modifier) {
     ) { granted ->
         sensorsPermissionGranted = granted
     }
-
-    // Kick off one-time permission request (only if needed)
     LaunchedEffect(Unit) {
         permissionLauncher.launch(permissionToRequest)
     }
 
     LaunchedEffect(isChronometerRunning) {
-        fitnessViewModel.registerHeartRateSensor()
+        if (sensorsPermissionGranted) {
+            fitnessViewModel.registerHeartRateSensor()
+        }
+
         if (isChronometerRunning) {
             while (true) {
                 delay(1000L)
@@ -85,8 +91,8 @@ fun FootballScreen(modifier: Modifier = Modifier) {
                 .padding(bottom = 2.dp)
         ) { page ->
             when (page) {
-                SCORE_SCREEN -> FootballScoreComponent()
-                FITNESS_SCREEN -> FitnessComponent(
+                SCORE_COMPONENT -> GetSportsComponent(sportName = sportName)
+                FITNESS_COMPONENT -> FitnessComponent(
                     timeInSeconds = timeInSeconds,
                     isRunning = isChronometerRunning,
                     onPause = { isChronometerRunning = it },
@@ -112,5 +118,16 @@ fun FootballScreen(modifier: Modifier = Modifier) {
                     .align(Alignment.BottomCenter)
             )
         }
+    }
+}
+
+@Composable
+fun GetSportsComponent(sportName: String) {
+    when (sportName) {
+        FOOTBALL -> FootballScoreComponent()
+        TENNIS -> Box() {}
+        PADEL -> Box() {}
+        VOLLEYBALL -> Box() {}
+        BASKETBALL -> Box() {}
     }
 }

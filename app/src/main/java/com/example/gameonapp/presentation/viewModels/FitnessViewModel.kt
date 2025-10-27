@@ -12,8 +12,6 @@ import kotlinx.coroutines.flow.StateFlow
 class FitnessViewModel(application: Application) : ViewModel(), SensorEventListener {
     private val _heartRateBpm = MutableStateFlow<Double?>(null)
     val heartRateBpm: StateFlow<Double?> = _heartRateBpm
-
-    // Estimated calories burned so far (kcal)
     private val _calories = MutableStateFlow(0.0)
     val calories: StateFlow<Double> = _calories
 
@@ -23,27 +21,20 @@ class FitnessViewModel(application: Application) : ViewModel(), SensorEventListe
 
     private var isSensorRegistered = false
     override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
-        ""
     }
 
     override fun onSensorChanged(event: SensorEvent?) {
         if (event == null) return
-        // For heart rate, values[0] usually contains bpm
         val value = event.values.getOrNull(0) ?: return
-        // Some devices report 0 when not ready — ignore zeros
         val bpm = value.toDouble()
         if (bpm > 0.0) {
             _heartRateBpm.value = bpm
-            // optional: feed BPM into calories formula here to refine estimate
         }
     }
 
     fun registerHeartRateSensor() {
         if (isSensorRegistered) return
-        // If heartSensor is null, device has no HR sensor
         heartSensor?.let {
-            // Choose a moderate delay to save battery
-            // SENSOR_DELAY_NORMAL or SENSOR_DELAY_UI recommended for wearable
             sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_UI)
             isSensorRegistered = true
         }

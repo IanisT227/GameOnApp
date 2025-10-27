@@ -4,13 +4,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Shapes
 import androidx.wear.compose.material3.ColorScheme
+import androidx.wear.compose.material3.Typography
 
 
 // 🧱 Manual color scheme
-val ActiveOrangeColorScheme = ColorScheme(
+val ColorScheme = ColorScheme(
     primary = BluePrimary,
     onPrimary = TextOnDark,
     secondary = BlueSecondary,
@@ -32,11 +34,18 @@ val backgroundGradient = Brush.linearGradient(
     end = Offset(1000f, 1000f)
 )
 
+val AppFontFamily = FontFamily.Monospace
+
+val AppTypography = Typography(
+    defaultFontFamily = AppFontFamily
+)
+
 @Composable
 fun GameOnAppTheme(content: @Composable () -> Unit) {
     MaterialTheme(
-        colorScheme = ActiveOrangeColorScheme,
+        colorScheme = ColorScheme,
         shapes = Shapes(),
-        content = content
+        content = content,
+        typography = AppTypography
     )
 }

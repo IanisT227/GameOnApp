@@ -88,7 +88,7 @@ fun SelectSportsScreen(navController: NavController) {
                         sportImage = listItem.second,
                         action = {
                             try {
-                                navController.navigate(listItem.first.lowercase())
+                                navController.navigate("scoring/${listItem.first.lowercase()}")
                             } catch (e: Exception) {
                                 Log.e(TAG, e.message ?: "")
                                 Toast.makeText(context, "Not available yet", Toast.LENGTH_SHORT)
