@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -43,11 +44,10 @@ import org.koin.androidx.compose.koinViewModel
 fun ScoringScreen(modifier: Modifier = Modifier, sportName: String) {
     val context = LocalContext.current
     val pagerState = rememberPagerState { 2 }
-    var isChronometerRunning by rememberSaveable { mutableStateOf(true) }
-    var timeInSeconds by rememberSaveable { mutableStateOf(0L) }
     val fitnessViewModel = koinViewModel<FitnessViewModel>()
     var sensorsPermissionGranted by rememberSaveable { mutableStateOf(false) }
     val permissionToRequest = Manifest.permission.BODY_SENSORS
+    val isTimerRunning by fitnessViewModel.isTimerRunning.collectAsState()
 
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
@@ -58,15 +58,15 @@ fun ScoringScreen(modifier: Modifier = Modifier, sportName: String) {
         permissionLauncher.launch(permissionToRequest)
     }
 
-    LaunchedEffect(isChronometerRunning) {
+    LaunchedEffect(isTimerRunning) {
         if (sensorsPermissionGranted) {
             fitnessViewModel.registerHeartRateSensor()
         }
 
-        if (isChronometerRunning) {
+        if (isTimerRunning) {
             while (true) {
                 delay(1000L)
-                timeInSeconds++
+                fitnessViewModel.increaseTimer()
             }
         }
     }
@@ -93,10 +93,6 @@ fun ScoringScreen(modifier: Modifier = Modifier, sportName: String) {
             when (page) {
                 SCORE_COMPONENT -> GetSportsComponent(sportName = sportName)
                 FITNESS_COMPONENT -> FitnessComponent(
-                    timeInSeconds = timeInSeconds,
-                    isRunning = isChronometerRunning,
-                    onPause = { isChronometerRunning = it },
-                    onReset = { timeInSeconds = 0L },
                     fitnessViewModel = fitnessViewModel
                 )
             }

@@ -17,6 +17,9 @@ import androidx.compose.material.icons.rounded.MonitorHeart
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -28,16 +31,16 @@ import kotlin.math.roundToInt
 @Composable
 fun FitnessComponent(
     modifier: Modifier = Modifier,
-    timeInSeconds: Long,
-    isRunning: Boolean,
-    onPause: (Boolean) -> Unit,
-    onReset: () -> Unit,
     fitnessViewModel: FitnessViewModel,
 ) {
     val hr by fitnessViewModel.heartRateBpm.collectAsState()
     val calories by fitnessViewModel.calories.collectAsState()
+    val timeInSeconds by fitnessViewModel.timeInSeconds.collectAsState()
+    val isTimerRunning by fitnessViewModel.isTimerRunning.collectAsState()
+    var showDialog by rememberSaveable { mutableStateOf(false) }
 
-
+    if (showDialog)
+        SaveDialog(isVisible = true, onDismiss = { showDialog = false })
     Column(
         modifier = Modifier.fillMaxRectangle(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -76,14 +79,14 @@ fun FitnessComponent(
         ) {
             FitnessButton(
                 modifier = Modifier.weight(1f),
-                onClick = { onPause(!isRunning) },
-                buttonImage = if (isRunning) Icons.Outlined.Pause else Icons.Outlined.PlayArrow
+                onClick = { fitnessViewModel.toggleIsTimerRunning() },
+                buttonImage = if (isTimerRunning) Icons.Outlined.Pause else Icons.Outlined.PlayArrow
             )
             Spacer(modifier = Modifier.width(4.dp))
             FitnessButton(
                 modifier = Modifier.weight(1f),
                 onClick = {
-                    onReset()
+                    showDialog = true
                 }, buttonImage = Icons.Outlined.Check
             )
         }

@@ -15,6 +15,12 @@ class FitnessViewModel(application: Application) : ViewModel(), SensorEventListe
     private val _calories = MutableStateFlow(0.0)
     val calories: StateFlow<Double> = _calories
 
+    private val _timeInSeconds = MutableStateFlow(0L)
+    val timeInSeconds: StateFlow<Long> = _timeInSeconds
+
+    private val _isTimerRunning = MutableStateFlow(true)
+    val isTimerRunning: StateFlow<Boolean> = _isTimerRunning
+
     private val sensorManager: SensorManager =
         application.getSystemService(android.content.Context.SENSOR_SERVICE) as SensorManager
     private val heartSensor: Sensor? = sensorManager.getDefaultSensor(Sensor.TYPE_HEART_RATE)
@@ -49,5 +55,13 @@ class FitnessViewModel(application: Application) : ViewModel(), SensorEventListe
     override fun onCleared() {
         super.onCleared()
         unregisterHeartRateSensor()
+    }
+
+    fun increaseTimer() {
+        _timeInSeconds.value++
+    }
+
+    fun toggleIsTimerRunning() {
+        _isTimerRunning.value = !_isTimerRunning.value
     }
 }

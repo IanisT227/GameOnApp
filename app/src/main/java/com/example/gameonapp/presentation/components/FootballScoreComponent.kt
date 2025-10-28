@@ -123,26 +123,6 @@ fun TeamBox(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            Button(
-                modifier = Modifier.size(36.dp),
-                shape = CircleShape,
-                onClick = { onClick(INCREMENT) },
-                contentPadding = PaddingValues(0.dp),
-                colors = ButtonDefaults.buttonColors(
-                    contentColor = MaterialTheme.colorScheme.onPrimary,
-                )
-            ) {
-                Box(
-                    modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        modifier = Modifier.size(22.dp),
-                        imageVector = Icons.Outlined.Add,
-                        contentDescription = "Increase"
-                    )
-                }
-            }
-            Spacer(modifier = Modifier.width(12.dp))
             OutlinedButton(
                 modifier = Modifier.size(36.dp),
                 shape = CircleShape,
@@ -160,6 +140,26 @@ fun TeamBox(
                         modifier = Modifier.size(22.dp),
                         imageVector = Icons.Outlined.Remove,
                         contentDescription = "Decrease"
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.width(12.dp))
+            Button(
+                modifier = Modifier.size(36.dp),
+                shape = CircleShape,
+                onClick = { onClick(INCREMENT) },
+                contentPadding = PaddingValues(0.dp),
+                colors = ButtonDefaults.buttonColors(
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                )
+            ) {
+                Box(
+                    modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        modifier = Modifier.size(22.dp),
+                        imageVector = Icons.Outlined.Add,
+                        contentDescription = "Increase"
                     )
                 }
             }
