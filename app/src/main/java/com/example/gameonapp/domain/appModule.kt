@@ -1,9 +1,30 @@
 package com.example.gameonapp.domain
 
+import androidx.room.Room
+import com.example.gameonapp.data.local.AppDatabase
+import com.example.gameonapp.domain.repository.GameRepository
 import com.example.gameonapp.presentation.viewModels.FitnessViewModel
+import com.example.gameonapp.presentation.viewModels.GameViewModel
+import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
-val appModule = module{
+val viewModelModule = module {
     viewModel { FitnessViewModel(application = get()) }
+    viewModel { GameViewModel(get()) }
+}
+
+val repositoryModule = module {
+    single { GameRepository(get()) }
+}
+val databaseModule = module {
+    single {
+        Room.databaseBuilder(
+            androidContext(),
+            AppDatabase::class.java,
+            "app_database"
+        ).build()
+    }
+
+    single { get<AppDatabase>().gameDao() }
 }

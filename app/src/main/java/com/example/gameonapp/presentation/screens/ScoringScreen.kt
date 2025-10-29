@@ -1,6 +1,7 @@
 package com.example.gameonapp.presentation.screens
 
 import android.Manifest
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
@@ -10,6 +11,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.AlertDialog
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -21,15 +23,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import androidx.wear.compose.foundation.pager.HorizontalPager
 import androidx.wear.compose.foundation.pager.rememberPagerState
+import androidx.wear.compose.material3.Button
 import androidx.wear.compose.material3.HorizontalPageIndicator
 import androidx.wear.compose.material3.MaterialTheme
+import androidx.wear.compose.material3.Text
 import androidx.wear.compose.material3.TimeText
 import com.example.gameonapp.presentation.components.FitnessComponent
 import com.example.gameonapp.presentation.components.FootballScoreComponent
 import com.example.gameonapp.presentation.theme.backgroundGradient
 import com.example.gameonapp.presentation.viewModels.FitnessViewModel
+import com.example.gameonapp.presentation.viewModels.GameViewModel
 import com.example.gameonapp.utils.BASKETBALL
 import com.example.gameonapp.utils.FITNESS_COMPONENT
 import com.example.gameonapp.utils.FOOTBALL
@@ -41,13 +47,24 @@ import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun ScoringScreen(modifier: Modifier = Modifier, sportName: String) {
+fun ScoringScreen(
+    modifier: Modifier = Modifier,
+    sportName: String,
+    navController: NavController,
+) {
     val context = LocalContext.current
     val pagerState = rememberPagerState { 2 }
     val fitnessViewModel = koinViewModel<FitnessViewModel>()
+    val gameViewModel = koinViewModel<GameViewModel>()
     var sensorsPermissionGranted by rememberSaveable { mutableStateOf(false) }
     val permissionToRequest = Manifest.permission.BODY_SENSORS
     val isTimerRunning by fitnessViewModel.isTimerRunning.collectAsState()
+
+    var showExitDialog by rememberSaveable { mutableStateOf(false) }
+
+    BackHandler(enabled = true) {
+        showExitDialog = true
+    }
 
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
@@ -58,7 +75,7 @@ fun ScoringScreen(modifier: Modifier = Modifier, sportName: String) {
         permissionLauncher.launch(permissionToRequest)
     }
 
-    LaunchedEffect(isTimerRunning) {
+    LaunchedEffect(isTimerRunning, sensorsPermissionGranted) {
         if (sensorsPermissionGranted) {
             fitnessViewModel.registerHeartRateSensor()
         }
@@ -67,8 +84,38 @@ fun ScoringScreen(modifier: Modifier = Modifier, sportName: String) {
             while (true) {
                 delay(1000L)
                 fitnessViewModel.increaseTimer()
+                fitnessViewModel.increaseTotalBPM()
             }
         }
+    }
+
+    if (showExitDialog) {
+        AlertDialog(
+            onDismissRequest = {
+                showExitDialog = false // Dismiss dialog, stay on screen
+            },
+            title = { Text("Unsaved Changes") },
+            text = { Text("Are you sure you want to exit? The event will not be saved.") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showExitDialog = false // Hide dialog
+                        navController.popBackStack() // Proceed with navigation back
+                    }
+                ) {
+                    Text("Yes, Exit")
+                }
+            },
+            dismissButton = {
+                Button(
+                    onClick = {
+                        showExitDialog = false
+                    }
+                ) {
+                    Text("No, Stay")
+                }
+            }
+        )
     }
 
     Box(
@@ -91,9 +138,10 @@ fun ScoringScreen(modifier: Modifier = Modifier, sportName: String) {
                 .padding(bottom = 2.dp)
         ) { page ->
             when (page) {
-                SCORE_COMPONENT -> GetSportsComponent(sportName = sportName)
+                SCORE_COMPONENT -> GetSportsComponent(sportName = sportName, gameViewModel = gameViewModel)
                 FITNESS_COMPONENT -> FitnessComponent(
-                    fitnessViewModel = fitnessViewModel
+                    fitnessViewModel = fitnessViewModel,
+                    onConfirmClick = { saveGame(gameViewModel, fitnessViewModel) }
                 )
             }
         }
@@ -118,12 +166,16 @@ fun ScoringScreen(modifier: Modifier = Modifier, sportName: String) {
 }
 
 @Composable
-fun GetSportsComponent(sportName: String) {
+fun GetSportsComponent(sportName: String, gameViewModel: GameViewModel) {
     when (sportName) {
-        FOOTBALL -> FootballScoreComponent()
+        FOOTBALL -> FootballScoreComponent(gameViewModel = gameViewModel)
         TENNIS -> Box() {}
         PADEL -> Box() {}
         VOLLEYBALL -> Box() {}
         BASKETBALL -> Box() {}
     }
+}
+
+fun saveGame(gameViewModel: GameViewModel, fitnessViewModel: FitnessViewModel) {
+
 }

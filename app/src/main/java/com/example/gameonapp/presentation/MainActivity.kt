@@ -1,5 +1,6 @@
 package com.example.gameonapp.presentation
 
+import android.R
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -8,6 +9,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import androidx.wear.compose.material.ExperimentalWearMaterialApi
 import androidx.wear.compose.navigation.SwipeDismissableNavHost
 import androidx.wear.compose.navigation.composable
 import androidx.wear.compose.navigation.rememberSwipeDismissableNavController
@@ -25,7 +27,7 @@ class MainActivity : ComponentActivity() {
 
         super.onCreate(savedInstanceState)
 
-        setTheme(android.R.style.Theme_DeviceDefault)
+        setTheme(R.style.Theme_DeviceDefault)
 
         setContent {
             WearApp()
@@ -33,13 +35,15 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@OptIn(ExperimentalWearMaterialApi::class)
 @Composable
 fun WearApp() {
     val navController = rememberSwipeDismissableNavController()
+
     GameOnAppTheme {
         SwipeDismissableNavHost(
             navController = navController,
-            startDestination = "main"
+            startDestination = "main",
         ) {
             composable("main") { MainScreen(navController) }
             composable("selectSports") {
@@ -57,7 +61,10 @@ fun WearApp() {
                     navArgument("sportName") { type = NavType.StringType }
                 )) { backStackEntry ->
                 val sportName = backStackEntry.arguments?.getString("sportName") ?: ""
-                ScoringScreen(sportName = sportName)
+                ScoringScreen(
+                    sportName = sportName,
+                    navController = navController,
+                )
             }
         }
     }

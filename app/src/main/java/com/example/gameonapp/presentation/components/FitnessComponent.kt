@@ -31,16 +31,21 @@ import kotlin.math.roundToInt
 @Composable
 fun FitnessComponent(
     modifier: Modifier = Modifier,
+    onConfirmClick: () -> Unit,
     fitnessViewModel: FitnessViewModel,
 ) {
     val hr by fitnessViewModel.heartRateBpm.collectAsState()
     val calories by fitnessViewModel.calories.collectAsState()
     val timeInSeconds by fitnessViewModel.timeInSeconds.collectAsState()
     val isTimerRunning by fitnessViewModel.isTimerRunning.collectAsState()
+    val totalBPM by fitnessViewModel.totalBPM.collectAsState()
     var showDialog by rememberSaveable { mutableStateOf(false) }
 
     if (showDialog)
-        SaveDialog(isVisible = true, onDismiss = { showDialog = false })
+        SaveDialog(
+            isVisible = true,
+            onDismiss = { showDialog = false },
+            onConfirmClick = { onConfirmClick() })
     Column(
         modifier = Modifier.fillMaxRectangle(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -92,3 +97,5 @@ fun FitnessComponent(
         }
     }
 }
+
+const val TAG = "FitnessComponent"

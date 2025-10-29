@@ -18,8 +18,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontFamily.Companion.Monospace
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material3.Icon
@@ -34,7 +35,10 @@ fun FitnessChip(
     icon: ImageVector,
     type: Boolean = false,
 ) {
-    val textValue = if (type == PULSE_METER) String.format("%3d BPM", value) else String.format("%3d kCal", value)
+    val textValue = if (type == PULSE_METER) String.format("%3d BPM", value) else String.format(
+        "%3d kCal",
+        value
+    )
     Column(
         modifier = Modifier
             .widthIn(min = 80.dp)
@@ -53,10 +57,10 @@ fun FitnessChip(
             tint = MaterialTheme.colorScheme.onTertiary
         )
         Text(
-            textValue, style = MaterialTheme.typography.bodyMedium.copy(
+            textValue, style = MaterialTheme.typography.bodySmall.copy(
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onTertiary
-            )
+                color = MaterialTheme.colorScheme.onTertiary,
+            ), maxLines = 1, overflow = TextOverflow.Ellipsis
         )
     }
 }
@@ -90,7 +94,7 @@ fun FitnessTimerChip(
             textValue, style = MaterialTheme.typography.bodyMedium.copy(
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onTertiary,
-                fontFamily = FontFamily.Monospace
+                fontFamily = Monospace
             )
         )
     }

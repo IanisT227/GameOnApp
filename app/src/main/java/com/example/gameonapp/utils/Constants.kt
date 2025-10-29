@@ -10,3 +10,6 @@ const val TENNIS = "tennis"
 const val PADEL = "padel"
 const val BASKETBALL = "basketball"
 const val VOLLEYBALL = "volleyball"
+
+const val HOME = true
+const val AWAY = false

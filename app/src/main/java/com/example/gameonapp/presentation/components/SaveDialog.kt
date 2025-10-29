@@ -18,11 +18,16 @@ import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
 
 @Composable
-fun SaveDialog(modifier: Modifier = Modifier, isVisible: Boolean, onDismiss: () -> Unit) {
+fun SaveDialog(
+    modifier: Modifier = Modifier,
+    isVisible: Boolean,
+    onDismiss: () -> Unit,
+    onConfirmClick: () -> Unit,
+) {
     AlertDialog(
         visible = isVisible,
         onDismissRequest = { onDismiss() },
-        confirmButton = { DialogButton(buttonText = "Yes", onClickAction = {}) },
+        confirmButton = { DialogButton(buttonText = "Yes", onClickAction = { onConfirmClick() }) },
         dismissButton = { DialogButton(buttonText = "No", onClickAction = { onDismiss() }) },
         title = { Text("End game") },
         icon = { Icons.Outlined.Save },

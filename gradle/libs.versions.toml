@@ -11,6 +11,7 @@ playServicesWearable = "18.0.0"
 composeBom = "2024.09.00"
 composeMaterial = "1.2.1"
 composeFoundation = "1.2.1"
+roomRuntime = "2.8.3"
 wearToolingPreview = "1.0.0"
 activityCompose = "1.10.1"
 coreSplashscreen = "1.0.1"
@@ -19,10 +20,11 @@ composeNavigation = "1.5.3"
 composeMaterial3 = "1.5.3"
 horologist = "0.6.19"
 material3 = "1.4.0"
+roomKtx = "2.8.3"
+playServicesFitness = "21.3.0"
 
 [libraries]
 animation = { module = "androidx.compose.animation:animation", version.ref = "animation" }
-core-splashscreen-v100 = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreenVersion" }
 horologist-compose-layout = { module = "com.google.android.horologist:horologist-compose-layout", version.ref = "horologist" }
 datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
@@ -33,6 +35,8 @@ material-icons-extended = { module = "androidx.compose.material:material-icons-e
 navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 play-services-wearable = { group = "com.google.android.gms", name = "play-services-wearable", version.ref = "playServicesWearable" }
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
+room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomRuntime" }
+room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomRuntime" }
 ui = { group = "androidx.compose.ui", name = "ui" }
 ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
@@ -47,6 +51,8 @@ core-splashscreen = { group = "androidx.core", name = "core-splashscreen", versi
 compose-navigation = { group = "androidx.wear.compose", name = "compose-navigation", version.ref = "composeNavigation" }
 compose-material3 = { group = "androidx.wear.compose", name = "compose-material3", version.ref = "composeMaterial3" }
 material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
+room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomKtx" }
+play-services-fitness = { group = "com.google.android.gms", name = "play-services-fitness", version.ref = "playServicesFitness" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
