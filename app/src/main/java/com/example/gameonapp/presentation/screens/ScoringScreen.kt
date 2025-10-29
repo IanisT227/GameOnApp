@@ -22,6 +22,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.wear.compose.foundation.pager.HorizontalPager
@@ -39,12 +41,14 @@ import com.example.gameonapp.presentation.viewModels.GameViewModel
 import com.example.gameonapp.utils.BASKETBALL
 import com.example.gameonapp.utils.FITNESS_COMPONENT
 import com.example.gameonapp.utils.FOOTBALL
+import com.example.gameonapp.utils.GameType
 import com.example.gameonapp.utils.PADEL
 import com.example.gameonapp.utils.SCORE_COMPONENT
 import com.example.gameonapp.utils.TENNIS
 import com.example.gameonapp.utils.VOLLEYBALL
 import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
+import java.util.Date
 
 @Composable
 fun ScoringScreen(
@@ -138,10 +142,14 @@ fun ScoringScreen(
                 .padding(bottom = 2.dp)
         ) { page ->
             when (page) {
-                SCORE_COMPONENT -> GetSportsComponent(sportName = sportName, gameViewModel = gameViewModel)
+                SCORE_COMPONENT -> GetSportsComponent(
+                    sportName = sportName,
+                    gameViewModel = gameViewModel
+                )
+
                 FITNESS_COMPONENT -> FitnessComponent(
                     fitnessViewModel = fitnessViewModel,
-                    onConfirmClick = { saveGame(gameViewModel, fitnessViewModel) }
+                    onConfirmClick = { saveGame(gameViewModel, fitnessViewModel, sportName) }
                 )
             }
         }
@@ -176,6 +184,21 @@ fun GetSportsComponent(sportName: String, gameViewModel: GameViewModel) {
     }
 }
 
-fun saveGame(gameViewModel: GameViewModel, fitnessViewModel: FitnessViewModel) {
+fun saveGame(gameViewModel: GameViewModel, fitnessViewModel: FitnessViewModel, sportName: String) {
+    val durationSeconds = fitnessViewModel.timeInSeconds.value.toInt()
+    val averageBPM =
+        computeAverageBPM(fitnessViewModel.totalBPM.value, fitnessViewModel.timeInSeconds.value)
+    val date = Date()
+    val gameType = GameType.valueOf(sportName.toUpperCase(Locale.current))
+    val finishedGame = gameViewModel.buildEndGameEntity(
+        durationSeconds = durationSeconds,
+        averageBPM = averageBPM,
+        date = date,
+        gameType = gameType
+    )
+    gameViewModel.insertGame(finishedGame)
+}
 
+fun computeAverageBPM(totalBPM: Long, timeInSeconds: Long): Int {
+    return (totalBPM / timeInSeconds).toInt()
 }

@@ -7,6 +7,7 @@ import com.example.gameonapp.data.local.model.Score
 import com.example.gameonapp.domain.repository.GameRepository
 import com.example.gameonapp.utils.AWAY
 import com.example.gameonapp.utils.DECREMENT
+import com.example.gameonapp.utils.GameType
 import com.example.gameonapp.utils.HOME
 import com.example.gameonapp.utils.INCREMENT
 import kotlinx.coroutines.Dispatchers
@@ -14,6 +15,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.Date
 
 class GameViewModel(private val gameRepository: GameRepository) : ViewModel() {
     private val _gameList = MutableStateFlow<List<GameEntity>>(emptyList())
@@ -57,4 +59,19 @@ class GameViewModel(private val gameRepository: GameRepository) : ViewModel() {
     fun resetScore() {
         _scores.value = Score(0, 0)
     }
+
+    fun buildEndGameEntity(
+        durationSeconds: Int,
+        averageBPM: Int,
+        date: Date,
+        gameType: GameType,
+    ): GameEntity = GameEntity(
+        gameType = gameType,
+        scoreA = scores.value.home,
+        scoreB = scores.value.away,
+        matchDate = date,
+        durationSeconds = durationSeconds,
+        averageBPM = averageBPM,
+        gameId = 0L
+    )
 }
