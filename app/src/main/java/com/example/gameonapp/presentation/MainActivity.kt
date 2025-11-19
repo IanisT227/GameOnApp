@@ -14,6 +14,7 @@ import androidx.wear.compose.navigation.SwipeDismissableNavHost
 import androidx.wear.compose.navigation.composable
 import androidx.wear.compose.navigation.rememberSwipeDismissableNavController
 import androidx.wear.tooling.preview.devices.WearDevices
+import com.example.gameonapp.presentation.screens.ExpandedStatisticsScreen
 import com.example.gameonapp.presentation.screens.MainScreen
 import com.example.gameonapp.presentation.screens.ScoringScreen
 import com.example.gameonapp.presentation.screens.SelectSportsScreen
@@ -50,7 +51,7 @@ fun WearApp() {
                 SelectSportsScreen(navController)
             }
             composable("selectStatistics") {
-                SelectStatisticsScreen()
+                SelectStatisticsScreen(navController)
             }
             composable("settings") {
                 SettingsScreen()
@@ -64,6 +65,16 @@ fun WearApp() {
                 ScoringScreen(
                     sportName = sportName,
                     navController = navController,
+                )
+            }
+            composable(
+                route = "statisticsExpanded/{gameId}",
+                arguments = listOf(
+                    navArgument("gameId") { type = NavType.LongType }
+                )) { backStackEntry ->
+                val gameId = backStackEntry.arguments?.getLong("gameId") ?: 0
+                ExpandedStatisticsScreen(
+                    gameId = gameId
                 )
             }
         }

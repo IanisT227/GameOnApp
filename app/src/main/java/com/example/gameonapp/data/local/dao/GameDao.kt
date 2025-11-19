@@ -17,4 +17,7 @@ interface GameDao {
 
     @Delete()
     suspend fun removeFromGames(game: GameEntity)
+
+    @Query("SELECT * FROM games WHERE gameId = :gameId LIMIT 1")
+    suspend fun getGameById(gameId: Long): GameEntity?
 }

@@ -7,11 +7,11 @@ import java.util.Date
 
 @Entity(tableName = "games")
 data class GameEntity(
-    @PrimaryKey(autoGenerate = true) val gameId: Long,
-    val gameType: GameType,
-    val scoreA: Int,
-    val scoreB: Int,
-    val matchDate: Date,
-    val durationSeconds: Int,
-    val averageBPM: Int,
+    @PrimaryKey(autoGenerate = true) val gameId: Long = 0,
+    val gameType: GameType = GameType.OTHER,
+    val scoreA: Int = 0,
+    val scoreB: Int = 0,
+    val matchDate: Date = Date(),
+    val durationSeconds: Int = 0,
+    val averageBPM: Int = 0,
 )

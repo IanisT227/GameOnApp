@@ -81,8 +81,7 @@ fun SelectSportsScreen(navController: NavController) {
                         modifier = Modifier
                             .fillMaxWidth()
                             .transformedHeight(this, transformationSpec)
-                            .padding(vertical = 4.dp)
-                            .fillMaxWidth(),
+                            .padding(vertical = 4.dp),
                         transformation = SurfaceTransformation(transformationSpec),
                         sportName = listItem.first,
                         sportImage = listItem.second,

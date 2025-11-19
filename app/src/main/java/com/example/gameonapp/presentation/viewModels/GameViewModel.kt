@@ -22,6 +22,11 @@ class GameViewModel(private val gameRepository: GameRepository) : ViewModel() {
     val gameList: StateFlow<List<GameEntity>> = _gameList
     private val _scores = MutableStateFlow(Score())
     val scores: StateFlow<Score> = _scores
+    private val _gameData = MutableStateFlow(
+        value = GameEntity()
+    )
+    val gameData: StateFlow<GameEntity> = _gameData
+
 
     fun insertGame(gameEntity: GameEntity) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -40,6 +45,15 @@ class GameViewModel(private val gameRepository: GameRepository) : ViewModel() {
             val list = gameRepository.getGamesHistory()
             withContext(Dispatchers.Main) {
                 _gameList.value = list
+            }
+        }
+    }
+
+    fun getGameById(gameId: Long) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val gameData = gameRepository.getGameById(gameId) ?: GameEntity()
+            withContext(Dispatchers.Main) {
+                _gameData.value = gameData
             }
         }
     }

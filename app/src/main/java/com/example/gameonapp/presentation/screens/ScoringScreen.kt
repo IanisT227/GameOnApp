@@ -1,6 +1,8 @@
 package com.example.gameonapp.presentation.screens
 
 import android.Manifest
+import android.app.Activity
+import android.content.Context
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -33,6 +35,7 @@ import androidx.wear.compose.material3.HorizontalPageIndicator
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
 import androidx.wear.compose.material3.TimeText
+import androidx.wear.widget.ConfirmationOverlay
 import com.example.gameonapp.presentation.components.FitnessComponent
 import com.example.gameonapp.presentation.components.FootballScoreComponent
 import com.example.gameonapp.presentation.theme.backgroundGradient
@@ -52,19 +55,19 @@ import java.util.Date
 
 @Composable
 fun ScoringScreen(
-    modifier: Modifier = Modifier,
     sportName: String,
     navController: NavController,
 ) {
-    val context = LocalContext.current
     val pagerState = rememberPagerState { 2 }
     val fitnessViewModel = koinViewModel<FitnessViewModel>()
     val gameViewModel = koinViewModel<GameViewModel>()
     var sensorsPermissionGranted by rememberSaveable { mutableStateOf(false) }
     val permissionToRequest = Manifest.permission.BODY_SENSORS
     val isTimerRunning by fitnessViewModel.isTimerRunning.collectAsState()
-
     var showExitDialog by rememberSaveable { mutableStateOf(false) }
+    var showOverlay by rememberSaveable { mutableStateOf(false) }
+    val context = LocalContext.current
+
 
     BackHandler(enabled = true) {
         showExitDialog = true
@@ -96,15 +99,15 @@ fun ScoringScreen(
     if (showExitDialog) {
         AlertDialog(
             onDismissRequest = {
-                showExitDialog = false // Dismiss dialog, stay on screen
+                showExitDialog = false
             },
             title = { Text("Unsaved Changes") },
             text = { Text("Are you sure you want to exit? The event will not be saved.") },
             confirmButton = {
                 Button(
                     onClick = {
-                        showExitDialog = false // Hide dialog
-                        navController.popBackStack() // Proceed with navigation back
+                        showExitDialog = false
+                        navController.popBackStack()
                     }
                 ) {
                     Text("Yes, Exit")
@@ -120,6 +123,14 @@ fun ScoringScreen(
                 }
             }
         )
+    }
+
+    if (showOverlay) {
+        LaunchedEffect(Unit) {
+            showConfirmation(context)
+            showOverlay = false
+            navController.popBackStack()
+        }
     }
 
     Box(
@@ -149,7 +160,10 @@ fun ScoringScreen(
 
                 FITNESS_COMPONENT -> FitnessComponent(
                     fitnessViewModel = fitnessViewModel,
-                    onConfirmClick = { saveGame(gameViewModel, fitnessViewModel, sportName) }
+                    onConfirmClick = {
+                        saveGame(gameViewModel, fitnessViewModel, sportName)
+                        showOverlay = true
+                    }
                 )
             }
         }
@@ -177,10 +191,10 @@ fun ScoringScreen(
 fun GetSportsComponent(sportName: String, gameViewModel: GameViewModel) {
     when (sportName) {
         FOOTBALL -> FootballScoreComponent(gameViewModel = gameViewModel)
-        TENNIS -> Box() {}
-        PADEL -> Box() {}
-        VOLLEYBALL -> Box() {}
-        BASKETBALL -> Box() {}
+        TENNIS -> Box {}
+        PADEL -> Box {}
+        VOLLEYBALL -> Box {}
+        BASKETBALL -> Box {}
     }
 }
 
@@ -197,6 +211,13 @@ fun saveGame(gameViewModel: GameViewModel, fitnessViewModel: FitnessViewModel, s
         gameType = gameType
     )
     gameViewModel.insertGame(finishedGame)
+}
+
+fun showConfirmation(context: Context) {
+    ConfirmationOverlay()
+        .setType(ConfirmationOverlay.SUCCESS_ANIMATION) // checkmark animation
+        .setDuration(1000)                              // 1 second
+        .showOn(context as Activity)                    // <-- IMPORTANT
 }
 
 fun computeAverageBPM(totalBPM: Long, timeInSeconds: Long): Int {

@@ -45,7 +45,10 @@ fun FitnessComponent(
         SaveDialog(
             isVisible = true,
             onDismiss = { showDialog = false },
-            onConfirmClick = { onConfirmClick() })
+            onConfirmClick = {
+                onConfirmClick()
+                showDialog = false
+            })
     Column(
         modifier = Modifier.fillMaxRectangle(),
         horizontalAlignment = Alignment.CenterHorizontally,

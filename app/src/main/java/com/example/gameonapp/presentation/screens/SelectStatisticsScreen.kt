@@ -1,9 +1,85 @@
 package com.example.gameonapp.presentation.screens
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.wear.compose.foundation.lazy.TransformingLazyColumn
+import androidx.wear.compose.foundation.lazy.rememberTransformingLazyColumnState
+import androidx.wear.compose.material.Text
+import androidx.wear.compose.material3.MaterialTheme
+import androidx.wear.compose.material3.ScreenScaffold
+import androidx.wear.compose.material3.lazy.rememberTransformationSpec
+import com.example.gameonapp.presentation.components.WorkoutSummaryCard
+import com.example.gameonapp.presentation.theme.backgroundGradient
+import com.example.gameonapp.presentation.viewModels.GameViewModel
+import com.google.android.horologist.compose.layout.fillMaxRectangle
+import com.google.android.horologist.compose.layout.responsivePaddingDefaults
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun SelectStatisticsScreen(modifier: Modifier = Modifier) {
-    
+fun SelectStatisticsScreen(navController: NavController) {
+    val gameViewModel = koinViewModel<GameViewModel>()
+    val listState = rememberTransformingLazyColumnState()
+    val gamesList by gameViewModel.gameList.collectAsState()
+    LaunchedEffect(Unit) {
+        gameViewModel.getGamesHistory()
+    }
+    if (gamesList.isNotEmpty())
+
+        ScreenScaffold(
+            scrollState = listState,
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    brush = backgroundGradient
+                )
+        ) {
+            TransformingLazyColumn(
+                state = listState,
+                modifier = Modifier
+                    .fillMaxRectangle()
+                    .padding(horizontal = 2.dp, vertical = 2.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+                contentPadding = responsivePaddingDefaults()
+            )
+            {
+                item {
+                    Text(
+                        "Games History", style = MaterialTheme.typography.titleMedium.copy(
+                            fontWeight = FontWeight.Bold
+                        )
+                    )
+                }
+                item {
+                    Spacer(modifier = Modifier.height(4.dp))
+                }
+                gamesList.forEach { gameEntity ->
+                    item {
+                        WorkoutSummaryCard(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp),
+                            contentData = gameEntity,
+                            navigateToDetails = {
+                                navController.navigate("statisticsExpanded/${gameEntity.gameId}")
+                            }
+                        )
+                    }
+                }
+            }
+        }
 }
