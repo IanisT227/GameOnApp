@@ -12,7 +12,7 @@ interface GameDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertGame(game: GameEntity)
 
-    @Query("SELECT * FROM games ")
+    @Query("SELECT * FROM games ORDER BY matchDate DESC")
     suspend fun getGames(): List<GameEntity>
 
     @Delete()

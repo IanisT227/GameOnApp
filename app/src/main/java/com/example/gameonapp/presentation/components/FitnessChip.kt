@@ -68,7 +68,7 @@ fun FitnessChip(
 @Composable
 fun FitnessTimerChip(
     modifier: Modifier = Modifier,
-    timeValue: Long,
+    timeValue: Int,
 ) {
     val textValue = formatTime(timeValue)
     Row(

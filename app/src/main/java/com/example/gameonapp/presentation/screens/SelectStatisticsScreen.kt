@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
@@ -17,12 +16,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.wear.compose.foundation.lazy.TransformingLazyColumn
+import androidx.wear.compose.foundation.lazy.itemsIndexed
 import androidx.wear.compose.foundation.lazy.rememberTransformingLazyColumnState
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.ScreenScaffold
+import androidx.wear.compose.material3.SurfaceTransformation
 import androidx.wear.compose.material3.lazy.rememberTransformationSpec
-import com.example.gameonapp.presentation.components.WorkoutSummaryCard
+import com.example.gameonapp.presentation.components.SportSummaryCard
 import com.example.gameonapp.presentation.theme.backgroundGradient
 import com.example.gameonapp.presentation.viewModels.GameViewModel
 import com.google.android.horologist.compose.layout.fillMaxRectangle
@@ -34,11 +35,12 @@ fun SelectStatisticsScreen(navController: NavController) {
     val gameViewModel = koinViewModel<GameViewModel>()
     val listState = rememberTransformingLazyColumnState()
     val gamesList by gameViewModel.gameList.collectAsState()
+    val transformationSpec = rememberTransformationSpec()
+
     LaunchedEffect(Unit) {
         gameViewModel.getGamesHistory()
     }
     if (gamesList.isNotEmpty())
-
         ScreenScaffold(
             scrollState = listState,
             modifier = Modifier
@@ -67,18 +69,15 @@ fun SelectStatisticsScreen(navController: NavController) {
                 item {
                     Spacer(modifier = Modifier.height(4.dp))
                 }
-                gamesList.forEach { gameEntity ->
-                    item {
-                        WorkoutSummaryCard(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 4.dp),
-                            contentData = gameEntity,
-                            navigateToDetails = {
-                                navController.navigate("statisticsExpanded/${gameEntity.gameId}")
-                            }
-                        )
-                    }
+                itemsIndexed(gamesList) { index, gameEntity ->
+                    SportSummaryCard(
+                        modifier = Modifier,
+                        contentData = gameEntity,
+                        navigateToDetails = {
+                            navController.navigate("statisticsExpanded/${gameEntity.gameId}")
+                        },
+                        SurfaceTransformation(transformationSpec)
+                    )
                 }
             }
         }

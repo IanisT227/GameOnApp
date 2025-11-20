@@ -19,8 +19,8 @@ class FitnessViewModel(application: Application) : ViewModel(), SensorEventListe
     private val _calories = MutableStateFlow(0.0)
     val calories: StateFlow<Double> = _calories
 
-    private val _timeInSeconds = MutableStateFlow(0L)
-    val timeInSeconds: StateFlow<Long> = _timeInSeconds
+    private val _timeInSeconds = MutableStateFlow(0)
+    val timeInSeconds: StateFlow<Int> = _timeInSeconds
 
     private val _isTimerRunning = MutableStateFlow(true)
     val isTimerRunning: StateFlow<Boolean> = _isTimerRunning

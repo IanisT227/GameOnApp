@@ -199,9 +199,12 @@ fun GetSportsComponent(sportName: String, gameViewModel: GameViewModel) {
 }
 
 fun saveGame(gameViewModel: GameViewModel, fitnessViewModel: FitnessViewModel, sportName: String) {
-    val durationSeconds = fitnessViewModel.timeInSeconds.value.toInt()
+    val durationSeconds = fitnessViewModel.timeInSeconds.value
     val averageBPM =
-        computeAverageBPM(fitnessViewModel.totalBPM.value, fitnessViewModel.timeInSeconds.value)
+        computeAverageBPM(
+            fitnessViewModel.totalBPM.value,
+            fitnessViewModel.timeInSeconds.value.toLong()
+        )
     val date = Date()
     val gameType = GameType.valueOf(sportName.toUpperCase(Locale.current))
     val finishedGame = gameViewModel.buildEndGameEntity(
