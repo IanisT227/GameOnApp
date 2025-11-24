@@ -80,4 +80,8 @@ dependencies {
     implementation(libs.room.ktx)
     implementation(libs.room.runtime)
     ksp(libs.room.compiler)
+
+    //Icons
+    implementation(libs.icons.lucide)
+
 }

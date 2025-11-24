@@ -1,9 +1,9 @@
 [versions]
 agp = "8.10.0"
 animation = "1.9.4"
-coreSplashscreenVersion = "1.0.0"
 datastorePreferences = "1.1.7"
 gson = "2.13.2"
+iconsLucide = "1.1.0"
 kotlin = "2.0.21"
 materialIconsExtended = "1.7.8"
 navigationCompose = "2.9.5"
@@ -28,6 +28,7 @@ animation = { module = "androidx.compose.animation:animation", version.ref = "an
 horologist-compose-layout = { module = "com.google.android.horologist:horologist-compose-layout", version.ref = "horologist" }
 datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+icons-lucide = { module = "com.composables:icons-lucide", version.ref = "iconsLucide" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
 koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koin" }
 koin-androidx-navigation = { module = "io.insert-koin:koin-androidx-navigation", version.ref = "koin" }

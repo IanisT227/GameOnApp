@@ -4,18 +4,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CalendarMonth
-import androidx.compose.material.icons.outlined.EmojiEvents
+import androidx.compose.material.icons.outlined.LocalFireDepartment
+import androidx.compose.material.icons.outlined.MonitorHeart
 import androidx.compose.material.icons.outlined.WatchLater
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -24,26 +21,27 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.foundation.lazy.TransformingLazyColumn
 import androidx.wear.compose.foundation.lazy.rememberTransformingLazyColumnState
-import androidx.wear.compose.material3.Icon
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.ScreenScaffold
 import androidx.wear.compose.material3.Text
+import com.composables.icons.lucide.Heart
+import com.composables.icons.lucide.Lucide
+import com.example.gameonapp.presentation.components.DetailsRow
+import com.example.gameonapp.presentation.components.ScoreColumn
 import com.example.gameonapp.presentation.theme.backgroundGradient
 import com.example.gameonapp.presentation.viewModels.GameViewModel
 import com.example.gameonapp.utils.formatDate
 import com.example.gameonapp.utils.formatTime
-import com.example.gameonapp.utils.toPascalCase
 import com.google.android.horologist.compose.layout.fillMaxRectangle
 import com.google.android.horologist.compose.layout.responsivePaddingDefaults
 import org.koin.androidx.compose.koinViewModel
 
+
 @Composable
-fun ExpandedStatisticsScreen(modifier: Modifier = Modifier, gameId: Long) {
+fun ExpandedStatisticsScreen(gameId: Long) {
     val gameViewModel = koinViewModel<GameViewModel>()
     val gameData by gameViewModel.gameData.collectAsState()
     val listState = rememberTransformingLazyColumnState()
@@ -79,34 +77,32 @@ fun ExpandedStatisticsScreen(modifier: Modifier = Modifier, gameId: Long) {
                 Spacer(modifier = Modifier.height(6.dp))
             }
             item {
+                ScoreColumn(
+                    gameType = gameData.gameType,
+                    gameScore = "${gameData.scoreA} - ${gameData.scoreB}"
+                )
+            }
+            item { Spacer(modifier = Modifier.height(6.dp)) }
+            item {
                 Column(
                     modifier = Modifier
-                        .fillMaxWidth()
                         .border(
                             width = 1.dp,
                             color = MaterialTheme.colorScheme.primary,
                             shape = RoundedCornerShape(6.dp)
                         )
-                        .padding(horizontal = 6.dp, vertical = 8.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
+                        .padding(vertical = 8.dp, horizontal = 6.dp)
                 ) {
-                    Icon(
-                        imageVector = Icons.Outlined.EmojiEvents,
-                        contentDescription = gameData.gameType.toString()
+                    DetailsRow(
+                        image = Icons.Outlined.CalendarMonth,
+                        legendText = "Date",
+                        valueText = formatDate(gameData.matchDate)
                     )
-                    Spacer(modifier = Modifier.height(6.dp))
-                    Text(
-                        text = gameData.gameType.toString().toPascalCase(),
-                        style = MaterialTheme.typography.titleSmall.copy(
-                            fontWeight = FontWeight.Bold
-                        )
-                    )
-                    Spacer(modifier = Modifier.height(6.dp))
-                    Text(
-                        text = "${gameData.scoreA} - ${gameData.scoreB}",
-                        style = MaterialTheme.typography.titleMedium.copy(
-                            fontWeight = FontWeight.Bold
-                        )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    DetailsRow(
+                        image = Icons.Outlined.WatchLater,
+                        legendText = "Duration",
+                        valueText = formatTime(gameData.durationSeconds)
                     )
                 }
             }
@@ -121,69 +117,25 @@ fun ExpandedStatisticsScreen(modifier: Modifier = Modifier, gameId: Long) {
                         )
                         .padding(vertical = 8.dp, horizontal = 6.dp)
                 ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            modifier = Modifier.size(18.dp),
-                            imageVector = Icons.Outlined.CalendarMonth,
-                            contentDescription = null
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text = "Date",
-                            style = MaterialTheme.typography.bodyMedium,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            modifier = Modifier.weight(1f),
-                            text = formatDate(gameData.matchDate),
-                            style = MaterialTheme.typography.bodyMedium.copy(
-                                fontWeight = FontWeight.Bold
-                            ),
-                            textAlign = TextAlign.End,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
+                    DetailsRow(
+                        image = Icons.Outlined.LocalFireDepartment,
+                        legendText = "Calories",
+                        valueText = gameData.averageBPM.toString()
+                    )
                     Spacer(modifier = Modifier.height(4.dp))
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            modifier = Modifier.size(18.dp),
-                            imageVector = Icons.Outlined.WatchLater,
-                            contentDescription = null
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text = "Duration",
-                            style = MaterialTheme.typography.bodyMedium,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            modifier = Modifier.weight(1f),
-                            text = formatTime(gameData.durationSeconds),
-                            style = MaterialTheme.typography.bodyMedium.copy(
-                                fontWeight = FontWeight.Bold
-                            ),
-                            textAlign = TextAlign.End,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
+                    DetailsRow(
+                        image = Icons.Outlined.MonitorHeart,
+                        legendText = "Max. BPM",
+                        valueText = gameData.averageBPM.toString()
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    DetailsRow(
+                        image = Lucide.Heart,
+                        legendText = "Avg. BPM",
+                        valueText = gameData.averageBPM.toString()
+                    )
                 }
             }
-            item {}
         }
-
     }
 }
