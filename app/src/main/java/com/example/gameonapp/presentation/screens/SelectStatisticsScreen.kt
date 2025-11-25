@@ -18,6 +18,7 @@ import androidx.navigation.NavController
 import androidx.wear.compose.foundation.lazy.TransformingLazyColumn
 import androidx.wear.compose.foundation.lazy.itemsIndexed
 import androidx.wear.compose.foundation.lazy.rememberTransformingLazyColumnState
+import androidx.wear.compose.material.ListHeader
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.ScreenScaffold
@@ -40,45 +41,48 @@ fun SelectStatisticsScreen(navController: NavController) {
     LaunchedEffect(Unit) {
         gameViewModel.getGamesHistory()
     }
-    if (gamesList.isNotEmpty())
-        ScreenScaffold(
-            scrollState = listState,
-            modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    brush = backgroundGradient
-                )
-        ) {
-            TransformingLazyColumn(
-                state = listState,
-                modifier = Modifier
-                    .fillMaxRectangle()
-                    .padding(horizontal = 2.dp, vertical = 2.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
-                contentPadding = responsivePaddingDefaults()
+    if (gamesList.isNotEmpty()) ScreenScaffold(
+        scrollState = listState, modifier = Modifier
+            .fillMaxSize()
+            .background(
+                brush = backgroundGradient
             )
-            {
-                item {
+    ) {
+        TransformingLazyColumn(
+            state = listState,
+            modifier = Modifier
+                .fillMaxRectangle()
+                .padding(horizontal = 2.dp, vertical = 2.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            contentPadding = responsivePaddingDefaults()
+        ) {
+            item {
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+            item {
+                ListHeader {
                     Text(
                         "Games History", style = MaterialTheme.typography.titleMedium.copy(
                             fontWeight = FontWeight.Bold
                         )
                     )
                 }
-                item {
-                    Spacer(modifier = Modifier.height(4.dp))
-                }
-                itemsIndexed(gamesList) { index, gameEntity ->
-                    SportSummaryCard(
-                        modifier = Modifier,
-                        contentData = gameEntity,
-                        navigateToDetails = {
-                            navController.navigate("statisticsExpanded/${gameEntity.gameId}")
-                        },
-                        SurfaceTransformation(transformationSpec)
-                    )
-                }
             }
+            item {
+                Spacer(modifier = Modifier.height(4.dp))
+            }
+            itemsIndexed(gamesList) { index, gameEntity ->
+                SportSummaryCard(
+                    modifier = Modifier, contentData = gameEntity, navigateToDetails = {
+                        navController.navigate("statisticsExpanded/${gameEntity.gameId}")
+                    }, SurfaceTransformation(transformationSpec)
+                )
+            }
+
+            item { Spacer(modifier = Modifier.height(40.dp)) }
+
         }
+
+    }
 }

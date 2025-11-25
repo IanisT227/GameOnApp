@@ -49,19 +49,26 @@ fun FitnessComponent(
                 onConfirmClick()
                 showDialog = false
             })
+
     Column(
-        modifier = Modifier.fillMaxRectangle(),
+        modifier = Modifier
+            .fillMaxRectangle()
+            .padding(horizontal = 4.dp, vertical = 10.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceEvenly
+        verticalArrangement = Arrangement.SpaceEvenly,
     ) {
-        Spacer(modifier = Modifier.height(6.dp))
+        Spacer(modifier = Modifier.height(20.dp))
         FitnessTimerChip(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth(0.5f)
+                .weight(0.7f),
             timeValue = timeInSeconds,
         )
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(4.dp))
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -78,10 +85,12 @@ fun FitnessComponent(
                 icon = Icons.Rounded.LocalFireDepartment
             )
         }
+        Spacer(modifier = Modifier.height(4.dp))
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp),
+                .weight(0.8f)
+                .padding(horizontal = 26.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
@@ -98,6 +107,7 @@ fun FitnessComponent(
                 }, buttonImage = Icons.Outlined.Check
             )
         }
+        Spacer(modifier = Modifier.height(10.dp))
     }
 }
 

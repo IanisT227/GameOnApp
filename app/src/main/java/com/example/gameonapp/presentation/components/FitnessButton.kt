@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,7 +22,7 @@ fun FitnessButton(modifier: Modifier = Modifier, onClick: () -> Unit, buttonImag
         modifier = modifier
             .background(
                 color = MaterialTheme.colorScheme.primary,
-                shape = RoundedCornerShape(10.dp)
+                shape = CircleShape
             ),
         contentPadding = PaddingValues(4.dp)
     ) {

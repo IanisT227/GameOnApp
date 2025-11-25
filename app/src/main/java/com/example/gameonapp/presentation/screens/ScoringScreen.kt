@@ -49,6 +49,7 @@ import com.example.gameonapp.utils.PADEL
 import com.example.gameonapp.utils.SCORE_COMPONENT
 import com.example.gameonapp.utils.TENNIS
 import com.example.gameonapp.utils.VOLLEYBALL
+import com.google.android.horologist.compose.layout.fillMaxRectangle
 import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
 import java.util.Date
@@ -135,7 +136,7 @@ fun ScoringScreen(
 
     Box(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxRectangle()
             .background(
                 brush = backgroundGradient
             ),

@@ -39,7 +39,7 @@ fun SportSummaryCard(
 ) {
     OutlinedButton(
         modifier = modifier
-            .fillMaxWidth()
+            .fillMaxWidth(0.8f)
             .padding(horizontal = 6.dp, vertical = 4.dp),
         onClick = {
             navigateToDetails()

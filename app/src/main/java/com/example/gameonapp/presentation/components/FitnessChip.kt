@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -41,7 +40,7 @@ fun FitnessChip(
     )
     Column(
         modifier = Modifier
-            .widthIn(min = 80.dp)
+            .widthIn(min = 90.dp)
             .background(
                 color = MaterialTheme.colorScheme.tertiary,
                 shape = RoundedCornerShape(10.dp)
@@ -67,20 +66,19 @@ fun FitnessChip(
 
 @Composable
 fun FitnessTimerChip(
-    modifier: Modifier = Modifier,
     timeValue: Int,
+    modifier: Modifier,
 ) {
     val textValue = formatTime(timeValue)
     Row(
-        modifier = Modifier
+        modifier = modifier
             .widthIn(min = 80.dp)
             .border(
                 width = 2.dp,
                 color = MaterialTheme.colorScheme.tertiary,
                 shape = RoundedCornerShape(8.dp)
             )
-            .padding(horizontal = 12.dp, vertical = 6.dp)
-            .fillMaxWidth(),
+            .padding(horizontal = 12.dp, vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
     ) {

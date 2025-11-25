@@ -5,10 +5,13 @@ import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.SportsBasketball
 import androidx.compose.material.icons.outlined.SportsSoccer
@@ -23,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.wear.compose.foundation.lazy.TransformingLazyColumn
 import androidx.wear.compose.foundation.lazy.rememberTransformingLazyColumnState
+import androidx.wear.compose.material.ListHeader
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.ScreenScaffold
@@ -31,8 +35,6 @@ import androidx.wear.compose.material3.lazy.rememberTransformationSpec
 import androidx.wear.compose.material3.lazy.transformedHeight
 import com.example.gameonapp.presentation.components.SelectSportChip
 import com.example.gameonapp.presentation.theme.backgroundGradient
-import com.google.android.horologist.compose.layout.fillMaxRectangle
-import com.google.android.horologist.compose.layout.responsivePaddingDefaults
 
 @Composable
 fun SelectSportsScreen(navController: NavController) {
@@ -50,27 +52,31 @@ fun SelectSportsScreen(navController: NavController) {
     ScreenScaffold(
         scrollState = listState,
         modifier = Modifier
-            .fillMaxSize()
             .background(
                 brush = backgroundGradient
-            ),
+            )
+            .fillMaxSize(),
     ) {
         TransformingLazyColumn(
             state = listState,
-            modifier = Modifier
-                .fillMaxRectangle()
-                .padding(horizontal = 2.dp, vertical = 2.dp),
+            modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
-            contentPadding = responsivePaddingDefaults()
+            contentPadding = WindowInsets.safeDrawing.asPaddingValues()
         ) {
 
             item {
-                Text(
-                    "Select your sport", style = MaterialTheme.typography.titleMedium.copy(
-                        fontWeight = FontWeight.Bold
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+
+            item {
+                ListHeader {
+                    Text(
+                        "Select your sport", style = MaterialTheme.typography.titleMedium.copy(
+                            fontWeight = FontWeight.Bold
+                        )
                     )
-                )
+                }
             }
             item {
                 Spacer(modifier = Modifier.height(4.dp))
@@ -79,7 +85,7 @@ fun SelectSportsScreen(navController: NavController) {
                 item {
                     SelectSportChip(
                         modifier = Modifier
-                            .fillMaxWidth()
+                            .fillMaxWidth(0.8f)
                             .transformedHeight(this, transformationSpec)
                             .padding(vertical = 4.dp),
                         transformation = SurfaceTransformation(transformationSpec),
@@ -96,7 +102,7 @@ fun SelectSportsScreen(navController: NavController) {
                         })
                 }
             }
-            item { Spacer(modifier = Modifier.height(30.dp)) }
+            item { Spacer(modifier = Modifier.height(40.dp)) }
         }
     }
 }
