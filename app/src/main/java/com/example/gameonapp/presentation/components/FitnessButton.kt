@@ -24,7 +24,7 @@ fun FitnessButton(modifier: Modifier = Modifier, onClick: () -> Unit, buttonImag
                 color = MaterialTheme.colorScheme.primary,
                 shape = CircleShape
             ),
-        contentPadding = PaddingValues(4.dp)
+        contentPadding = PaddingValues(10.dp)
     ) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Icon(

@@ -58,13 +58,13 @@ fun FootballScoreComponent(modifier: Modifier = Modifier, gameViewModel: GameVie
             TeamBox(
                 teamName = "Home",
                 onClick = { operation ->
-                    gameViewModel.adjustScore(HOME, operation)
+                    gameViewModel.adjustFootballScore(HOME, operation)
                 },
                 score = scores.home
             )
             TeamBox(
                 teamName = "Away", onClick = { operation ->
-                    gameViewModel.adjustScore(AWAY, operation)
+                    gameViewModel.adjustFootballScore(AWAY, operation)
                 },
                 score = scores.away
             )

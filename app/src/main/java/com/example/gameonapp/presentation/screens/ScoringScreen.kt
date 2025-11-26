@@ -36,6 +36,7 @@ import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
 import androidx.wear.compose.material3.TimeText
 import androidx.wear.widget.ConfirmationOverlay
+import com.example.gameonapp.presentation.components.BasketballScoreComponent
 import com.example.gameonapp.presentation.components.FitnessComponent
 import com.example.gameonapp.presentation.components.FootballScoreComponent
 import com.example.gameonapp.presentation.theme.backgroundGradient
@@ -195,7 +196,7 @@ fun GetSportsComponent(sportName: String, gameViewModel: GameViewModel) {
         TENNIS -> Box {}
         PADEL -> Box {}
         VOLLEYBALL -> Box {}
-        BASKETBALL -> Box {}
+        BASKETBALL -> BasketballScoreComponent(gameViewModel = gameViewModel)
     }
 }
 

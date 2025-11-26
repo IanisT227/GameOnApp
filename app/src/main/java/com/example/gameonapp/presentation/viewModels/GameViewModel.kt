@@ -58,14 +58,22 @@ class GameViewModel(private val gameRepository: GameRepository) : ViewModel() {
         }
     }
 
-    fun adjustScore(team: Boolean, adjustType: Boolean) {
+    fun adjustFootballScore(team: Boolean, adjustType: Boolean) {
         val current = _scores.value
-
         _scores.value = when {
             team == HOME && adjustType == INCREMENT -> current.copy(home = current.home + 1)
             team == HOME && adjustType == DECREMENT -> current.copy(home = current.home - 1)
             team == AWAY && adjustType == INCREMENT -> current.copy(away = current.away + 1)
             team == AWAY && adjustType == DECREMENT -> current.copy(away = current.away - 1)
+            else -> current
+        }
+    }
+
+    fun adjustBasketballScore(team: Boolean, scoreAmount: Int) {
+        val current = _scores.value
+        _scores.value = when (team) {
+            HOME -> current.copy(home = current.home + scoreAmount)
+            AWAY -> current.copy(away = current.away + scoreAmount)
             else -> current
         }
     }

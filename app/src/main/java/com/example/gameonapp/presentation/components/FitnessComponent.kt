@@ -1,9 +1,11 @@
 package com.example.gameonapp.presentation.components
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -25,12 +27,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.gameonapp.presentation.viewModels.FitnessViewModel
 import com.example.gameonapp.utils.PULSE_METER
-import com.google.android.horologist.compose.layout.fillMaxRectangle
 import kotlin.math.roundToInt
 
 @Composable
 fun FitnessComponent(
-    modifier: Modifier = Modifier,
     onConfirmClick: () -> Unit,
     fitnessViewModel: FitnessViewModel,
 ) {
@@ -50,64 +50,69 @@ fun FitnessComponent(
                 showDialog = false
             })
 
-    Column(
-        modifier = Modifier
-            .fillMaxRectangle()
-            .padding(horizontal = 4.dp, vertical = 10.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceEvenly,
+    Box(
+        modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
     ) {
-        Spacer(modifier = Modifier.height(20.dp))
-        FitnessTimerChip(
+        Column(
             modifier = Modifier
-                .fillMaxWidth(0.5f)
-                .weight(0.7f),
-            timeValue = timeInSeconds,
-        )
-        Spacer(modifier = Modifier.height(4.dp))
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
+                .fillMaxWidth(0.85f)
+                .fillMaxSize()
+                .padding(horizontal = 4.dp, vertical = 10.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceEvenly,
         ) {
-            FitnessChip(
-                modifier = Modifier.weight(1f),
-                value = hr?.roundToInt() ?: 20,
-                icon = Icons.Rounded.MonitorHeart,
-                type = PULSE_METER
+            Spacer(modifier = Modifier.height(20.dp))
+            FitnessTimerChip(
+                modifier = Modifier
+                    .fillMaxWidth(0.8f)
+                    .weight(0.7f),
+                timeValue = timeInSeconds,
             )
-            Spacer(modifier = Modifier.width(4.dp))
-            FitnessChip(
-                modifier = Modifier.weight(1f),
-                value = hr?.roundToInt() ?: 111,
-                icon = Icons.Rounded.LocalFireDepartment
-            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                FitnessChip(
+                    modifier = Modifier.weight(1f),
+                    value = hr?.roundToInt() ?: 20,
+                    icon = Icons.Rounded.MonitorHeart,
+                    type = PULSE_METER
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                FitnessChip(
+                    modifier = Modifier.weight(1f),
+                    value = hr?.roundToInt() ?: 111,
+                    icon = Icons.Rounded.LocalFireDepartment
+                )
+            }
+            Spacer(modifier = Modifier.height(4.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(0.8f)
+                    .padding(horizontal = 26.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                FitnessButton(
+                    modifier = Modifier.weight(1f),
+                    onClick = { fitnessViewModel.toggleIsTimerRunning() },
+                    buttonImage = if (isTimerRunning) Icons.Outlined.Pause else Icons.Outlined.PlayArrow
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                FitnessButton(
+                    modifier = Modifier.weight(1f),
+                    onClick = {
+                        showDialog = true
+                    }, buttonImage = Icons.Outlined.Check
+                )
+            }
+            Spacer(modifier = Modifier.height(10.dp))
         }
-        Spacer(modifier = Modifier.height(4.dp))
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(0.8f)
-                .padding(horizontal = 26.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            FitnessButton(
-                modifier = Modifier.weight(1f),
-                onClick = { fitnessViewModel.toggleIsTimerRunning() },
-                buttonImage = if (isTimerRunning) Icons.Outlined.Pause else Icons.Outlined.PlayArrow
-            )
-            Spacer(modifier = Modifier.width(4.dp))
-            FitnessButton(
-                modifier = Modifier.weight(1f),
-                onClick = {
-                    showDialog = true
-                }, buttonImage = Icons.Outlined.Check
-            )
-        }
-        Spacer(modifier = Modifier.height(10.dp))
     }
 }
 
