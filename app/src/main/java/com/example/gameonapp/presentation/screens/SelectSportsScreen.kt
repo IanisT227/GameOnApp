@@ -43,10 +43,10 @@ fun SelectSportsScreen(navController: NavController) {
     val transformationSpec = rememberTransformationSpec()
     val sportsList = listOf(
         Pair("Football", Icons.Outlined.SportsSoccer),
-        Pair("Tennis", Icons.Outlined.SportsTennis),
-        Pair("Padel", Icons.Outlined.SportsTennis),
         Pair("Volleyball", Icons.Outlined.SportsVolleyball),
         Pair("Basketball", Icons.Outlined.SportsBasketball),
+        Pair("Tennis", Icons.Outlined.SportsTennis),
+        Pair("Padel", Icons.Outlined.SportsTennis),
     )
 
     ScreenScaffold(

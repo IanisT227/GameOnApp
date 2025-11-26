@@ -64,8 +64,9 @@ fun BasketballScoreComponent(gameViewModel: GameViewModel) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceAround
+                horizontalArrangement = Arrangement.SpaceEvenly
             ) {
+                Spacer(modifier = Modifier.width(4.dp))
                 TeamScoreComponent(
                     modifier = Modifier
                         .weight(1f)
@@ -83,6 +84,7 @@ fun BasketballScoreComponent(gameViewModel: GameViewModel) {
                     teamName = "Away",
                     onClick = { selectedTeam = AWAY }
                 )
+                Spacer(modifier = Modifier.width(4.dp))
             }
             ScoreButtonsRow(valuesList = amounts, onClick = { amount ->
                 gameViewModel.adjustBasketballScore(selectedTeam, amount)
@@ -110,7 +112,7 @@ fun TeamScoreComponent(
     Column(
         modifier = modifier
             .clickable(enabled = true, onClick = { onClick() })
-            .padding(horizontal = 20.dp, vertical = 6.dp),
+            .padding(horizontal = 14.dp, vertical = 6.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
