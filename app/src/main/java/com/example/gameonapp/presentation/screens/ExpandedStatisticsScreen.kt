@@ -5,6 +5,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,18 +21,26 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import androidx.wear.compose.foundation.lazy.TransformingLazyColumn
 import androidx.wear.compose.foundation.lazy.rememberTransformingLazyColumnState
+import androidx.wear.compose.material3.Button
+import androidx.wear.compose.material3.ButtonDefaults
 import androidx.wear.compose.material3.ListHeader
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.ScreenScaffold
 import androidx.wear.compose.material3.Text
 import com.composables.icons.lucide.Heart
 import com.composables.icons.lucide.Lucide
+import com.example.gameonapp.presentation.components.DeleteGameDialog
 import com.example.gameonapp.presentation.components.DetailsRow
 import com.example.gameonapp.presentation.components.ScoreColumn
 import com.example.gameonapp.presentation.theme.backgroundGradient
@@ -43,10 +52,23 @@ import org.koin.androidx.compose.koinViewModel
 
 
 @Composable
-fun ExpandedStatisticsScreen(gameId: Long) {
+fun ExpandedStatisticsScreen(gameId: Long, navController: NavController) {
     val gameViewModel = koinViewModel<GameViewModel>()
     val gameData by gameViewModel.gameData.collectAsState()
     val listState = rememberTransformingLazyColumnState()
+    var showDialog by rememberSaveable { mutableStateOf(false) }
+
+    if (showDialog)
+        DeleteGameDialog(
+            isVisible = true,
+            onDismiss = { showDialog = false },
+            onConfirmClick = {
+                gameViewModel.removeGame(gameId)
+                showDialog = false
+                navController.popBackStack()
+            })
+
+
     if (gameId != 0L) {
         LaunchedEffect(Unit) {
             gameViewModel.getGameById(gameId)
@@ -143,6 +165,25 @@ fun ExpandedStatisticsScreen(gameId: Long) {
                             image = Lucide.Heart,
                             legendText = "Avg. BPM",
                             valueText = gameData.averageBPM.toString()
+                        )
+                    }
+                }
+                item { Spacer(modifier = Modifier.height(6.dp)) }
+                item {
+                    Button(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = { showDialog = true },
+                        shape = RoundedCornerShape(12.dp),
+                        contentPadding = PaddingValues(horizontal = 2.dp, vertical = 0.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary,
+                        )
+                    ) {
+                        Text(
+                            text = "Remove game",
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center
                         )
                     }
                 }

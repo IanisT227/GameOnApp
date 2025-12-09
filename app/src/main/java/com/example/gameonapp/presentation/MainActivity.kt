@@ -74,7 +74,8 @@ fun WearApp() {
                 )) { backStackEntry ->
                 val gameId = backStackEntry.arguments?.getLong("gameId") ?: 0
                 ExpandedStatisticsScreen(
-                    gameId = gameId
+                    gameId = gameId,
+                    navController = navController
                 )
             }
         }

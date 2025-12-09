@@ -38,6 +38,26 @@ fun SaveDialog(
 }
 
 @Composable
+fun DeleteGameDialog(
+    modifier: Modifier = Modifier,
+    isVisible: Boolean,
+    onDismiss: () -> Unit,
+    onConfirmClick: () -> Unit,
+) {
+    AlertDialog(
+        visible = isVisible,
+        onDismissRequest = { onDismiss() },
+        confirmButton = { DialogButton(buttonText = "Yes", onClickAction = { onConfirmClick() }) },
+        dismissButton = { DialogButton(buttonText = "No", onClickAction = { onDismiss() }) },
+        title = { Text("Delete game") },
+        icon = { Icons.Outlined.Save },
+        text = { Text("Are you sure you want to remove this session?") },
+        verticalArrangement = Arrangement.SpaceEvenly,
+        content = {}
+    )
+}
+
+@Composable
 fun DialogButton(modifier: Modifier = Modifier, buttonText: String, onClickAction: () -> Unit) {
     Button(
         modifier = Modifier.width(80.dp),

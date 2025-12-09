@@ -12,11 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.SportsBasketball
-import androidx.compose.material.icons.outlined.SportsSoccer
-import androidx.compose.material.icons.outlined.SportsTennis
-import androidx.compose.material.icons.outlined.SportsVolleyball
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,19 +30,13 @@ import androidx.wear.compose.material3.lazy.rememberTransformationSpec
 import androidx.wear.compose.material3.lazy.transformedHeight
 import com.example.gameonapp.presentation.components.SelectSportChip
 import com.example.gameonapp.presentation.theme.backgroundGradient
+import com.example.gameonapp.utils.sportsList
 
 @Composable
 fun SelectSportsScreen(navController: NavController) {
     val context = LocalContext.current
     val listState = rememberTransformingLazyColumnState()
     val transformationSpec = rememberTransformationSpec()
-    val sportsList = listOf(
-        Pair("Football", Icons.Outlined.SportsSoccer),
-        Pair("Volleyball", Icons.Outlined.SportsVolleyball),
-        Pair("Basketball", Icons.Outlined.SportsBasketball),
-        Pair("Tennis", Icons.Outlined.SportsTennis),
-        Pair("Padel", Icons.Outlined.SportsTennis),
-    )
 
     ScreenScaffold(
         scrollState = listState,

@@ -40,6 +40,13 @@ class GameViewModel(private val gameRepository: GameRepository) : ViewModel() {
         }
     }
 
+    fun removeGame(gameId: Long) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val gameEntity = gameRepository.getGameById(gameId) ?: GameEntity()
+            gameRepository.removeGame(gameEntity)
+        }
+    }
+
     fun getGamesHistory() {
         viewModelScope.launch(Dispatchers.IO) {
             val list = gameRepository.getGamesHistory()
