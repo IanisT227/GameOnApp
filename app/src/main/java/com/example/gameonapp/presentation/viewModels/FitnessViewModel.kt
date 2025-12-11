@@ -6,14 +6,21 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.gameonapp.utils.PreferencesKeys
+import com.example.gameonapp.utils.dataStore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class FitnessViewModel(application: Application) : ViewModel(), SensorEventListener {
+class FitnessViewModel(private val application: Application) :
+    ViewModel(), SensorEventListener {
     private val _heartRateBpm = MutableStateFlow<Double?>(null)
     val heartRateBpm: StateFlow<Double?> = _heartRateBpm
     private val _calories = MutableStateFlow(0.0)
@@ -28,6 +35,15 @@ class FitnessViewModel(application: Application) : ViewModel(), SensorEventListe
     private val _totalBPM = MutableStateFlow(0L)
     val totalBPM: StateFlow<Long> = _totalBPM
 
+    val maxBpmFlow: StateFlow<Int> = application.dataStore.data
+        .map { preferences ->
+            preferences[PreferencesKeys.MAX_BPM_KEY] ?: 0 // Provide a default value
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = 0
+        )
     private val sensorManager: SensorManager =
         application.getSystemService(SENSOR_SERVICE) as SensorManager
     private val heartSensor: Sensor? = sensorManager.getDefaultSensor(Sensor.TYPE_HEART_RATE)
@@ -45,6 +61,16 @@ class FitnessViewModel(application: Application) : ViewModel(), SensorEventListe
             }
         }
     }
+
+    fun setMaxBpm(value: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            application.dataStore.edit { preferences ->
+                preferences[PreferencesKeys.MAX_BPM_KEY] = value
+            }
+        }
+    }
+
+    fun getMaxBpm() = maxBpmFlow.value
 
     fun registerHeartRateSensor() {
         if (isSensorRegistered) return
@@ -78,6 +104,9 @@ class FitnessViewModel(application: Application) : ViewModel(), SensorEventListe
     fun increaseTotalBPM() {
         viewModelScope.launch(Dispatchers.IO) {
             _totalBPM.value += heartRateBpm.value?.toInt() ?: 0
+            if ((heartRateBpm.value?.toInt() ?: 0) > maxBpmFlow.value) {
+                setMaxBpm(heartRateBpm.value?.toInt() ?: 0)
+            }
         }
     }
 }

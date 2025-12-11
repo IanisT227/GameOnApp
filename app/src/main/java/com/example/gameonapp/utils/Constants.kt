@@ -1,10 +1,13 @@
 package com.example.gameonapp.utils
 
+import android.content.Context
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.SportsBasketball
 import androidx.compose.material.icons.outlined.SportsSoccer
 import androidx.compose.material.icons.outlined.SportsTennis
 import androidx.compose.material.icons.outlined.SportsVolleyball
+import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
 
 const val INCREMENT = true
 const val DECREMENT = false
@@ -27,3 +30,9 @@ val sportsList = listOf(
     Pair("Tennis", Icons.Outlined.SportsTennis),
     Pair("Padel", Icons.Outlined.SportsTennis),
 )
+
+val Context.dataStore by preferencesDataStore("statistics")
+
+object PreferencesKeys {
+    val MAX_BPM_KEY = intPreferencesKey("max_bpm_key")
+}

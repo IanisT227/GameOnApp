@@ -27,6 +27,9 @@ class GameViewModel(private val gameRepository: GameRepository) : ViewModel() {
     )
     val gameData: StateFlow<GameEntity> = _gameData
 
+    private val _totalTime = MutableStateFlow(0)
+    val totalTime: StateFlow<Int> = _totalTime
+
 
     fun insertGame(gameEntity: GameEntity) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -61,6 +64,15 @@ class GameViewModel(private val gameRepository: GameRepository) : ViewModel() {
             val gameData = gameRepository.getGameById(gameId) ?: GameEntity()
             withContext(Dispatchers.Main) {
                 _gameData.value = gameData
+            }
+        }
+    }
+
+    fun getTotalTime() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val totalTime = gameRepository.getTotalTime().toInt()
+            withContext(Dispatchers.Main) {
+                _totalTime.value = totalTime
             }
         }
     }

@@ -1,10 +1,13 @@
 package com.example.gameonapp.domain
 
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import androidx.room.Room
 import com.example.gameonapp.data.local.AppDatabase
 import com.example.gameonapp.domain.repository.GameRepository
 import com.example.gameonapp.presentation.viewModels.FitnessViewModel
 import com.example.gameonapp.presentation.viewModels.GameViewModel
+import com.example.gameonapp.utils.dataStore
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -27,4 +30,10 @@ val databaseModule = module {
     }
 
     single { get<AppDatabase>().gameDao() }
+}
+
+val dataStoreModule = module {
+    single<DataStore<Preferences>> {
+        androidContext().dataStore
+    }
 }

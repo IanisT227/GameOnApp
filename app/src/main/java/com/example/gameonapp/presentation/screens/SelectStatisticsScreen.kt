@@ -24,8 +24,10 @@ import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.ScreenScaffold
 import androidx.wear.compose.material3.SurfaceTransformation
 import androidx.wear.compose.material3.lazy.rememberTransformationSpec
+import com.example.gameonapp.presentation.components.ActivitySummaryCard
 import com.example.gameonapp.presentation.components.SportSummaryCard
 import com.example.gameonapp.presentation.theme.backgroundGradient
+import com.example.gameonapp.presentation.viewModels.FitnessViewModel
 import com.example.gameonapp.presentation.viewModels.GameViewModel
 import com.google.android.horologist.compose.layout.fillMaxRectangle
 import com.google.android.horologist.compose.layout.responsivePaddingDefaults
@@ -34,12 +36,16 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun SelectStatisticsScreen(navController: NavController) {
     val gameViewModel = koinViewModel<GameViewModel>()
+    val fitnessViewModel = koinViewModel<FitnessViewModel>()
+    val maxBpm by fitnessViewModel.maxBpmFlow.collectAsState()
     val listState = rememberTransformingLazyColumnState()
     val gamesList by gameViewModel.gameList.collectAsState()
+    val totalTime by gameViewModel.totalTime.collectAsState()
     val transformationSpec = rememberTransformationSpec()
 
     LaunchedEffect(Unit) {
         gameViewModel.getGamesHistory()
+        gameViewModel.getTotalTime()
     }
     if (gamesList.isNotEmpty()) ScreenScaffold(
         scrollState = listState, modifier = Modifier
@@ -68,6 +74,16 @@ fun SelectStatisticsScreen(navController: NavController) {
                         )
                     )
                 }
+            }
+            item {
+                Spacer(modifier = Modifier.height(4.dp))
+            }
+            item {
+                ActivitySummaryCard(
+                    totalTime = totalTime,
+                    totalGames = gamesList.size,
+                    maxBpm = maxBpm
+                )
             }
             item {
                 Spacer(modifier = Modifier.height(4.dp))

@@ -39,6 +39,7 @@ import androidx.wear.widget.ConfirmationOverlay
 import com.example.gameonapp.presentation.components.BasketballScoreComponent
 import com.example.gameonapp.presentation.components.FitnessComponent
 import com.example.gameonapp.presentation.components.FootballScoreComponent
+import com.example.gameonapp.presentation.components.TennisScoreComponent
 import com.example.gameonapp.presentation.theme.backgroundGradient
 import com.example.gameonapp.presentation.viewModels.FitnessViewModel
 import com.example.gameonapp.presentation.viewModels.GameViewModel
@@ -193,7 +194,7 @@ fun ScoringScreen(
 fun GetSportsComponent(sportName: String, gameViewModel: GameViewModel) {
     when (sportName) {
         FOOTBALL -> FootballScoreComponent(gameViewModel = gameViewModel)
-        TENNIS -> Box {}
+        TENNIS -> TennisScoreComponent(gameViewModel = gameViewModel)
         PADEL -> Box {}
         VOLLEYBALL -> Box {}
         BASKETBALL -> BasketballScoreComponent(gameViewModel = gameViewModel)
@@ -220,9 +221,9 @@ fun saveGame(gameViewModel: GameViewModel, fitnessViewModel: FitnessViewModel, s
 
 fun showConfirmation(context: Context) {
     ConfirmationOverlay()
-        .setType(ConfirmationOverlay.SUCCESS_ANIMATION) // checkmark animation
-        .setDuration(1000)                              // 1 second
-        .showOn(context as Activity)                    // <-- IMPORTANT
+        .setType(ConfirmationOverlay.SUCCESS_ANIMATION)
+        .setDuration(1000)
+        .showOn(context as Activity)
 }
 
 fun computeAverageBPM(totalBPM: Long, timeInSeconds: Long): Int {

@@ -15,4 +15,6 @@ class GameRepository(private val gameDao: GameDao) {
     suspend fun getGamesHistory(): List<GameEntity> = gameDao.getGames()
 
     suspend fun getGameById(gameId: Long) = gameDao.getGameById(gameId = gameId)
+
+    suspend fun getTotalTime() = gameDao.getTotalTime()
 }

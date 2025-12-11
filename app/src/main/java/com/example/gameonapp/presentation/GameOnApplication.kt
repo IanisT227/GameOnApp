@@ -1,6 +1,7 @@
 package com.example.gameonapp.presentation
 
 import android.app.Application
+import com.example.gameonapp.domain.dataStoreModule
 import com.example.gameonapp.domain.databaseModule
 import com.example.gameonapp.domain.repositoryModule
 import com.example.gameonapp.domain.viewModelModule
@@ -12,7 +13,7 @@ class GameOnApplication : Application() {
         super.onCreate()
         startKoin {
             androidContext(this@GameOnApplication)
-            modules(listOf(databaseModule, repositoryModule, viewModelModule))
+            modules(listOf(databaseModule, repositoryModule, viewModelModule, dataStoreModule))
         }
     }
 }

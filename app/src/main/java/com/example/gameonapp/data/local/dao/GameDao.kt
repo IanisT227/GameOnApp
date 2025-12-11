@@ -20,4 +20,7 @@ interface GameDao {
 
     @Query("SELECT * FROM games WHERE gameId = :gameId LIMIT 1")
     suspend fun getGameById(gameId: Long): GameEntity?
+
+    @Query("SELECT COALESCE(SUM(durationSeconds), 0) FROM games")
+    suspend fun getTotalTime(): Long
 }
