@@ -23,7 +23,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.wear.compose.material.Icon
@@ -32,16 +31,17 @@ import androidx.wear.compose.material3.Button
 import androidx.wear.compose.material3.ButtonDefaults
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.OutlinedButton
-import com.example.gameonapp.data.local.model.Score
+import com.example.gameonapp.data.local.model.SimpleScore
 import com.example.gameonapp.presentation.viewModels.GameViewModel
 import com.example.gameonapp.utils.AWAY
 import com.example.gameonapp.utils.DECREMENT
 import com.example.gameonapp.utils.HOME
 import com.example.gameonapp.utils.INCREMENT
+import java.util.Locale
 
 @Composable
 fun FootballScoreComponent(modifier: Modifier = Modifier, gameViewModel: GameViewModel) {
-    val scores: Score by gameViewModel.scores.collectAsState()
+    val scores: SimpleScore by gameViewModel.simpleScores.collectAsState()
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -100,13 +100,12 @@ fun TeamBox(
 ) {
     Column(modifier = Modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
-            teamName, style = MaterialTheme.typography.titleMedium.copy(
+            teamName.uppercase(Locale.ROOT), style = MaterialTheme.typography.labelSmall.copy(
                 fontWeight = FontWeight.Bold,
-                textDecoration = TextDecoration.Underline
             )
         )
         Text(
-            score.toString(), style = MaterialTheme.typography.titleLarge.copy(
+            score.toString(), style = MaterialTheme.typography.displaySmall.copy(
                 fontWeight = FontWeight.ExtraBold,
                 fontSize = 40.sp,
             )

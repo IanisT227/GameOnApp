@@ -40,6 +40,7 @@ import com.example.gameonapp.presentation.components.BasketballScoreComponent
 import com.example.gameonapp.presentation.components.FitnessComponent
 import com.example.gameonapp.presentation.components.FootballScoreComponent
 import com.example.gameonapp.presentation.components.TennisScoreComponent
+import com.example.gameonapp.presentation.components.VolleyballScoreComponent
 import com.example.gameonapp.presentation.theme.backgroundGradient
 import com.example.gameonapp.presentation.viewModels.FitnessViewModel
 import com.example.gameonapp.presentation.viewModels.GameViewModel
@@ -196,7 +197,7 @@ fun GetSportsComponent(sportName: String, gameViewModel: GameViewModel) {
         FOOTBALL -> FootballScoreComponent(gameViewModel = gameViewModel)
         TENNIS -> TennisScoreComponent(gameViewModel = gameViewModel)
         PADEL -> Box {}
-        VOLLEYBALL -> Box {}
+        VOLLEYBALL -> VolleyballScoreComponent(gameViewModel = gameViewModel)
         BASKETBALL -> BasketballScoreComponent(gameViewModel = gameViewModel)
     }
 }

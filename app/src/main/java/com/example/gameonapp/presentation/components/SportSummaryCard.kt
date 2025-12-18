@@ -25,6 +25,7 @@ import androidx.wear.compose.material3.OutlinedButton
 import androidx.wear.compose.material3.SurfaceTransformation
 import androidx.wear.compose.material3.Text
 import com.example.gameonapp.data.local.model.GameEntity
+import com.example.gameonapp.data.local.model.SimpleScore
 import com.example.gameonapp.utils.fetchIconForGameType
 import com.example.gameonapp.utils.formatDate
 import com.example.gameonapp.utils.formatTime
@@ -57,7 +58,8 @@ fun SportSummaryCard(
 fun SportSummaryContent(modifier: Modifier = Modifier, gameData: GameEntity) {
     Row(
         modifier = Modifier
-            .fillMaxWidth().padding(vertical = 4.dp),
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceAround
     ) {
@@ -93,8 +95,9 @@ fun SportSummaryContent(modifier: Modifier = Modifier, gameData: GameEntity) {
         Column(
             horizontalAlignment = Alignment.End
         ) {
+            val gameScore = (gameData.score) as SimpleScore
             Text(
-                text = "${gameData.scoreA} - ${gameData.scoreB}",
+                text = "${gameScore.home} - ${gameScore.away}",
                 style = MaterialTheme.typography.bodySmall.copy(
                     fontSize = 10.sp,
                     fontWeight = FontWeight.Bold

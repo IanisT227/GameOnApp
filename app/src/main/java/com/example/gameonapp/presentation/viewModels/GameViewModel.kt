@@ -3,7 +3,8 @@ package com.example.gameonapp.presentation.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gameonapp.data.local.model.GameEntity
-import com.example.gameonapp.data.local.model.Score
+import com.example.gameonapp.data.local.model.SimpleScore
+import com.example.gameonapp.data.local.model.VolleyballScore
 import com.example.gameonapp.domain.repository.GameRepository
 import com.example.gameonapp.utils.AWAY
 import com.example.gameonapp.utils.DECREMENT
@@ -20,8 +21,11 @@ import java.util.Date
 class GameViewModel(private val gameRepository: GameRepository) : ViewModel() {
     private val _gameList = MutableStateFlow<List<GameEntity>>(emptyList())
     val gameList: StateFlow<List<GameEntity>> = _gameList
-    private val _scores = MutableStateFlow(Score())
-    val scores: StateFlow<Score> = _scores
+    private val _simpleScores = MutableStateFlow(SimpleScore())
+    val simpleScores: StateFlow<SimpleScore> = _simpleScores
+
+    private val _volleyballScores = MutableStateFlow(VolleyballScore())
+    val volleyballScores: StateFlow<VolleyballScore> = _volleyballScores
     private val _gameData = MutableStateFlow(
         value = GameEntity()
     )
@@ -78,8 +82,8 @@ class GameViewModel(private val gameRepository: GameRepository) : ViewModel() {
     }
 
     fun adjustFootballScore(team: Boolean, adjustType: Boolean) {
-        val current = _scores.value
-        _scores.value = when {
+        val current = _simpleScores.value
+        _simpleScores.value = when {
             team == HOME && adjustType == INCREMENT -> current.copy(home = current.home + 1)
             team == HOME && adjustType == DECREMENT -> current.copy(home = current.home - 1)
             team == AWAY && adjustType == INCREMENT -> current.copy(away = current.away + 1)
@@ -89,16 +93,33 @@ class GameViewModel(private val gameRepository: GameRepository) : ViewModel() {
     }
 
     fun adjustBasketballScore(team: Boolean, scoreAmount: Int) {
-        val current = _scores.value
-        _scores.value = when (team) {
+        val current = _simpleScores.value
+        _simpleScores.value = when (team) {
             HOME -> current.copy(home = current.home + scoreAmount)
             AWAY -> current.copy(away = current.away + scoreAmount)
             else -> current
         }
     }
 
+    fun adjustVolleyballScore(team: Boolean, scoreAmount: Int) {
+        val current = _volleyballScores.value
+
+        val updatedSets = current.scoresPerSet.mapIndexed { index, set ->
+            if (index == current.currentSet) {
+                if (team == HOME) {
+                    set.copy(pointsHome = (set.pointsHome + scoreAmount).coerceAtLeast(0))
+                } else {
+                    set.copy(pointsAway = (set.pointsAway + scoreAmount).coerceAtLeast(0))
+                }
+            } else {
+                set
+            }
+        }
+        _volleyballScores.value = current.copy(scoresPerSet = updatedSets)
+    }
+
     fun resetScore() {
-        _scores.value = Score(0, 0)
+        _simpleScores.value = SimpleScore(0, 0)
     }
 
     fun buildEndGameEntity(
@@ -108,8 +129,7 @@ class GameViewModel(private val gameRepository: GameRepository) : ViewModel() {
         gameType: GameType,
     ): GameEntity = GameEntity(
         gameType = gameType,
-        scoreA = scores.value.home,
-        scoreB = scores.value.away,
+        score = SimpleScore(home = simpleScores.value.home, away = simpleScores.value.away),
         matchDate = date,
         durationSeconds = durationSeconds,
         averageBPM = averageBPM,

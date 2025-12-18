@@ -1,7 +1,5 @@
 package com.example.gameonapp.presentation.components
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,21 +25,23 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material3.Button
 import androidx.wear.compose.material3.ButtonDefaults
 import androidx.wear.compose.material3.Icon
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
-import com.example.gameonapp.data.local.model.Score
+import com.example.gameonapp.data.local.model.SimpleScore
 import com.example.gameonapp.presentation.viewModels.GameViewModel
 import com.example.gameonapp.utils.AWAY
 import com.example.gameonapp.utils.HOME
+import com.example.gameonapp.utils.getScoreItemBackground
+import java.util.Locale
 
 @Composable
 fun BasketballScoreComponent(gameViewModel: GameViewModel) {
-    val scores: Score by gameViewModel.scores.collectAsState()
+    val scores: SimpleScore by gameViewModel.simpleScores.collectAsState()
     var selectedTeam by rememberSaveable { mutableStateOf(HOME) }
     val amounts = listOf(1, 2, 3)
     val isEnabled = if (selectedTeam == HOME) {
@@ -117,12 +117,13 @@ fun TeamScoreComponent(
         verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
         Text(
-            text = teamName,
-            style = MaterialTheme.typography.titleMedium,
-            textDecoration = TextDecoration.Underline
+            text = teamName.uppercase(Locale.ROOT),
+            style = MaterialTheme.typography.labelSmall,
         )
         Text(
-            text = teamScore.toString(), style = MaterialTheme.typography.titleLarge,
+            text = teamScore.toString(), style = MaterialTheme.typography.displayMedium.copy(
+                fontWeight = FontWeight.ExtraBold
+            ),
         )
     }
 }
@@ -169,16 +170,5 @@ fun DecreaseScoreButton(onClick: (Int) -> Unit, isEnabled: Boolean) {
     }
 }
 
-@Composable
-fun Modifier.getScoreItemBackground(isSelected: Boolean): Modifier {
-    val shape = RoundedCornerShape(10.dp)
 
-    return if (isSelected) {
-        this
-            .background(MaterialTheme.colorScheme.primary, shape)
-    } else {
-        this
-            .border(1.dp, MaterialTheme.colorScheme.primary, shape)
-    }
-}
 

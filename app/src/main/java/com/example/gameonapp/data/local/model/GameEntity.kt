@@ -9,8 +9,7 @@ import java.util.Date
 data class GameEntity(
     @PrimaryKey(autoGenerate = true) val gameId: Long = 0,
     val gameType: GameType = GameType.OTHER,
-    val scoreA: Int = 0,
-    val scoreB: Int = 0,
+    val score: GameScore = SimpleScore(),
     val matchDate: Date = Date(),
     val durationSeconds: Int = 0,
     val averageBPM: Int = 0,

@@ -23,10 +23,10 @@ val repositoryModule = module {
 val databaseModule = module {
     single {
         Room.databaseBuilder(
-            androidContext(),
-            AppDatabase::class.java,
-            "app_database"
-        ).build()
+                androidContext(),
+                AppDatabase::class.java,
+                "app_database"
+            ).fallbackToDestructiveMigration(false).build()
     }
 
     single { get<AppDatabase>().gameDao() }

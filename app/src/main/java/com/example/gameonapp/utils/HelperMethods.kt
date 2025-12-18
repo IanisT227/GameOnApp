@@ -1,12 +1,19 @@
 package com.example.gameonapp.utils
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.SportsBasketball
 import androidx.compose.material.icons.outlined.SportsScore
 import androidx.compose.material.icons.outlined.SportsSoccer
 import androidx.compose.material.icons.outlined.SportsTennis
 import androidx.compose.material.icons.outlined.SportsVolleyball
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.dp
+import androidx.wear.compose.material3.MaterialTheme
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Date
@@ -49,4 +56,17 @@ fun formatDate(date: Date): String {
         .toLocalDate()
 
     return localDate.format(formatter)
+}
+
+@Composable
+fun Modifier.getScoreItemBackground(isSelected: Boolean): Modifier {
+    val shape = RoundedCornerShape(16.dp)
+
+    return if (isSelected) {
+        this
+            .background(MaterialTheme.colorScheme.primary, shape)
+    } else {
+        this
+            .border(2.dp, MaterialTheme.colorScheme.primary, shape)
+    }
 }
