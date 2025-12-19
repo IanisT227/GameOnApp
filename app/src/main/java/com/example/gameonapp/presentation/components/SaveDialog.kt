@@ -19,7 +19,6 @@ import androidx.wear.compose.material3.Text
 
 @Composable
 fun SaveDialog(
-    modifier: Modifier = Modifier,
     isVisible: Boolean,
     onDismiss: () -> Unit,
     onConfirmClick: () -> Unit,
@@ -39,7 +38,6 @@ fun SaveDialog(
 
 @Composable
 fun DeleteGameDialog(
-    modifier: Modifier = Modifier,
     isVisible: Boolean,
     onDismiss: () -> Unit,
     onConfirmClick: () -> Unit,
@@ -58,7 +56,26 @@ fun DeleteGameDialog(
 }
 
 @Composable
-fun DialogButton(modifier: Modifier = Modifier, buttonText: String, onClickAction: () -> Unit) {
+fun EndGameDialog(
+    isVisible: Boolean,
+    onDismiss: () -> Unit,
+    onConfirmClick: () -> Unit,
+) {
+    AlertDialog(
+        visible = isVisible,
+        onDismissRequest = { onDismiss() },
+        confirmButton = { DialogButton(buttonText = "Yes", onClickAction = { onConfirmClick() }) },
+        dismissButton = { DialogButton(buttonText = "No", onClickAction = {  }) },
+        title = { Text("Game finished") },
+        icon = { Icons.Outlined.Save },
+        text = { Text("The game has finished. Proceed to fitness screen to save your game?") },
+        verticalArrangement = Arrangement.SpaceEvenly,
+        content = {}
+    )
+}
+
+@Composable
+fun DialogButton(buttonText: String, onClickAction: () -> Unit) {
     Button(
         modifier = Modifier.width(80.dp),
         onClick = { onClickAction() },

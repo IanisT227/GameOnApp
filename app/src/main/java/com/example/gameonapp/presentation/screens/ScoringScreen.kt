@@ -19,6 +19,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -36,6 +37,7 @@ import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
 import androidx.wear.compose.material3.TimeText
 import androidx.wear.widget.ConfirmationOverlay
+import com.example.gameonapp.data.local.model.GameEntity
 import com.example.gameonapp.presentation.components.BasketballScoreComponent
 import com.example.gameonapp.presentation.components.FitnessComponent
 import com.example.gameonapp.presentation.components.FootballScoreComponent
@@ -54,6 +56,7 @@ import com.example.gameonapp.utils.TENNIS
 import com.example.gameonapp.utils.VOLLEYBALL
 import com.google.android.horologist.compose.layout.fillMaxRectangle
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import java.util.Date
 
@@ -71,6 +74,8 @@ fun ScoringScreen(
     var showExitDialog by rememberSaveable { mutableStateOf(false) }
     var showOverlay by rememberSaveable { mutableStateOf(false) }
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+
 
 
     BackHandler(enabled = true) {
@@ -157,10 +162,17 @@ fun ScoringScreen(
                 .padding(bottom = 2.dp)
         ) { page ->
             when (page) {
-                SCORE_COMPONENT -> GetSportsComponent(
-                    sportName = sportName,
-                    gameViewModel = gameViewModel
-                )
+                SCORE_COMPONENT -> {
+                    GetSportsComponent(
+                        sportName = sportName,
+                        gameViewModel = gameViewModel,
+                        onGameFinished = {
+                            coroutineScope.launch {
+                                pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                            }
+                        }
+                    )
+                }
 
                 FITNESS_COMPONENT -> FitnessComponent(
                     fitnessViewModel = fitnessViewModel,
@@ -192,13 +204,20 @@ fun ScoringScreen(
 }
 
 @Composable
-fun GetSportsComponent(sportName: String, gameViewModel: GameViewModel) {
+fun GetSportsComponent(
+    sportName: String,
+    gameViewModel: GameViewModel,
+    onGameFinished: (() -> Unit)? = null,
+) {
     when (sportName) {
         FOOTBALL -> FootballScoreComponent(gameViewModel = gameViewModel)
+        BASKETBALL -> BasketballScoreComponent(gameViewModel = gameViewModel)
         TENNIS -> TennisScoreComponent(gameViewModel = gameViewModel)
         PADEL -> Box {}
-        VOLLEYBALL -> VolleyballScoreComponent(gameViewModel = gameViewModel)
-        BASKETBALL -> BasketballScoreComponent(gameViewModel = gameViewModel)
+        VOLLEYBALL -> VolleyballScoreComponent(
+            gameViewModel = gameViewModel,
+            onGameFinished = onGameFinished!!
+        )
     }
 }
 
@@ -211,12 +230,21 @@ fun saveGame(gameViewModel: GameViewModel, fitnessViewModel: FitnessViewModel, s
         )
     val date = Date()
     val gameType = GameType.valueOf(sportName.toUpperCase(Locale.current))
-    val finishedGame = gameViewModel.buildEndGameEntity(
-        durationSeconds = durationSeconds,
-        averageBPM = averageBPM,
-        date = date,
-        gameType = gameType
-    )
+    val finishedGame: GameEntity = if (sportName == FOOTBALL || sportName == BASKETBALL) {
+        gameViewModel.buildEndGameEntity(
+            durationSeconds = durationSeconds,
+            averageBPM = averageBPM,
+            date = date,
+            gameType = gameType
+        )
+    } else {
+        gameViewModel.buildVolleyballEndGameEntity(
+            durationSeconds = durationSeconds,
+            averageBPM = averageBPM,
+            date = date,
+            gameType = gameType
+        )
+    }
     gameViewModel.insertGame(finishedGame)
 }
 

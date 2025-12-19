@@ -11,7 +11,11 @@ sealed interface GameScore
 data class SimpleScore(
     val home: Int = 0,
     val away: Int = 0,
-) : GameScore
+) : GameScore {
+    override fun toString(): String {
+        return "{$home} - {$away}"
+    }
+}
 
 @Serializable
 @SerialName("volleyball")
@@ -19,11 +23,28 @@ data class VolleyballScore(
     val scoresPerSet: List<VolleyballSet> = List(5) {
         VolleyballSet(pointsHome = 0, pointsAway = 0)
     },
+    val currentSet: Int = 0,
 ) : GameScore {
-    val setsHome: Int get() = scoresPerSet.count { it.pointsHome > it.pointsAway }
-    val setsAway: Int get() = scoresPerSet.count { it.pointsAway > it.pointsHome }
-    val isMatchFinished: Boolean get() = setsHome == 3 || setsAway == 3
-    var currentSet = 0
+    val targetPointsPerSet = listOf(25, 25, 25, 25, 15)
+    val setsHome: Int
+        get() = scoresPerSet.mapIndexed { index, set ->
+            val target = targetPointsPerSet.getOrElse(index) { 25 }
+            if (set.pointsHome > set.pointsAway && set.pointsHome >= target) 1 else 0
+        }.sum()
+
+    val setsAway: Int
+        get() = scoresPerSet.mapIndexed { index, set ->
+            val target = targetPointsPerSet.getOrElse(index) { 25 }
+            if (set.pointsAway > set.pointsHome && set.pointsAway >= target) 1 else 0
+        }.sum()
+
+    fun getFinalScore(): String = "$setsHome - $setsAway"
+    fun getSetScores(): String {
+        val setScoresString =
+            scoresPerSet.mapIndexed { index, set -> "${index+1}. ${scoresPerSet[index].pointsHome} - ${scoresPerSet[index].pointsAway}" }
+                .joinToString("\n")
+        return setScoresString
+    }
 }
 
 @Serializable

@@ -111,7 +111,7 @@ fun ExpandedStatisticsScreen(gameId: Long, navController: NavController) {
                 item {
                     ScoreColumn(
                         gameType = gameData.gameType,
-                        gameScore = gameData.score.toString()
+                        gameScore = gameData.score
                     )
                 }
                 item { Spacer(modifier = Modifier.height(6.dp)) }

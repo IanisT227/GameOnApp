@@ -26,6 +26,7 @@ import androidx.wear.compose.material3.SurfaceTransformation
 import androidx.wear.compose.material3.Text
 import com.example.gameonapp.data.local.model.GameEntity
 import com.example.gameonapp.data.local.model.SimpleScore
+import com.example.gameonapp.data.local.model.VolleyballScore
 import com.example.gameonapp.utils.fetchIconForGameType
 import com.example.gameonapp.utils.formatDate
 import com.example.gameonapp.utils.formatTime
@@ -95,15 +96,23 @@ fun SportSummaryContent(modifier: Modifier = Modifier, gameData: GameEntity) {
         Column(
             horizontalAlignment = Alignment.End
         ) {
-            val gameScore = (gameData.score) as SimpleScore
-            Text(
-                text = "${gameScore.home} - ${gameScore.away}",
-                style = MaterialTheme.typography.bodySmall.copy(
-                    fontSize = 10.sp,
-                    fontWeight = FontWeight.Bold
-
+            when (val gameScore = gameData.score) {
+                is SimpleScore -> Text(
+                    text = "${gameScore.home} - ${gameScore.away}",
+                    style = MaterialTheme.typography.bodySmall.copy(
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Bold
+                    )
                 )
-            )
+                is VolleyballScore -> Text(
+                    text = gameScore.getFinalScore(),
+                    style = MaterialTheme.typography.bodySmall.copy(
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+                else -> Text("Unknown score")
+            }
             Text(
                 text = formatTime(gameData.durationSeconds),
                 style = MaterialTheme.typography.bodySmall.copy(

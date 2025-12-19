@@ -14,14 +14,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.wear.compose.material3.Icon
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
+import com.example.gameonapp.data.local.model.GameScore
+import com.example.gameonapp.data.local.model.SimpleScore
+import com.example.gameonapp.data.local.model.VolleyballScore
 import com.example.gameonapp.utils.GameType
 import com.example.gameonapp.utils.toPascalCase
 
 @Composable
-fun ScoreColumn(modifier: Modifier = Modifier, gameType: GameType, gameScore: String) {
+fun ScoreColumn(modifier: Modifier = Modifier, gameType: GameType, gameScore: GameScore) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -45,11 +49,31 @@ fun ScoreColumn(modifier: Modifier = Modifier, gameType: GameType, gameScore: St
             )
         )
         Spacer(modifier = Modifier.height(6.dp))
-        Text(
-            text = gameScore,
-            style = MaterialTheme.typography.titleMedium.copy(
-                fontWeight = FontWeight.Bold
+        when (gameScore) {
+            is SimpleScore -> Text(
+                text = "${gameScore.home} - ${gameScore.away}",
+                style = MaterialTheme.typography.titleMedium.copy(
+                    fontWeight = FontWeight.Bold
+                )
             )
-        )
+
+            is VolleyballScore -> {
+                Text(
+                    text = gameScore.getFinalScore(),
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = gameScore.getSetScores(),
+                    style = MaterialTheme.typography.titleSmall.copy(
+                        fontWeight = FontWeight.SemiBold
+                    )
+                )
+            }
+
+            else -> Text("Unknown score")
+        }
     }
 }

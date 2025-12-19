@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.gameonapp.data.local.model.GameEntity
 import com.example.gameonapp.data.local.model.SimpleScore
 import com.example.gameonapp.data.local.model.VolleyballScore
+import com.example.gameonapp.data.local.model.VolleyballSet
 import com.example.gameonapp.domain.repository.GameRepository
 import com.example.gameonapp.utils.AWAY
 import com.example.gameonapp.utils.DECREMENT
@@ -17,6 +18,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Date
+import kotlin.math.abs
 
 class GameViewModel(private val gameRepository: GameRepository) : ViewModel() {
     private val _gameList = MutableStateFlow<List<GameEntity>>(emptyList())
@@ -26,6 +28,9 @@ class GameViewModel(private val gameRepository: GameRepository) : ViewModel() {
 
     private val _volleyballScores = MutableStateFlow(VolleyballScore())
     val volleyballScores: StateFlow<VolleyballScore> = _volleyballScores
+
+    private val _volleyballGameFinished = MutableStateFlow(false)
+    val volleyballGameFinished: StateFlow<Boolean> = _volleyballGameFinished
     private val _gameData = MutableStateFlow(
         value = GameEntity()
     )
@@ -103,6 +108,7 @@ class GameViewModel(private val gameRepository: GameRepository) : ViewModel() {
 
     fun adjustVolleyballScore(team: Boolean, scoreAmount: Int) {
         val current = _volleyballScores.value
+        if (_volleyballGameFinished.value) return
 
         val updatedSets = current.scoresPerSet.mapIndexed { index, set ->
             if (index == current.currentSet) {
@@ -116,6 +122,39 @@ class GameViewModel(private val gameRepository: GameRepository) : ViewModel() {
             }
         }
         _volleyballScores.value = current.copy(scoresPerSet = updatedSets)
+        checkVolleyballSetFinished()
+    }
+
+    private fun checkVolleyballSetFinished() {
+        val current = _volleyballScores.value ?: return
+        val currentSetIndex = current.currentSet
+        val targetPointsPerSet = listOf(25, 25, 25, 25, 15)
+
+        if (currentSetIndex >= current.scoresPerSet.size) return
+
+        val currentSet = current.scoresPerSet[currentSetIndex]
+        val diff = abs(currentSet.pointsHome - currentSet.pointsAway)
+        val target = targetPointsPerSet.getOrElse(currentSetIndex) { 25 }
+
+        // Check if the current set is finished
+        if ((currentSet.pointsHome >= target || currentSet.pointsAway >= target) && diff >= 2) {
+
+            // If either team has already won 3 sets, the match is finished
+            if (current.setsHome >= 3 || current.setsAway >= 3) {
+                _volleyballGameFinished.value = true
+                return
+            }
+
+            val nextSetIndex = (currentSetIndex + 1).coerceAtMost(current.scoresPerSet.lastIndex)
+            val updatedScoresPerSet = current.scoresPerSet.mapIndexed { index, set ->
+                if (index == nextSetIndex) VolleyballSet(0, 0) else set
+            }
+
+            _volleyballScores.value = current.copy(
+                currentSet = nextSetIndex,
+                scoresPerSet = updatedScoresPerSet
+            )
+        }
     }
 
     fun resetScore() {
@@ -130,6 +169,20 @@ class GameViewModel(private val gameRepository: GameRepository) : ViewModel() {
     ): GameEntity = GameEntity(
         gameType = gameType,
         score = SimpleScore(home = simpleScores.value.home, away = simpleScores.value.away),
+        matchDate = date,
+        durationSeconds = durationSeconds,
+        averageBPM = averageBPM,
+        gameId = 0L
+    )
+
+    fun buildVolleyballEndGameEntity(
+        durationSeconds: Int,
+        averageBPM: Int,
+        date: Date,
+        gameType: GameType,
+    ): GameEntity = GameEntity(
+        gameType = gameType,
+        score = volleyballScores.value,
         matchDate = date,
         durationSeconds = durationSeconds,
         averageBPM = averageBPM,
