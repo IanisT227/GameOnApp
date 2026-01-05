@@ -111,7 +111,6 @@ fun SportSummaryContent(modifier: Modifier = Modifier, gameData: GameEntity) {
                         fontWeight = FontWeight.Bold
                     )
                 )
-                else -> Text("Unknown score")
             }
             Text(
                 text = formatTime(gameData.durationSeconds),
