@@ -3,12 +3,10 @@ package com.example.gameonapp.presentation.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -35,11 +33,10 @@ fun TennisScoreComponent(gameViewModel: GameViewModel) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly
         ) {
-            Spacer(Modifier.height(20.dp))
-            Row(
+            Column(
                 modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceEvenly
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceEvenly
             )
             {
                 TennisTeamComponent(
@@ -48,7 +45,9 @@ fun TennisScoreComponent(gameViewModel: GameViewModel) {
                         .getScoreItemBackground(isSelected = selectedTeam),
                     onClick = {}
                 )
-                Spacer(modifier = Modifier.width(10.dp))
+                Spacer(modifier = Modifier.height(4.dp))
+                TennisTotalScoreComponent()
+                Spacer(modifier = Modifier.height(4.dp))
                 TennisTeamComponent(
                     modifier = Modifier
                         .weight(1f)
