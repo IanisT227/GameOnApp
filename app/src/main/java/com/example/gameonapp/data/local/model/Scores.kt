@@ -41,7 +41,7 @@ data class VolleyballScore(
     fun getFinalScore(): String = "$setsHome - $setsAway"
     fun getSetScores(): String {
         val setScoresString =
-            scoresPerSet.mapIndexed { index, set -> "${index+1}. ${scoresPerSet[index].pointsHome} - ${scoresPerSet[index].pointsAway}" }
+            scoresPerSet.mapIndexed { index, set -> "${index + 1}. ${scoresPerSet[index].pointsHome} - ${scoresPerSet[index].pointsAway}" }
                 .joinToString("\n")
         return setScoresString
     }
@@ -52,3 +52,22 @@ data class VolleyballSet(
     var pointsHome: Int = 0,
     var pointsAway: Int = 0,
 )
+
+
+@Serializable
+@SerialName("tennis")
+data class TennisScore(
+    val name: Boolean,
+    val points: TennisScoreValues = TennisScoreValues.ZERO,
+    val games: Int = 0,
+    val sets: List<Int> = emptyList()
+) : GameScore
+
+data class SetResult(
+    val homeGames: Int,
+    val awayGames: Int
+) {
+    val homePlayerWon: Boolean get() = homeGames > awayGames
+    override fun toString(): String = "$homeGames – $awayGames"
+}
+

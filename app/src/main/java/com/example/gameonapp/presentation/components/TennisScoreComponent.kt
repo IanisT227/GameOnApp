@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.gameonapp.presentation.viewModels.GameViewModel
+import com.example.gameonapp.utils.AWAY
 import com.example.gameonapp.utils.HOME
 import com.example.gameonapp.utils.getScoreItemBackground
 
@@ -48,14 +49,14 @@ fun TennisScoreComponent(gameViewModel: GameViewModel) {
                     modifier = Modifier
                         .weight(1f)
                         .getScoreItemBackground(isSelected = selectedTeam),
-                    onClick = {}
+                    onClick = {selectedTeam = HOME}
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 TennisTeamComponent(
                     modifier = Modifier
                         .weight(1f)
                         .getScoreItemBackground(isSelected = !selectedTeam),
-                    onClick = {}
+                    onClick = {selectedTeam = AWAY }
                 )
             }
             TennisTotalScoreComponent()

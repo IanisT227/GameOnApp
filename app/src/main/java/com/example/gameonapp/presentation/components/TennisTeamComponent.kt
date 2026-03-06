@@ -30,10 +30,10 @@ import com.example.gameonapp.utils.INCREMENT
 import java.util.Locale
 
 @Composable
-fun TennisTeamComponent(modifier: Modifier = Modifier, onClick: (Boolean) -> Unit) {
+fun TennisTeamComponent(modifier: Modifier = Modifier, onClick: () -> Unit) {
         Column(
             modifier = modifier
-                .clickable(enabled = true, onClick = {})
+                .clickable(enabled = true, onClick = {onClick()})
                 .padding(vertical = 6.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(2.dp),

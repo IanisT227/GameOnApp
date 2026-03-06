@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gameonapp.data.local.model.GameEntity
 import com.example.gameonapp.data.local.model.SimpleScore
+import com.example.gameonapp.data.local.model.TennisMatchState
+import com.example.gameonapp.data.local.model.TennisScore
 import com.example.gameonapp.data.local.model.VolleyballScore
 import com.example.gameonapp.data.local.model.VolleyballSet
 import com.example.gameonapp.domain.repository.GameRepository
@@ -15,6 +17,7 @@ import com.example.gameonapp.utils.INCREMENT
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Date
@@ -38,7 +41,16 @@ class GameViewModel(private val gameRepository: GameRepository) : ViewModel() {
 
     private val _totalTime = MutableStateFlow(0)
     val totalTime: StateFlow<Int> = _totalTime
+    //todo: REWORK GAME MODEL INTO STATES FOR EACH TYPE OF GAME
 
+    private val _tennisMatchState = MutableStateFlow(
+        TennisMatchState(
+            homeScore = TennisScore(name = HOME),
+            awayScore = TennisScore(name = AWAY),
+            setsToWin = 2
+        )
+    )
+    val tennisMatchState: StateFlow<TennisMatchState> = _tennisMatchState.asStateFlow()
 
     fun insertGame(gameEntity: GameEntity) {
         viewModelScope.launch(Dispatchers.IO) {
