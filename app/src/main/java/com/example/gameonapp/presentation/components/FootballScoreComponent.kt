@@ -1,47 +1,41 @@
 package com.example.gameonapp.presentation.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.Remove
-import androidx.compose.material.icons.outlined.RestartAlt
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.Text
-import androidx.wear.compose.material3.Button
-import androidx.wear.compose.material3.ButtonDefaults
 import androidx.wear.compose.material3.MaterialTheme
-import androidx.wear.compose.material3.OutlinedButton
 import com.example.gameonapp.data.local.model.SimpleScore
 import com.example.gameonapp.presentation.viewModels.GameViewModel
 import com.example.gameonapp.utils.AWAY
 import com.example.gameonapp.utils.DECREMENT
 import com.example.gameonapp.utils.HOME
 import com.example.gameonapp.utils.INCREMENT
+import com.example.gameonapp.utils.getScoreItemBackground
 import java.util.Locale
 
 @Composable
 fun FootballScoreComponent(modifier: Modifier = Modifier, gameViewModel: GameViewModel) {
     val scores: SimpleScore by gameViewModel.simpleScores.collectAsState()
+    var selectedTeam by rememberSaveable { mutableStateOf(HOME) }
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -51,43 +45,37 @@ fun FootballScoreComponent(modifier: Modifier = Modifier, gameViewModel: GameVie
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 4.dp),
+                .padding(horizontal = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             TeamBox(
+                modifier = Modifier
+                    .weight(1f)
+                    .getScoreItemBackground(selectedTeam),
                 teamName = "Home",
-                onClick = { operation ->
-                    gameViewModel.adjustFootballScore(HOME, operation)
+                onClick = {
+                    selectedTeam = HOME
                 },
                 score = scores.home
             )
+            Spacer(modifier = Modifier.width(6.dp))
             TeamBox(
-                teamName = "Away", onClick = { operation ->
-                    gameViewModel.adjustFootballScore(AWAY, operation)
+                modifier = Modifier
+                    .weight(1f)
+                    .getScoreItemBackground(!selectedTeam),
+                teamName = "Away", onClick = {
+                    selectedTeam = AWAY
                 },
                 score = scores.away
             )
         }
-        Button(
-            modifier = Modifier.size(36.dp),
-            onClick = { gameViewModel.resetScore() },
-            contentPadding = PaddingValues(0.dp),
-            shape = CircleShape,
-            colors = ButtonDefaults.buttonColors(
-                contentColor = MaterialTheme.colorScheme.onPrimary,
+        ScoringRow(onClick = {
+            gameViewModel.adjustFootballScore(
+                selectedTeam,
+                if (it == INCREMENT) INCREMENT else DECREMENT
             )
-        ) {
-            Box(
-                modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.RestartAlt,
-                    contentDescription = "Reset",
-                    modifier = Modifier.size(22.dp)
-                )
-            }
-        }
+        }, enabled = checkIfEnabled(selectedTeam, scores))
     }
 }
 
@@ -95,10 +83,15 @@ fun FootballScoreComponent(modifier: Modifier = Modifier, gameViewModel: GameVie
 fun TeamBox(
     modifier: Modifier = Modifier,
     teamName: String,
-    onClick: (Boolean) -> Unit,
+    onClick: () -> Unit,
     score: Int,
 ) {
-    Column(modifier = Modifier, horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(
+        modifier = modifier
+            .padding(4.dp)
+            .clickable(enabled = true, onClick = { onClick() }),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Text(
             teamName.uppercase(Locale.ROOT), style = MaterialTheme.typography.labelSmall.copy(
                 fontWeight = FontWeight.Bold,
@@ -107,54 +100,15 @@ fun TeamBox(
         Text(
             score.toString(), style = MaterialTheme.typography.displaySmall.copy(
                 fontWeight = FontWeight.ExtraBold,
-                fontSize = 40.sp,
+                fontSize = 36.sp,
             )
         )
-        Row(
-            modifier = Modifier.padding(vertical = 4.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            OutlinedButton(
-                modifier = Modifier.size(36.dp),
-                shape = CircleShape,
-                contentPadding = PaddingValues(0.dp),
-                onClick = { onClick(DECREMENT) },
-                colors = ButtonDefaults.outlinedButtonColors(
-                    contentColor = MaterialTheme.colorScheme.onPrimary,
-                ),
-                enabled = score != 0
-            ) {
-                Box(
-                    modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        modifier = Modifier.size(22.dp),
-                        imageVector = Icons.Outlined.Remove,
-                        contentDescription = "Decrease"
-                    )
-                }
-            }
-            Spacer(modifier = Modifier.width(12.dp))
-            Button(
-                modifier = Modifier.size(36.dp),
-                shape = CircleShape,
-                onClick = { onClick(INCREMENT) },
-                contentPadding = PaddingValues(0.dp),
-                colors = ButtonDefaults.buttonColors(
-                    contentColor = MaterialTheme.colorScheme.onPrimary,
-                )
-            ) {
-                Box(
-                    modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        modifier = Modifier.size(22.dp),
-                        imageVector = Icons.Outlined.Add,
-                        contentDescription = "Increase"
-                    )
-                }
-            }
-        }
     }
+}
+
+private fun checkIfEnabled(selectedTeam: Boolean, scores: SimpleScore): Boolean {
+    return if (selectedTeam == HOME)
+        scores.home > 0
+    else
+        scores.away > 0
 }

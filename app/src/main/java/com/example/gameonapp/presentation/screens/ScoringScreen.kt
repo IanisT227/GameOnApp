@@ -34,6 +34,7 @@ import androidx.wear.compose.foundation.pager.rememberPagerState
 import androidx.wear.compose.material3.Button
 import androidx.wear.compose.material3.HorizontalPageIndicator
 import androidx.wear.compose.material3.MaterialTheme
+import androidx.wear.compose.material3.ScreenScaffold
 import androidx.wear.compose.material3.Text
 import androidx.wear.compose.material3.TimeText
 import androidx.wear.widget.ConfirmationOverlay
@@ -54,7 +55,6 @@ import com.example.gameonapp.utils.PADEL
 import com.example.gameonapp.utils.SCORE_COMPONENT
 import com.example.gameonapp.utils.TENNIS
 import com.example.gameonapp.utils.VOLLEYBALL
-import com.google.android.horologist.compose.layout.fillMaxRectangle
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
@@ -142,12 +142,12 @@ fun ScoringScreen(
         }
     }
 
-    Box(
+    ScreenScaffold(
         modifier = Modifier
-            .fillMaxRectangle()
             .background(
                 brush = backgroundGradient
-            ),
+            )
+            .fillMaxSize()
     ) {
         TimeText(
             modifier = Modifier
