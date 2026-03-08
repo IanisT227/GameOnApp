@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -18,14 +19,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.gameonapp.data.local.model.TennisScoreValues
 import com.example.gameonapp.presentation.viewModels.GameViewModel
 import com.example.gameonapp.utils.AWAY
 import com.example.gameonapp.utils.HOME
+import com.example.gameonapp.utils.INCREMENT
 import com.example.gameonapp.utils.getScoreItemBackground
 
 @Composable
 fun TennisScoreComponent(gameViewModel: GameViewModel) {
     var selectedTeam by rememberSaveable { mutableStateOf(HOME) }
+    val tennisMatchState by gameViewModel.tennisMatchState.collectAsState()
+
 
     Box(
         modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
@@ -49,18 +54,32 @@ fun TennisScoreComponent(gameViewModel: GameViewModel) {
                     modifier = Modifier
                         .weight(1f)
                         .getScoreItemBackground(isSelected = selectedTeam),
-                    onClick = {selectedTeam = HOME}
+                    onClick = { selectedTeam = HOME },
+                    currentScore = tennisMatchState.homeScore.points
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 TennisTeamComponent(
                     modifier = Modifier
                         .weight(1f)
                         .getScoreItemBackground(isSelected = !selectedTeam),
-                    onClick = {selectedTeam = AWAY }
+                    onClick = { selectedTeam = AWAY },
+                    currentScore = tennisMatchState.awayScore.points
                 )
             }
             TennisTotalScoreComponent()
-            TennisScoringButtonRow(onClick = {})
+            TennisScoringButtonRow(
+                onClick = { it ->
+                    if (it == INCREMENT)
+                        gameViewModel.addPoint(isHome = selectedTeam)
+                    else
+                        gameViewModel.removePoint(isHome = selectedTeam)
+                },
+                enabled = if (selectedTeam == HOME) {
+                    tennisMatchState.homeScore.points != TennisScoreValues.ZERO
+                } else {
+                    tennisMatchState.awayScore.points != TennisScoreValues.ZERO
+                }
+            )
         }
     }
 }

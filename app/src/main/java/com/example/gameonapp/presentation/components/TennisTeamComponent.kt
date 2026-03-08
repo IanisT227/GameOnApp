@@ -25,37 +25,50 @@ import androidx.wear.compose.material3.ButtonDefaults
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.OutlinedButton
 import androidx.wear.compose.material3.Text
+import com.example.gameonapp.data.local.model.TennisScoreValues
 import com.example.gameonapp.utils.DECREMENT
 import com.example.gameonapp.utils.INCREMENT
 import java.util.Locale
 
 @Composable
-fun TennisTeamComponent(modifier: Modifier = Modifier, onClick: () -> Unit) {
-        Column(
-            modifier = modifier
-                .clickable(enabled = true, onClick = {onClick()})
-                .padding(vertical = 6.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(2.dp),
+fun TennisTeamComponent(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+    currentScore: TennisScoreValues = TennisScoreValues.ZERO
+) {
+    Column(
+        modifier = modifier
+            .clickable(enabled = true, onClick = { onClick() })
+            .padding(vertical = 6.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(2.dp),
+    )
+    {
+        Text(
+            "home".uppercase(Locale.ROOT), style = MaterialTheme.typography.labelSmall.copy(
+                fontWeight = FontWeight.Bold,
+            )
         )
-        {
-            Text(
-                "home".uppercase(Locale.ROOT), style = MaterialTheme.typography.labelSmall.copy(
-                    fontWeight = FontWeight.Bold,
-                )
-            )
 
-            Text(
-                "15", style = MaterialTheme.typography.displaySmall.copy(
-                    fontWeight = FontWeight.ExtraBold,
-                )
+        Text(
+            currentScore.toString(), style = MaterialTheme.typography.displaySmall.copy(
+                fontWeight = FontWeight.ExtraBold,
             )
-        }
+        )
     }
+}
 
 @Composable
-fun TennisScoringButtonRow(modifier: Modifier = Modifier, onClick: (Boolean) -> Unit) {
-    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceEvenly) {
+fun TennisScoringButtonRow(
+    modifier: Modifier = Modifier,
+    onClick: (Boolean) -> Unit,
+    enabled: Boolean
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceEvenly
+    ) {
         OutlinedButton(
             modifier = Modifier.size(42.dp),
             shape = CircleShape,
@@ -64,7 +77,7 @@ fun TennisScoringButtonRow(modifier: Modifier = Modifier, onClick: (Boolean) -> 
             colors = ButtonDefaults.outlinedButtonColors(
                 contentColor = MaterialTheme.colorScheme.onPrimary,
             ),
-            enabled = true
+            enabled = enabled
         ) {
             Box(
                 modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
