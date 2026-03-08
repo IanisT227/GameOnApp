@@ -11,4 +11,6 @@ data class TennisMatchState(
 ) {
     val homeSetsWon: Int get() = completedSets.count { it.homePlayerWon }
     val awaySetsWon: Int get() = completedSets.count { !it.homePlayerWon }
+    fun side(isHome: Boolean): TennisScore = if (isHome == homeScore.name) homeScore else awayScore
+
 }

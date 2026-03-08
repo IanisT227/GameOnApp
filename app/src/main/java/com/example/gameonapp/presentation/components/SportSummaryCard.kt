@@ -26,6 +26,7 @@ import androidx.wear.compose.material3.SurfaceTransformation
 import androidx.wear.compose.material3.Text
 import com.example.gameonapp.data.local.model.GameEntity
 import com.example.gameonapp.data.local.model.SimpleScore
+import com.example.gameonapp.data.local.model.TennisScore
 import com.example.gameonapp.data.local.model.VolleyballScore
 import com.example.gameonapp.utils.fetchIconForGameType
 import com.example.gameonapp.utils.formatDate
@@ -111,6 +112,7 @@ fun SportSummaryContent(modifier: Modifier = Modifier, gameData: GameEntity) {
                         fontWeight = FontWeight.Bold
                     )
                 )
+                is TennisScore -> Text(text = "Hello world")
             }
             Text(
                 text = formatTime(gameData.durationSeconds),

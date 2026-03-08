@@ -29,7 +29,6 @@ import com.example.gameonapp.presentation.components.SportSummaryCard
 import com.example.gameonapp.presentation.theme.backgroundGradient
 import com.example.gameonapp.presentation.viewModels.FitnessViewModel
 import com.example.gameonapp.presentation.viewModels.GameViewModel
-import com.google.android.horologist.compose.layout.fillMaxRectangle
 import com.google.android.horologist.compose.layout.responsivePaddingDefaults
 import org.koin.androidx.compose.koinViewModel
 
@@ -39,15 +38,13 @@ fun SelectStatisticsScreen(navController: NavController) {
     val fitnessViewModel = koinViewModel<FitnessViewModel>()
     val maxBpm by fitnessViewModel.maxBpmFlow.collectAsState()
     val listState = rememberTransformingLazyColumnState()
-    val gamesList by gameViewModel.gameList.collectAsState()
-    val totalTime by gameViewModel.totalTime.collectAsState()
+    val gameHistoryState by gameViewModel.gameHistoryState.collectAsState()
     val transformationSpec = rememberTransformationSpec()
 
     LaunchedEffect(Unit) {
         gameViewModel.getGamesHistory()
-        gameViewModel.getTotalTime()
     }
-    if (gamesList.isNotEmpty()) ScreenScaffold(
+    if (gameHistoryState.gameList.isNotEmpty()) ScreenScaffold(
         scrollState = listState, modifier = Modifier
             .fillMaxSize()
             .background(
@@ -57,7 +54,7 @@ fun SelectStatisticsScreen(navController: NavController) {
         TransformingLazyColumn(
             state = listState,
             modifier = Modifier
-                .fillMaxRectangle()
+                .fillMaxSize()
                 .padding(horizontal = 2.dp, vertical = 2.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
@@ -80,24 +77,24 @@ fun SelectStatisticsScreen(navController: NavController) {
             }
             item {
                 ActivitySummaryCard(
-                    totalTime = totalTime,
-                    totalGames = gamesList.size,
+                    totalTime = gameHistoryState.totalTime,
+                    totalGames = gameHistoryState.gameList.size,
                     maxBpm = maxBpm
                 )
             }
             item {
                 Spacer(modifier = Modifier.height(4.dp))
             }
-            itemsIndexed(gamesList) { index, gameEntity ->
-                SportSummaryCard(
-                    modifier = Modifier, contentData = gameEntity, navigateToDetails = {
-                        navController.navigate("statisticsExpanded/${gameEntity.gameId}")
-                    }, SurfaceTransformation(transformationSpec)
-                )
+            for (gameEntity in gameHistoryState.gameList) {
+                item {
+                    SportSummaryCard(
+                        modifier = Modifier, contentData = gameEntity, navigateToDetails = {
+                            navController.navigate("statisticsExpanded/${gameEntity.gameId}")
+                        }, SurfaceTransformation(transformationSpec)
+                    )
+                }
             }
-
             item { Spacer(modifier = Modifier.height(40.dp)) }
-
         }
 
     }

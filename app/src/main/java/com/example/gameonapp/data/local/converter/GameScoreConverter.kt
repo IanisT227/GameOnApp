@@ -3,10 +3,10 @@ package com.example.gameonapp.data.local.converter
 import androidx.room.TypeConverter
 import com.example.gameonapp.data.local.model.GameScore
 import com.example.gameonapp.data.local.model.SimpleScore
+import com.example.gameonapp.data.local.model.TennisScore
 import com.example.gameonapp.data.local.model.VolleyballScore
 import com.google.gson.Gson
 import com.google.gson.JsonParser
-import com.google.gson.reflect.TypeToken
 
 
 class GameScoreConverter {
@@ -21,6 +21,7 @@ class GameScoreConverter {
         when (score) {
             is SimpleScore -> json.addProperty("type", "simple")
             is VolleyballScore -> json.addProperty("type", "volleyball")
+            is TennisScore -> json.addProperty("type", "tennis")
         }
         return gson.toJson(json)
     }
