@@ -212,7 +212,11 @@ fun GetSportsComponent(
     when (sportName) {
         FOOTBALL -> FootballScoreComponent(gameViewModel = gameViewModel)
         BASKETBALL -> BasketballScoreComponent(gameViewModel = gameViewModel)
-        TENNIS -> TennisScoreComponent(gameViewModel = gameViewModel)
+        TENNIS -> TennisScoreComponent(
+            gameViewModel = gameViewModel,
+            onGameFinished = onGameFinished!!
+        )
+
         PADEL -> Box {}
         VOLLEYBALL -> VolleyballScoreComponent(
             gameViewModel = gameViewModel,

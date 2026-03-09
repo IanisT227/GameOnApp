@@ -6,8 +6,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -28,13 +30,13 @@ import androidx.wear.compose.material3.Text
 import com.example.gameonapp.data.local.model.TennisScoreValues
 import com.example.gameonapp.utils.DECREMENT
 import com.example.gameonapp.utils.INCREMENT
-import java.util.Locale
 
 @Composable
 fun TennisTeamComponent(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
-    currentScore: TennisScoreValues = TennisScoreValues.ZERO
+    currentScore: TennisScoreValues = TennisScoreValues.ZERO,
+    name: String
 ) {
     Column(
         modifier = modifier
@@ -45,13 +47,13 @@ fun TennisTeamComponent(
     )
     {
         Text(
-            "home".uppercase(Locale.ROOT), style = MaterialTheme.typography.labelSmall.copy(
+           name, style = MaterialTheme.typography.labelSmall.copy(
                 fontWeight = FontWeight.Bold,
             )
         )
-
+        Spacer(modifier = Modifier.height(4.dp))
         Text(
-            currentScore.toString(), style = MaterialTheme.typography.displaySmall.copy(
+            currentScore.display, style = MaterialTheme.typography.displaySmall.copy(
                 fontWeight = FontWeight.ExtraBold,
             )
         )

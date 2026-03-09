@@ -1,5 +1,6 @@
 package com.example.gameonapp.data.local.model
 
+import com.example.gameonapp.utils.HOME
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -61,13 +62,16 @@ data class TennisScore(
     val points: TennisScoreValues = TennisScoreValues.ZERO,
     val games: Int = 0,
     val sets: List<Int> = emptyList()
-) : GameScore
+) : GameScore {
+    val display = if (name == HOME) "HOME" else "AWAY"
+}
 
 data class SetResult(
     val homeGames: Int,
     val awayGames: Int
 ) {
     val homePlayerWon: Boolean get() = homeGames > awayGames
+    fun gamesFor(isHome: Boolean): Int = if (isHome) homeGames else awayGames
     override fun toString(): String = "$homeGames – $awayGames"
 }
 

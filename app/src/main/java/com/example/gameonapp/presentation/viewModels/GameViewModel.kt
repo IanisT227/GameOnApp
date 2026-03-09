@@ -210,12 +210,18 @@ class GameViewModel(private val gameRepository: GameRepository) : ViewModel() {
     // ----- Tennis -----
     fun addPoint(isHome: Boolean) {
         if (_tennisMatchState.value.matchWinner != null) return
-        _tennisMatchState.update { scorePoint(it, isHome) }
+        _tennisMatchState.update { current ->
+            if (current.isTiebreak) scoreTiebreakPoint(current, isHome)
+            else scorePoint(current, isHome)
+        }
     }
 
     fun removePoint(isHome: Boolean) {
         if (_tennisMatchState.value.matchWinner != null) return
-        _tennisMatchState.update { undoPoint(it, isHome) }
+        _tennisMatchState.update { current ->
+            if (current.isTiebreak) undoTiebreakPoint(current, isHome)
+            else undoPoint(current, isHome)
+        }
     }
 
     private fun scorePoint(state: TennisMatchState, isHome: Boolean): TennisMatchState {
@@ -223,27 +229,17 @@ class GameViewModel(private val gameRepository: GameRepository) : ViewModel() {
         val other = state.side(!isHome)
 
         return when {
-            state.isDeuce -> {
-                put(
-                    state,
-                    isHome,
-                    scorer.copy(points = TennisScoreValues.ADVANTAGE),
-                    other,
-                    isDeuce = false
-                )
-            }
-
             scorer.points == TennisScoreValues.ADVANTAGE -> awardGame(state, isHome)
 
             other.points == TennisScoreValues.ADVANTAGE -> put(
                 state, isHome,
                 scorer.copy(points = TennisScoreValues.FORTY),
-                other.copy(points = TennisScoreValues.FORTY),
-                isDeuce = true
+                other.copy(points = TennisScoreValues.FORTY)
             )
 
+            // Deuce → scorer gets Advantage immediately (one tap)
             scorer.points == TennisScoreValues.FORTY && other.points == TennisScoreValues.FORTY ->
-                state.copy(isDeuce = true)
+                put(state, isHome, scorer.copy(points = TennisScoreValues.ADVANTAGE), other)
 
             scorer.points.next() == TennisScoreValues.GAME -> awardGame(state, isHome)
 
@@ -255,33 +251,84 @@ class GameViewModel(private val gameRepository: GameRepository) : ViewModel() {
         val scorer = state.side(isHome)
         val other = state.side(!isHome)
 
-        val afterGame = put(
-            state, isHome,
-            scorer.copy(points = TennisScoreValues.ZERO, games = scorer.games + 1),
-            other.copy(points = TennisScoreValues.ZERO),
-            isDeuce = false
+        val newHomeGames = if (isHome) scorer.games + 1 else other.games
+        val newAwayGames = if (isHome) other.games else scorer.games + 1
+
+        // Reset points for both sides
+        val afterGame = state.copy(
+            homeScore = state.homeScore.copy(
+                points = TennisScoreValues.ZERO,
+                games = newHomeGames
+            ),
+            awayScore = state.awayScore.copy(
+                points = TennisScoreValues.ZERO,
+                games = newAwayGames
+            )
         )
+
         return checkSetWin(afterGame)
     }
 
     private fun checkSetWin(state: TennisMatchState): TennisMatchState {
-        val homeGames = state.homeScore.games
-        val awayGames = state.homeScore.games
+        val h = state.homeScore.games
+        val a = state.awayScore.games
 
-        val setOver =
-            (homeGames >= 6 && homeGames - awayGames >= 2) || (awayGames >= 6 && awayGames - homeGames >= 2) ||
-                    (homeGames == 7 && awayGames == 6) || (awayGames == 7 && homeGames == 6)
+        return when {
+            // 6–6 → start tiebreak, don't close the set yet
+            h == 6 && a == 6 -> state.copy(isTiebreak = true)
 
-        if (!setOver) return state
+            // Normal set win: reach 6 with 2-game lead (covers 6–0 … 7–5)
+            (h >= 6 && h - a >= 2) || (a >= 6 && a - h >= 2) -> closeSet(state, h, a)
 
+            else -> state
+        }
+    }
+
+    private fun scoreTiebreakPoint(state: TennisMatchState, isHome: Boolean): TennisMatchState {
+        val newHome = if (isHome) state.homeTiebreakPoints + 1 else state.homeTiebreakPoints
+        val newAway = if (isHome) state.awayTiebreakPoints else state.awayTiebreakPoints + 1
+
+        val tiebreakWon = (newHome >= 7 || newAway >= 7) && abs(newHome - newAway) >= 2
+
+        return if (tiebreakWon) {
+            // Whoever reached the winning tiebreak point wins the set 7–6
+            val homeWonTiebreak = newHome > newAway
+            closeSet(
+                state.copy(homeTiebreakPoints = newHome, awayTiebreakPoints = newAway),
+                homeGames = if (homeWonTiebreak) 7 else 6,
+                awayGames = if (homeWonTiebreak) 6 else 7
+            )
+        } else {
+            state.copy(homeTiebreakPoints = newHome, awayTiebreakPoints = newAway)
+        }
+    }
+
+    private fun undoTiebreakPoint(state: TennisMatchState, isHome: Boolean): TennisMatchState {
+        val newHome =
+            if (isHome) maxOf(0, state.homeTiebreakPoints - 1) else state.homeTiebreakPoints
+        val newAway =
+            if (isHome) state.awayTiebreakPoints else maxOf(0, state.awayTiebreakPoints - 1)
+        return state.copy(homeTiebreakPoints = newHome, awayTiebreakPoints = newAway)
+    }
+
+    // ── Close a completed set ─────────────────────────────────────────────────
+
+    private fun closeSet(
+        state: TennisMatchState,
+        homeGames: Int,
+        awayGames: Int
+    ): TennisMatchState {
         val updatedSets =
             state.completedSets + SetResult(homeGames = homeGames, awayGames = awayGames)
 
         val afterSet = state.copy(
-            homeScore = state.homeScore.copy(games = 0),
-            awayScore = state.awayScore.copy(games = 0),
+            homeScore = state.homeScore.copy(games = 0, points = TennisScoreValues.ZERO),
+            awayScore = state.awayScore.copy(games = 0, points = TennisScoreValues.ZERO),
             completedSets = updatedSets,
-            currentSet = state.currentSet + 1
+            currentSet = state.currentSet + 1,
+            isTiebreak = false,
+            homeTiebreakPoints = 0,
+            awayTiebreakPoints = 0
         )
 
         val homeSets = updatedSets.count { it.homePlayerWon }
@@ -294,16 +341,9 @@ class GameViewModel(private val gameRepository: GameRepository) : ViewModel() {
         }
     }
 
-    private fun undoPoint(state: TennisMatchState, isHome: Boolean): TennisMatchState {
-        // Deuce → both sides back to 40
-        if (state.isDeuce) {
-            return state.copy(
-                homeScore = state.homeScore.copy(points = TennisScoreValues.FORTY),
-                awayScore = state.awayScore.copy(points = TennisScoreValues.FORTY),
-                isDeuce = false
-            )
-        }
+    // ── Undo normal point ─────────────────────────────────────────────────────
 
+    private fun undoPoint(state: TennisMatchState, isHome: Boolean): TennisMatchState {
         val scorer = state.side(isHome)
         val prev = when (scorer.points) {
             TennisScoreValues.ADVANTAGE -> TennisScoreValues.FORTY
@@ -314,15 +354,16 @@ class GameViewModel(private val gameRepository: GameRepository) : ViewModel() {
         return put(state, isHome, scorer.copy(points = prev), state.side(!isHome))
     }
 
+    // ── Helper ────────────────────────────────────────────────────────────────
+
     private fun put(
         state: TennisMatchState,
         isHome: Boolean,
         scorer: TennisScore,
-        other: TennisScore,
-        isDeuce: Boolean = state.isDeuce
+        other: TennisScore
     ): TennisMatchState = if (isHome) {
-        state.copy(homeScore = scorer, awayScore = other, isDeuce = isDeuce)
+        state.copy(homeScore = scorer, awayScore = other)
     } else {
-        state.copy(homeScore = other, awayScore = scorer, isDeuce = isDeuce)
+        state.copy(homeScore = other, awayScore = scorer)
     }
 }

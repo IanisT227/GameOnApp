@@ -5,12 +5,31 @@ data class TennisMatchState(
     val awayScore: TennisScore,
     val completedSets: List<SetResult> = emptyList(),
     val currentSet: Int = 1,
-    val isDeuce: Boolean = false,
-    val matchWinner: Boolean? = null,   // null while match is ongoing
-    val setsToWin: Int = 2
+    val matchWinner: Boolean? = null,       // HOME / AWAY / null while ongoing
+    val setsToWin: Int = 2,
+    val homeServesFirst: Boolean = true,
+    /**
+     * True once both sides reach 6 games in the current set.
+     * While true, normal 15/30/40 scoring is replaced by raw tiebreak points.
+     */
+    val isTiebreak: Boolean = false,
+    val homeTiebreakPoints: Int = 0,
+    val awayTiebreakPoints: Int = 0
 ) {
-    val homeSetsWon: Int get() = completedSets.count { it.homePlayerWon }
-    val awaySetsWon: Int get() = completedSets.count { !it.homePlayerWon }
-    fun side(isHome: Boolean): TennisScore = if (isHome == homeScore.name) homeScore else awayScore
+    fun side(isHome: Boolean): TennisScore =
+        if (isHome == homeScore.name) homeScore else awayScore
+    val servingIsHome: Boolean
+        get() {
+            val gamesInCompletedSets = completedSets.sumOf { it.homeGames + it.awayGames }
+            val gamesInCurrentSet = homeScore.games + awayScore.games
+            val totalGames = gamesInCompletedSets + gamesInCurrentSet
+            return if (totalGames % 2 == 0) homeServesFirst else !homeServesFirst
+        }
 
+    fun isMatchFinished(): Boolean {
+        val homeSetsWon = completedSets.count { it.homePlayerWon }
+        val awaySetsWon = completedSets.count { !it.homePlayerWon }
+
+        return homeSetsWon >= setsToWin || awaySetsWon >= setsToWin
+    }
 }

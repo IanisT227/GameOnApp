@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,9 +25,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
+import com.example.gameonapp.data.local.model.SetResult
+import com.example.gameonapp.data.local.model.TennisMatchState
+import com.example.gameonapp.data.local.model.TennisScore
+import com.example.gameonapp.utils.HOME
+import java.util.Locale
 
 @Composable
-fun TennisTotalScoreComponent(modifier: Modifier = Modifier) {
+fun TennisTotalScoreComponent(
+    modifier: Modifier = Modifier,
+    tennisMatchState: TennisMatchState,
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -35,12 +44,18 @@ fun TennisTotalScoreComponent(modifier: Modifier = Modifier) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start
     ) {
-        ServeIndicatorComponent(isServing = false)
+        ServeIndicatorComponent(isHomePlayerServing = tennisMatchState.servingIsHome)
         Spacer(modifier = Modifier.width(4.dp))
         Column(
+            modifier = Modifier
+                .width(IntrinsicSize.Max)
+                .weight(1f),
             horizontalAlignment = Alignment.Start,
         ) {
-            TennisPlayerScoreComponent()
+            TennisPlayerScoreComponent(
+                playerScore = tennisMatchState.homeScore,
+                completedSets = tennisMatchState.completedSets
+            )
             Spacer(
                 modifier = Modifier
                     .padding(vertical = 4.dp)
@@ -49,63 +64,76 @@ fun TennisTotalScoreComponent(modifier: Modifier = Modifier) {
                     .background(color = Color.White)
 
             )
-            TennisPlayerScoreComponent()
+            TennisPlayerScoreComponent(
+                playerScore = tennisMatchState.awayScore,
+                completedSets = tennisMatchState.completedSets
+            )
         }
     }
 }
 
 @Composable
-fun TennisPlayerScoreComponent(modifier: Modifier = Modifier) {
+fun TennisPlayerScoreComponent(
+    modifier: Modifier = Modifier,
+    playerScore: TennisScore,
+    completedSets: List<SetResult>
+) {
     Row(
         modifier = Modifier.padding(start = 6.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start
     ) {
         Text(
-            "Home".uppercase(),
+            modifier = Modifier.weight(1f),
+            maxLines = 1,
+            text = playerScore.display,
             style = MaterialTheme.typography.labelMedium.copy(
                 fontWeight = FontWeight.ExtraBold,
                 fontSize = 16.sp
             )
         )
         Spacer(modifier = Modifier.width(14.dp))
+        completedSets.forEach { set ->
+            val gamesInSet = if (playerScore.name == HOME) set.homeGames else set.awayGames
+            Text(
+                text = gamesInSet.toString(),
+                style = MaterialTheme.typography.labelMedium.copy(
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp,
+                    color = if (playerScore.name == HOME) {
+                        if (set.homePlayerWon) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                    } else {
+                        if (!set.homePlayerWon) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                    }
+                )
+            )
+            Spacer(modifier = Modifier.width(6.dp))
+        }
         Text(
-            "6", style = MaterialTheme.typography.labelMedium.copy(
-                fontWeight = FontWeight.Bold, fontSize = 18.sp
+            text = playerScore.games.toString(),
+            style = MaterialTheme.typography.labelMedium.copy(
+                fontWeight = FontWeight.Bold,
+                fontSize = 18.sp
             )
         )
-        Spacer(modifier = Modifier.width(6.dp))
-        Text(
-            "6", style = MaterialTheme.typography.labelMedium.copy(
-                fontWeight = FontWeight.Bold, fontSize = 18.sp
-            )
-        )
-        Spacer(modifier = Modifier.width(6.dp))
-        Text(
-            "6", style = MaterialTheme.typography.labelMedium.copy(
-                fontWeight = FontWeight.Bold, fontSize = 18.sp
-            )
-        )
-
-
     }
 }
 
 @Composable
-fun ServeIndicatorComponent(modifier: Modifier = Modifier, isServing: Boolean) {
+fun ServeIndicatorComponent(modifier: Modifier = Modifier, isHomePlayerServing: Boolean) {
     Column {
         Icon(
             modifier = Modifier.size(12.dp),
             imageVector = Icons.Default.FiberManualRecord,
             contentDescription = "",
-            tint = if (!isServing) Color.Transparent else Color.White
+            tint = if (isHomePlayerServing) Color.White else Color.Transparent
         )
         Spacer(modifier = Modifier.height(10.dp))
         Icon(
             modifier = Modifier.size(12.dp),
             imageVector = Icons.Default.FiberManualRecord,
             contentDescription = "",
-            tint = if (isServing) Color.Transparent else Color.White
+            tint = if (!isHomePlayerServing) Color.White else Color.Transparent
         )
     }
 }
