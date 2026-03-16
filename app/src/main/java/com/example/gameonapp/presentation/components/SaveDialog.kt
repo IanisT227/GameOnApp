@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Save
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -65,10 +66,29 @@ fun EndGameDialog(
         visible = isVisible,
         onDismissRequest = { onDismiss() },
         confirmButton = { DialogButton(buttonText = "Yes", onClickAction = { onConfirmClick() }) },
-        dismissButton = { DialogButton(buttonText = "No", onClickAction = {  }) },
+        dismissButton = { DialogButton(buttonText = "No", onClickAction = { onDismiss()}) },
         title = { Text("Game finished") },
         icon = { Icons.Outlined.Save },
         text = { Text("The game has finished. Proceed to fitness screen to save your game?") },
+        verticalArrangement = Arrangement.SpaceEvenly,
+        content = {}
+    )
+}
+
+@Composable
+fun ExitGameDialog(
+    isVisible: Boolean,
+    onDismiss: () -> Unit,
+    onConfirmClick: () -> Unit,
+) {
+    AlertDialog(
+        visible = isVisible,
+        onDismissRequest = { onDismiss() },
+        confirmButton = { DialogButton(buttonText = "Yes", onClickAction = { onConfirmClick() }) },
+        dismissButton = { DialogButton(buttonText = "No", onClickAction = { onDismiss() }) },
+        title = { Text("Cancel game") },
+        icon = { Icons.Outlined.Close },
+        text = { Text("Are you sure you want to cancel the game?") },
         verticalArrangement = Arrangement.SpaceEvenly,
         content = {}
     )

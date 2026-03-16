@@ -27,7 +27,7 @@ import androidx.wear.compose.material3.ButtonDefaults
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.OutlinedButton
 import androidx.wear.compose.material3.Text
-import com.example.gameonapp.data.local.model.TennisScoreValues
+import com.example.gameonapp.data.local.model.RacquetSportsScoreValues
 import com.example.gameonapp.utils.DECREMENT
 import com.example.gameonapp.utils.INCREMENT
 
@@ -35,7 +35,7 @@ import com.example.gameonapp.utils.INCREMENT
 fun TennisTeamComponent(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
-    currentScore: TennisScoreValues = TennisScoreValues.ZERO,
+    currentScore: RacquetSportsScoreValues = RacquetSportsScoreValues.ZERO,
     name: String
 ) {
     Column(

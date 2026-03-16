@@ -29,10 +29,9 @@ import com.example.gameonapp.data.local.model.SetResult
 import com.example.gameonapp.data.local.model.TennisMatchState
 import com.example.gameonapp.data.local.model.TennisScore
 import com.example.gameonapp.utils.HOME
-import java.util.Locale
 
 @Composable
-fun TennisTotalScoreComponent(
+fun TennisTotalScoreRow(
     modifier: Modifier = Modifier,
     tennisMatchState: TennisMatchState,
 ) {
@@ -54,7 +53,9 @@ fun TennisTotalScoreComponent(
         ) {
             TennisPlayerScoreComponent(
                 playerScore = tennisMatchState.homeScore,
-                completedSets = tennisMatchState.completedSets
+                completedSets = tennisMatchState.completedSets,
+                isTiebreak = tennisMatchState.isTiebreak,
+                tieBreakPoints = tennisMatchState.homeTiebreakPoints
             )
             Spacer(
                 modifier = Modifier
@@ -66,7 +67,9 @@ fun TennisTotalScoreComponent(
             )
             TennisPlayerScoreComponent(
                 playerScore = tennisMatchState.awayScore,
-                completedSets = tennisMatchState.completedSets
+                completedSets = tennisMatchState.completedSets,
+                isTiebreak = tennisMatchState.isTiebreak,
+                tieBreakPoints = tennisMatchState.awayTiebreakPoints
             )
         }
     }
@@ -76,7 +79,9 @@ fun TennisTotalScoreComponent(
 fun TennisPlayerScoreComponent(
     modifier: Modifier = Modifier,
     playerScore: TennisScore,
-    completedSets: List<SetResult>
+    completedSets: List<SetResult>,
+    tieBreakPoints: Int = 0,
+    isTiebreak: Boolean = false
 ) {
     Row(
         modifier = Modifier.padding(start = 6.dp),
@@ -116,6 +121,18 @@ fun TennisPlayerScoreComponent(
                 fontSize = 18.sp
             )
         )
+        if (isTiebreak) {
+            Spacer(modifier = Modifier.width(6.dp))
+            val currentPointsText = tieBreakPoints.toString()
+            Text(
+                text = currentPointsText,
+                style = MaterialTheme.typography.labelMedium.copy(
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            )
+        }
     }
 }
 

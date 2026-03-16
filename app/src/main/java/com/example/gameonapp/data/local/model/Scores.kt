@@ -59,7 +59,7 @@ data class VolleyballSet(
 @SerialName("tennis")
 data class TennisScore(
     val name: Boolean,
-    val points: TennisScoreValues = TennisScoreValues.ZERO,
+    val points: RacquetSportsScoreValues = RacquetSportsScoreValues.ZERO,
     val games: Int = 0,
     val sets: List<Int> = emptyList()
 ) : GameScore {
@@ -74,4 +74,17 @@ data class SetResult(
     fun gamesFor(isHome: Boolean): Int = if (isHome) homeGames else awayGames
     override fun toString(): String = "$homeGames – $awayGames"
 }
+
+enum class PadelServePosition { RIGHT, LEFT }
+
+enum class PadelPointWinner { HOME, AWAY }
+
+data class PadelScore(
+    val name: Boolean,
+    val display: String,
+    val points: RacquetSportsScoreValues = RacquetSportsScoreValues.ZERO,
+    val games: Int = 0,
+    val setsWon: Int = 0
+)
+
 

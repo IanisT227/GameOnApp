@@ -18,6 +18,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.gameonapp.data.local.model.PadelPointWinner
 import com.example.gameonapp.data.local.model.RacquetSportsScoreValues
 import com.example.gameonapp.presentation.viewModels.GameViewModel
 import com.example.gameonapp.utils.AWAY
@@ -26,16 +27,15 @@ import com.example.gameonapp.utils.INCREMENT
 import com.example.gameonapp.utils.getScoreItemBackground
 
 @Composable
-fun TennisScoreComponent(gameViewModel: GameViewModel, onGameFinished: (() -> Unit)) {
+fun PadelScoreComponent(gameViewModel: GameViewModel, onGameFinished: (() -> Unit)) {
     var selectedTeam by rememberSaveable { mutableStateOf(HOME) }
-    val tennisMatchState by gameViewModel.tennisMatchState.collectAsState()
+    val padelMatchState by gameViewModel.padelState.collectAsState()
     var showDialog by rememberSaveable { mutableStateOf(true) }
 
     Box(
         modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
     ) {
-        if (tennisMatchState.matchWinner != null && showDialog)
-        {
+        if (padelMatchState.isFinished && showDialog) {
             EndGameDialog(
                 isVisible = true,
                 onDismiss = { showDialog = false },
@@ -43,9 +43,7 @@ fun TennisScoreComponent(gameViewModel: GameViewModel, onGameFinished: (() -> Un
                     onGameFinished()
                     showDialog = false
                 })
-        }
-        else
-        {
+        } else {
             Column(
                 modifier = Modifier
                     .fillMaxWidth(0.85f)
@@ -54,8 +52,8 @@ fun TennisScoreComponent(gameViewModel: GameViewModel, onGameFinished: (() -> Un
                 verticalArrangement = Arrangement.SpaceEvenly
             ) {
                 Spacer(modifier = Modifier.height(10.dp))
-                TennisTotalScoreRow(
-                    tennisMatchState = tennisMatchState,
+                PadelTotalScoreRow(
+                    padelMatchState = padelMatchState,
                 )
                 Row(
                     modifier = Modifier
@@ -68,8 +66,8 @@ fun TennisScoreComponent(gameViewModel: GameViewModel, onGameFinished: (() -> Un
                             .weight(1f)
                             .getScoreItemBackground(isSelected = selectedTeam),
                         onClick = { selectedTeam = HOME },
-                        currentScore = tennisMatchState.homeScore.points,
-                        name = tennisMatchState.homeScore.display
+                        currentScore = padelMatchState.homeScore.points,
+                        name = padelMatchState.homeScore.display
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     TennisTeamComponent(
@@ -77,22 +75,21 @@ fun TennisScoreComponent(gameViewModel: GameViewModel, onGameFinished: (() -> Un
                             .weight(1f)
                             .getScoreItemBackground(isSelected = !selectedTeam),
                         onClick = { selectedTeam = AWAY },
-                        currentScore = tennisMatchState.awayScore.points,
-                        name = tennisMatchState.awayScore.display
+                        currentScore = padelMatchState.awayScore.points,
+                        name = padelMatchState.awayScore.display
                     )
                 }
-
                 TennisScoringButtonRow(
                     onClick = {
                         if (it == INCREMENT)
-                            gameViewModel.addPoint(isHome = selectedTeam)
+                            gameViewModel.onPadelPoint(winner = if (selectedTeam == HOME) PadelPointWinner.HOME else PadelPointWinner.AWAY)
                         else
-                            gameViewModel.removePoint(isHome = selectedTeam)
+                            gameViewModel.undoPadelPoint()
                     },
                     enabled = if (selectedTeam == HOME) {
-                        tennisMatchState.homeScore.points != RacquetSportsScoreValues.ZERO
+                        padelMatchState.homeScore.points != RacquetSportsScoreValues.ZERO
                     } else {
-                        tennisMatchState.awayScore.points != RacquetSportsScoreValues.ZERO
+                        padelMatchState.awayScore.points != RacquetSportsScoreValues.ZERO
                     }
                 )
             }

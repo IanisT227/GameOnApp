@@ -1,6 +1,6 @@
 package com.example.gameonapp.data.local.model
 
-enum class TennisScoreValues(val display: String) {
+enum class RacquetSportsScoreValues(val display: String) {
     ZERO("0"),
     FIFTEEN("15"),
     THIRTY("30"),
@@ -8,7 +8,7 @@ enum class TennisScoreValues(val display: String) {
     ADVANTAGE("AD"),
     GAME("GAME");
 
-    fun next(): TennisScoreValues = when (this) {
+    fun next(): RacquetSportsScoreValues = when (this) {
         ZERO -> FIFTEEN
         FIFTEEN -> THIRTY
         THIRTY -> FORTY

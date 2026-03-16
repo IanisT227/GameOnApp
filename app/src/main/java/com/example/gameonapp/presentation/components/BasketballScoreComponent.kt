@@ -55,7 +55,6 @@ fun BasketballScoreComponent(gameViewModel: GameViewModel) {
     ) {
         Column(
             modifier = Modifier
-                .fillMaxWidth(0.85f)
                 .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly

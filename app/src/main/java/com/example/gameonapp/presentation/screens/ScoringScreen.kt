@@ -13,7 +13,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.AlertDialog
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -24,6 +23,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.toUpperCase
@@ -31,17 +31,17 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.wear.compose.foundation.pager.HorizontalPager
 import androidx.wear.compose.foundation.pager.rememberPagerState
-import androidx.wear.compose.material3.Button
 import androidx.wear.compose.material3.HorizontalPageIndicator
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.ScreenScaffold
-import androidx.wear.compose.material3.Text
 import androidx.wear.compose.material3.TimeText
 import androidx.wear.widget.ConfirmationOverlay
 import com.example.gameonapp.data.local.model.GameEntity
 import com.example.gameonapp.presentation.components.BasketballScoreComponent
+import com.example.gameonapp.presentation.components.ExitGameDialog
 import com.example.gameonapp.presentation.components.FitnessComponent
 import com.example.gameonapp.presentation.components.FootballScoreComponent
+import com.example.gameonapp.presentation.components.PadelScoreComponent
 import com.example.gameonapp.presentation.components.TennisScoreComponent
 import com.example.gameonapp.presentation.components.VolleyballScoreComponent
 import com.example.gameonapp.presentation.theme.backgroundGradient
@@ -105,39 +105,17 @@ fun ScoringScreen(
         }
     }
 
-    if (showExitDialog) {
-        AlertDialog(
-            onDismissRequest = {
-                showExitDialog = false
-            },
-            title = { Text("Unsaved Changes") },
-            text = { Text("Are you sure you want to exit? The event will not be saved.") },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        showExitDialog = false
-                        navController.popBackStack()
-                    }
-                ) {
-                    Text("Yes, Exit")
-                }
-            },
-            dismissButton = {
-                Button(
-                    onClick = {
-                        showExitDialog = false
-                    }
-                ) {
-                    Text("No, Stay")
-                }
-            }
+
+        ExitGameDialog(
+            isVisible = showExitDialog,
+            onDismiss = { showExitDialog = false },
+            onConfirmClick = { navController.popBackStack() }
         )
-    }
+
 
     if (showOverlay) {
         LaunchedEffect(Unit) {
             showConfirmation(context)
-            showOverlay = false
             navController.popBackStack()
         }
     }
@@ -163,24 +141,28 @@ fun ScoringScreen(
         ) { page ->
             when (page) {
                 SCORE_COMPONENT -> {
-                    GetSportsComponent(
-                        sportName = sportName,
-                        gameViewModel = gameViewModel,
-                        onGameFinished = {
-                            coroutineScope.launch {
-                                pagerState.animateScrollToPage(pagerState.currentPage + 1)
-                            }
-                        }
-                    )
+                    val isRound = LocalConfiguration.current.isScreenRound
+                    val horizontalPadding = if (isRound) 12.dp else 8.dp
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = horizontalPadding)
+                    ) {
+                        GetSportsComponent(
+                            sportName = sportName, gameViewModel = gameViewModel, onGameFinished = {
+                                coroutineScope.launch {
+                                    pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                                }
+                            })
+                    }
                 }
 
                 FITNESS_COMPONENT -> FitnessComponent(
-                    fitnessViewModel = fitnessViewModel,
-                    onConfirmClick = {
+                    fitnessViewModel = fitnessViewModel, onConfirmClick = {
                         saveGame(gameViewModel, fitnessViewModel, sportName)
                         showOverlay = true
-                    }
-                )
+                    })
             }
         }
 
@@ -213,25 +195,24 @@ fun GetSportsComponent(
         FOOTBALL -> FootballScoreComponent(gameViewModel = gameViewModel)
         BASKETBALL -> BasketballScoreComponent(gameViewModel = gameViewModel)
         TENNIS -> TennisScoreComponent(
-            gameViewModel = gameViewModel,
-            onGameFinished = onGameFinished!!
+            gameViewModel = gameViewModel, onGameFinished = onGameFinished!!
         )
 
-        PADEL -> Box {}
+        PADEL -> PadelScoreComponent(
+            gameViewModel = gameViewModel, onGameFinished = onGameFinished!!
+        )
+
         VOLLEYBALL -> VolleyballScoreComponent(
-            gameViewModel = gameViewModel,
-            onGameFinished = onGameFinished!!
+            gameViewModel = gameViewModel, onGameFinished = onGameFinished!!
         )
     }
 }
 
 fun saveGame(gameViewModel: GameViewModel, fitnessViewModel: FitnessViewModel, sportName: String) {
     val durationSeconds = fitnessViewModel.timeInSeconds.value
-    val averageBPM =
-        computeAverageBPM(
-            fitnessViewModel.totalBPM.value,
-            fitnessViewModel.timeInSeconds.value.toLong()
-        )
+    val averageBPM = computeAverageBPM(
+        fitnessViewModel.totalBPM.value, fitnessViewModel.timeInSeconds.value.toLong()
+    )
     val date = Date()
     val gameType = GameType.valueOf(sportName.toUpperCase(Locale.current))
     val finishedGame: GameEntity = if (sportName == FOOTBALL || sportName == BASKETBALL) {
@@ -253,9 +234,7 @@ fun saveGame(gameViewModel: GameViewModel, fitnessViewModel: FitnessViewModel, s
 }
 
 fun showConfirmation(context: Context) {
-    ConfirmationOverlay()
-        .setType(ConfirmationOverlay.SUCCESS_ANIMATION)
-        .setDuration(1000)
+    ConfirmationOverlay().setType(ConfirmationOverlay.SUCCESS_ANIMATION).setDuration(1000)
         .showOn(context as Activity)
 }
 
