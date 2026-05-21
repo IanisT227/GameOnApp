@@ -23,6 +23,7 @@ material3 = "1.4.0"
 roomKtx = "2.8.3"
 playServicesFitness = "21.3.0"
 
+
 [libraries]
 animation = { module = "androidx.compose.animation:animation", version.ref = "animation" }
 horologist-compose-layout = { module = "com.google.android.horologist:horologist-compose-layout", version.ref = "horologist" }

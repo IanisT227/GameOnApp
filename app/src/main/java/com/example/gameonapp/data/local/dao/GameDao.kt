@@ -15,7 +15,7 @@ interface GameDao {
     @Query("SELECT * FROM games ORDER BY matchDate DESC")
     suspend fun getGames(): List<GameEntity>
 
-    @Delete()
+    @Delete
     suspend fun removeFromGames(game: GameEntity)
 
     @Query("SELECT * FROM games WHERE gameId = :gameId LIMIT 1")

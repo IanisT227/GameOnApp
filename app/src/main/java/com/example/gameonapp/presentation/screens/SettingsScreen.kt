@@ -5,24 +5,31 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.wear.compose.material.ListHeader
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.ScreenScaffold
-import com.example.gameonapp.data.local.model.Gender
 import com.example.gameonapp.presentation.components.GenderSelector
 import com.example.gameonapp.presentation.components.HorizontalDrumRoller
 import com.example.gameonapp.presentation.theme.backgroundGradient
+import com.example.gameonapp.presentation.viewModels.SettingsViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun SettingsScreen(modifier: Modifier = Modifier) {
+    val viewModel = koinViewModel<SettingsViewModel>()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val scrollState = rememberScrollState()
 
     ScreenScaffold(
@@ -53,23 +60,37 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
                 )
             )
             Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = "Height",
+                style = MaterialTheme.typography.titleSmall,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(vertical = 12.dp)
+            )
+            Spacer(modifier = Modifier.height(4.dp))
             HorizontalDrumRoller(
                 values = (50..250).toList(),
-                defaultValue = 170,
+                defaultValue = uiState.height,
                 unit = "cm",
-                onValueConfirmed = { height -> }
+                onValueConfirmed = { height -> viewModel.saveHeight(height) }
             )
             Spacer(modifier = Modifier.height(6.dp))
+            Text(
+                text = "Weight",
+                style = MaterialTheme.typography.titleSmall,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(vertical = 12.dp)
+            )
+            Spacer(modifier = Modifier.height(4.dp))
             HorizontalDrumRoller(
                 values = (20..300).toList(),
-                defaultValue = 70,
+                defaultValue = uiState.weight,
                 unit = "kg",
-                onValueConfirmed = { weight -> }
+                onValueConfirmed = { weight -> viewModel.saveWeight(weight) }
             )
             Spacer(modifier = Modifier.height(6.dp))
             GenderSelector(
-                defaultGender = Gender.Female,
-                onGenderSelected = { gender -> }
+                defaultGender = uiState.gender,
+                onGenderSelected = { gender -> viewModel.saveGender(gender) }
             )
             Spacer(modifier = Modifier.height(12.dp))
         }
