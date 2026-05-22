@@ -20,43 +20,43 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
-import com.example.gameonapp.data.local.model.Gender
 
 @Composable
-fun GenderSelector(
-    defaultGender: Gender = Gender.Male,
-    onGenderSelected: (Gender) -> Unit
+fun SimpleOptionSelector(
+    title: String,
+    defaultOption: String,
+    entries: List<String>,
+    onOptionSelected: (String) -> Unit
 ) {
-    var selected by remember { mutableStateOf(defaultGender) }
+    var selected by remember { mutableStateOf(defaultOption) }
 
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Gender",
+            text = title,
             style = MaterialTheme.typography.titleSmall,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(vertical = 12.dp)
         )
 
-        Gender.entries.forEach { gender ->
-            GenderOption(
-                gender = gender,
-                isSelected = selected == gender,
+        entries.forEach { entry ->
+            RowOption(
+                title = entry,
+                isSelected = selected == entry,
                 onClick = {
-                    selected = gender
-                    onGenderSelected(gender)
+                    selected = entry
+                    onOptionSelected(selected)
                 }
             )
         }
     }
 }
 
-
 @Composable
-fun GenderOption(
-    gender: Gender,
+fun RowOption(
+    title: String,
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
@@ -78,7 +78,7 @@ fun GenderOption(
             )
         )
         Text(
-            text = gender.name,
+            text = title,
             style = MaterialTheme.typography.bodyMedium.copy(
                 textAlign = TextAlign.Start
             ),

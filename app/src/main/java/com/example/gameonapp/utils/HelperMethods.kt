@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material3.MaterialTheme
+import com.example.gameonapp.data.local.model.UnitSystem
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Date
@@ -70,3 +71,34 @@ fun Modifier.getScoreItemBackground(isSelected: Boolean): Modifier {
             .border(2.dp, MaterialTheme.colorScheme.primary, shape)
     }
 }
+
+fun fetchHeightList(unitSystem: UnitSystem): List<String> =
+    when (unitSystem) {
+        UnitSystem.Metric -> (50..250).map { "$it" }
+        UnitSystem.Imperial -> {
+            // 1'8" (20 inches) to 8'2" (98 inches)
+            (20..98).map { totalInches ->
+                val feet = totalInches / 12
+                val inches = totalInches % 12
+                "$feet′ $inches″"
+            }
+        }
+    }
+
+fun fetchWeightList(unitSystem: UnitSystem): List<String> =
+    when (unitSystem) {
+        UnitSystem.Metric -> (20..300).map { "$it" }
+        UnitSystem.Imperial -> (44..660).map { "$it" } // 20kg–300kg converted
+    }
+
+fun defaultHeight(unitSystem: UnitSystem): String =
+    when (unitSystem) {
+        UnitSystem.Metric -> "170"
+        UnitSystem.Imperial -> "5′ 7″"   // ~170cm
+    }
+
+fun defaultWeight(unitSystem: UnitSystem): String =
+    when (unitSystem) {
+        UnitSystem.Metric -> "70"
+        UnitSystem.Imperial -> "154" // ~70kg
+    }

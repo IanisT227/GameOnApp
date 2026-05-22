@@ -20,10 +20,15 @@ import androidx.wear.compose.material.ListHeader
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.ScreenScaffold
+import com.example.gameonapp.data.local.model.UnitSystem
+import com.example.gameonapp.presentation.components.ExpandableSection
 import com.example.gameonapp.presentation.components.GenderSelector
 import com.example.gameonapp.presentation.components.HorizontalDrumRoller
+import com.example.gameonapp.presentation.components.SimpleOptionSelector
 import com.example.gameonapp.presentation.theme.backgroundGradient
 import com.example.gameonapp.presentation.viewModels.SettingsViewModel
+import com.example.gameonapp.utils.fetchHeightList
+import com.example.gameonapp.utils.fetchWeightList
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -47,52 +52,56 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
             Spacer(modifier = Modifier.height(4.dp))
             ListHeader {
                 Text(
-                    "Settings",
-                    style = MaterialTheme.typography.titleMedium.copy(
+                    "Settings", style = MaterialTheme.typography.titleMedium.copy(
                         fontWeight = FontWeight.Bold
                     )
                 )
             }
             Spacer(modifier = Modifier.height(6.dp))
-            Text(
-                "Personal Profile", style = MaterialTheme.typography.titleMedium.copy(
-                    fontWeight = FontWeight.Bold
+            ExpandableSection(title = "Personal Profile") {
+                Text(
+                    text = "Height",
+                    style = MaterialTheme.typography.titleSmall,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(vertical = 12.dp)
                 )
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = "Height",
-                style = MaterialTheme.typography.titleSmall,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(vertical = 12.dp)
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            HorizontalDrumRoller(
-                values = (50..250).toList(),
-                defaultValue = uiState.height,
-                unit = "cm",
-                onValueConfirmed = { height -> viewModel.saveHeight(height) }
-            )
-            Spacer(modifier = Modifier.height(6.dp))
-            Text(
-                text = "Weight",
-                style = MaterialTheme.typography.titleSmall,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(vertical = 12.dp)
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            HorizontalDrumRoller(
-                values = (20..300).toList(),
-                defaultValue = uiState.weight,
-                unit = "kg",
-                onValueConfirmed = { weight -> viewModel.saveWeight(weight) }
-            )
-            Spacer(modifier = Modifier.height(6.dp))
-            GenderSelector(
-                defaultGender = uiState.gender,
-                onGenderSelected = { gender -> viewModel.saveGender(gender) }
-            )
-            Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(4.dp))
+                HorizontalDrumRoller(
+                    values = fetchHeightList(uiState.units),
+                    defaultValue = uiState.height,
+                    unit = if (uiState.units == UnitSystem.Metric) "cm" else "ft",
+                    onValueConfirmed = { height -> viewModel.saveHeight(height) })
+                Spacer(modifier = Modifier.height(6.dp))
+                Text(
+                    text = "Weight",
+                    style = MaterialTheme.typography.titleSmall,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(vertical = 12.dp)
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                HorizontalDrumRoller(
+                    values = fetchWeightList(uiState.units),
+                    defaultValue = uiState.weight,
+                    unit = if (uiState.units == UnitSystem.Metric) "kg" else "lb",
+                    onValueConfirmed = { weight -> viewModel.saveWeight(weight) })
+                Spacer(modifier = Modifier.height(6.dp))
+                GenderSelector(
+                    defaultGender = uiState.gender,
+                    onGenderSelected = { gender -> viewModel.saveGender(gender) })
+            }
+            ExpandableSection(title = "Display & Units") {
+                SimpleOptionSelector(
+                    title = "Units",
+                    defaultOption = "Metric",
+                    entries = listOf(UnitSystem.Metric.name, UnitSystem.Imperial.name),
+                    onOptionSelected = { value -> viewModel.saveUnits(value) })
+                Spacer(modifier = Modifier.height(4.dp))
+                SimpleOptionSelector(
+                    title = "Time format",
+                    defaultOption = "24h",
+                    entries = listOf("24h", "12h"),
+                    onOptionSelected = { value -> viewModel.saveTimeFormat(value) })
+            }
         }
     }
 }

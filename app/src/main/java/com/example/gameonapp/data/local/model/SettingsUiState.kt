@@ -1,7 +1,12 @@
 package com.example.gameonapp.data.local.model
 
+import com.example.gameonapp.utils.defaultHeight
+import com.example.gameonapp.utils.defaultWeight
+
 data class SettingsUiState(
-    val height: Int = 170,
-    val weight: Int = 70,
-    val gender: Gender = Gender.Male
+    val height: String = defaultHeight(unitSystem = UnitSystem.Metric),
+    val weight: String = defaultWeight(unitSystem = UnitSystem.Metric),
+    val gender: Gender = Gender.Male,
+    val units: UnitSystem = UnitSystem.Metric,
+    val timeFormat: String = "24h"
 )

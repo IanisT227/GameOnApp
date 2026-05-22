@@ -30,10 +30,10 @@ import kotlin.math.roundToInt
 
 @Composable
 fun HorizontalDrumRoller(
-    values: List<Int>,
-    defaultValue: Int = values[values.size / 2],
+    values: List<String>,
+    defaultValue: String = values[values.size / 2],
     unit: String = "",
-    onValueConfirmed: (Int) -> Unit
+    onValueConfirmed: (String) -> Unit
 ) {
     var selectedIndex by remember {
         mutableIntStateOf(values.indexOf(defaultValue).takeIf { it >= 0 } ?: 0)
@@ -91,7 +91,7 @@ fun HorizontalDrumRoller(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = if (itemIdx in values.indices) "${values[itemIdx]}" else "",
+                            text = if (itemIdx in values.indices) values[itemIdx] else "",
                             fontSize = fontSize,
                             color = if (isSelected)
                                 MaterialTheme.colorScheme.primary
