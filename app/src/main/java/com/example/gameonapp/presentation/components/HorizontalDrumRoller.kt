@@ -14,7 +14,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -35,8 +35,8 @@ fun HorizontalDrumRoller(
     unit: String = "",
     onValueConfirmed: (String) -> Unit
 ) {
-    var selectedIndex by remember {
-        mutableIntStateOf(values.indexOf(defaultValue).takeIf { it >= 0 } ?: 0)
+    var selectedIndex by remember(defaultValue) {
+        mutableStateOf(values.indexOf(defaultValue).takeIf { it >= 0 } ?: 0)
     }
 
     // Debounce: fire onValueConfirmed 600ms after the user stops dragging

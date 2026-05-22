@@ -92,13 +92,13 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
             ExpandableSection(title = "Display & Units") {
                 SimpleOptionSelector(
                     title = "Units",
-                    defaultOption = "Metric",
+                    defaultOption = uiState.units.name,
                     entries = listOf(UnitSystem.Metric.name, UnitSystem.Imperial.name),
                     onOptionSelected = { value -> viewModel.saveUnits(value) })
                 Spacer(modifier = Modifier.height(4.dp))
                 SimpleOptionSelector(
                     title = "Time format",
-                    defaultOption = "24h",
+                    defaultOption = uiState.timeFormat,
                     entries = listOf("24h", "12h"),
                     onOptionSelected = { value -> viewModel.saveTimeFormat(value) })
             }
