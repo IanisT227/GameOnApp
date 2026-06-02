@@ -35,7 +35,7 @@ fun PadelScoreComponent(gameViewModel: GameViewModel, onGameFinished: (() -> Uni
     Box(
         modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
     ) {
-        if (padelMatchState.isFinished && showDialog) {
+        if (padelMatchState.matchState.isFinished && showDialog) {
             EndGameDialog(
                 isVisible = true,
                 onDismiss = { showDialog = false },
@@ -53,7 +53,7 @@ fun PadelScoreComponent(gameViewModel: GameViewModel, onGameFinished: (() -> Uni
             ) {
                 Spacer(modifier = Modifier.height(10.dp))
                 PadelTotalScoreRow(
-                    padelMatchState = padelMatchState,
+                    padelMatchState = padelMatchState.matchState,
                 )
                 Row(
                     modifier = Modifier
@@ -66,8 +66,8 @@ fun PadelScoreComponent(gameViewModel: GameViewModel, onGameFinished: (() -> Uni
                             .weight(1f)
                             .getScoreItemBackground(isSelected = selectedTeam),
                         onClick = { selectedTeam = HOME },
-                        currentScore = padelMatchState.homeScore.points,
-                        name = padelMatchState.homeScore.display
+                        currentScore = padelMatchState.matchState.homeScore.points,
+                        name = padelMatchState.matchState.homeScore.display
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     TennisTeamComponent(
@@ -75,8 +75,8 @@ fun PadelScoreComponent(gameViewModel: GameViewModel, onGameFinished: (() -> Uni
                             .weight(1f)
                             .getScoreItemBackground(isSelected = !selectedTeam),
                         onClick = { selectedTeam = AWAY },
-                        currentScore = padelMatchState.awayScore.points,
-                        name = padelMatchState.awayScore.display
+                        currentScore = padelMatchState.matchState.awayScore.points,
+                        name = padelMatchState.matchState.awayScore.display
                     )
                 }
                 TennisScoringButtonRow(
@@ -87,9 +87,9 @@ fun PadelScoreComponent(gameViewModel: GameViewModel, onGameFinished: (() -> Uni
                             gameViewModel.undoPadelPoint()
                     },
                     enabled = if (selectedTeam == HOME) {
-                        padelMatchState.homeScore.points != RacquetSportsScoreValues.ZERO
+                        padelMatchState.matchState.homeScore.points != RacquetSportsScoreValues.ZERO
                     } else {
-                        padelMatchState.awayScore.points != RacquetSportsScoreValues.ZERO
+                        padelMatchState.matchState.awayScore.points != RacquetSportsScoreValues.ZERO
                     }
                 )
             }

@@ -34,7 +34,7 @@ import java.util.Locale
 
 @Composable
 fun FootballScoreComponent(modifier: Modifier = Modifier, gameViewModel: GameViewModel) {
-    val scores: SimpleScore by gameViewModel.simpleScores.collectAsState()
+    val scores: SimpleScore by gameViewModel.footballScore.collectAsState()
     var selectedTeam by rememberSaveable { mutableStateOf(HOME) }
     Column(
         modifier = Modifier.fillMaxSize(),

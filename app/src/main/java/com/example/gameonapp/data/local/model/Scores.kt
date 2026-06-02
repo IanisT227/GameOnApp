@@ -66,6 +66,7 @@ data class TennisScore(
     val display = if (name == HOME) "HOME" else "AWAY"
 }
 
+@Serializable
 data class SetResult(
     val homeGames: Int,
     val awayGames: Int
@@ -75,10 +76,13 @@ data class SetResult(
     override fun toString(): String = "$homeGames – $awayGames"
 }
 
+@Serializable
 enum class PadelServePosition { RIGHT, LEFT }
 
+@Serializable
 enum class PadelPointWinner { HOME, AWAY }
 
+@Serializable
 data class PadelScore(
     val name: Boolean,
     val display: String,

@@ -25,8 +25,9 @@ import androidx.wear.compose.material3.OutlinedButton
 import androidx.wear.compose.material3.SurfaceTransformation
 import androidx.wear.compose.material3.Text
 import com.example.gameonapp.data.local.model.GameEntity
+import com.example.gameonapp.data.local.model.PadelMatchState
 import com.example.gameonapp.data.local.model.SimpleScore
-import com.example.gameonapp.data.local.model.TennisScore
+import com.example.gameonapp.data.local.model.TennisMatchState
 import com.example.gameonapp.data.local.model.VolleyballScore
 import com.example.gameonapp.utils.fetchIconForGameType
 import com.example.gameonapp.utils.formatDate
@@ -105,6 +106,7 @@ fun SportSummaryContent(modifier: Modifier = Modifier, gameData: GameEntity) {
                         fontWeight = FontWeight.Bold
                     )
                 )
+
                 is VolleyballScore -> Text(
                     text = gameScore.getFinalScore(),
                     style = MaterialTheme.typography.bodySmall.copy(
@@ -112,7 +114,24 @@ fun SportSummaryContent(modifier: Modifier = Modifier, gameData: GameEntity) {
                         fontWeight = FontWeight.Bold
                     )
                 )
-                is TennisScore -> Text(text = "Hello world")
+
+                is TennisMatchState -> Text(
+                    text = gameScore.getFinalScore(),
+                    style = MaterialTheme.typography.bodySmall.copy(
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+
+                is PadelMatchState -> Text(
+                    text = gameScore.getFinalScore(),
+                    style = MaterialTheme.typography.bodySmall.copy(
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+
+                else -> {}
             }
             Text(
                 text = formatTime(gameData.durationSeconds),

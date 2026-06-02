@@ -1,5 +1,10 @@
 package com.example.gameonapp.data.local.model
 
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+@Serializable
+@SerialName("tennisMatch")
 data class TennisMatchState(
     val homeScore: TennisScore,
     val awayScore: TennisScore,
@@ -15,9 +20,10 @@ data class TennisMatchState(
     val isTiebreak: Boolean = false,
     val homeTiebreakPoints: Int = 0,
     val awayTiebreakPoints: Int = 0
-) {
+) : GameScore {
     fun side(isHome: Boolean): TennisScore =
         if (isHome == homeScore.name) homeScore else awayScore
+
     val servingIsHome: Boolean
         get() {
             val gamesInCompletedSets = completedSets.sumOf { it.homeGames + it.awayGames }
@@ -31,5 +37,17 @@ data class TennisMatchState(
         val awaySetsWon = completedSets.count { !it.homePlayerWon }
 
         return homeSetsWon >= setsToWin || awaySetsWon >= setsToWin
+    }
+
+    fun getFinalScore(): String {
+        val homeSetsWon = completedSets.count { it.homePlayerWon }
+        val awaySetsWon = completedSets.count { !it.homePlayerWon }
+        return "$homeSetsWon - $awaySetsWon"
+    }
+
+    fun getSetScores(): String {
+        return completedSets.mapIndexed { index, set ->
+            "$set"
+        }.joinToString("\n")
     }
 }

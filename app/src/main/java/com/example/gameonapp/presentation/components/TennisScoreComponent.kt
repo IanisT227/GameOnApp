@@ -28,13 +28,13 @@ import com.example.gameonapp.utils.getScoreItemBackground
 @Composable
 fun TennisScoreComponent(gameViewModel: GameViewModel, onGameFinished: (() -> Unit)) {
     var selectedTeam by rememberSaveable { mutableStateOf(HOME) }
-    val tennisMatchState by gameViewModel.tennisMatchState.collectAsState()
+    val tennisMatchState by gameViewModel.tennisState.collectAsState()
     var showDialog by rememberSaveable { mutableStateOf(true) }
 
     Box(
         modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
     ) {
-        if (tennisMatchState.matchWinner != null && showDialog)
+        if (tennisMatchState.matchState.isMatchFinished() && showDialog)
         {
             EndGameDialog(
                 isVisible = true,
@@ -55,7 +55,7 @@ fun TennisScoreComponent(gameViewModel: GameViewModel, onGameFinished: (() -> Un
             ) {
                 Spacer(modifier = Modifier.height(10.dp))
                 TennisTotalScoreRow(
-                    tennisMatchState = tennisMatchState,
+                    tennisMatchState = tennisMatchState.matchState,
                 )
                 Row(
                     modifier = Modifier
@@ -68,8 +68,8 @@ fun TennisScoreComponent(gameViewModel: GameViewModel, onGameFinished: (() -> Un
                             .weight(1f)
                             .getScoreItemBackground(isSelected = selectedTeam),
                         onClick = { selectedTeam = HOME },
-                        currentScore = tennisMatchState.homeScore.points,
-                        name = tennisMatchState.homeScore.display
+                        currentScore = tennisMatchState.matchState.homeScore.points,
+                        name = tennisMatchState.matchState.homeScore.display
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     TennisTeamComponent(
@@ -77,22 +77,22 @@ fun TennisScoreComponent(gameViewModel: GameViewModel, onGameFinished: (() -> Un
                             .weight(1f)
                             .getScoreItemBackground(isSelected = !selectedTeam),
                         onClick = { selectedTeam = AWAY },
-                        currentScore = tennisMatchState.awayScore.points,
-                        name = tennisMatchState.awayScore.display
+                        currentScore = tennisMatchState.matchState.awayScore.points,
+                        name = tennisMatchState.matchState.awayScore.display
                     )
                 }
 
                 TennisScoringButtonRow(
                     onClick = {
                         if (it == INCREMENT)
-                            gameViewModel.addPoint(isHome = selectedTeam)
+                            gameViewModel.addTennisPoint(isHome = selectedTeam)
                         else
-                            gameViewModel.removePoint(isHome = selectedTeam)
+                            gameViewModel.undoTennisPoint()
                     },
                     enabled = if (selectedTeam == HOME) {
-                        tennisMatchState.homeScore.points != RacquetSportsScoreValues.ZERO
+                        tennisMatchState.matchState.homeScore.points != RacquetSportsScoreValues.ZERO
                     } else {
-                        tennisMatchState.awayScore.points != RacquetSportsScoreValues.ZERO
+                        tennisMatchState.matchState.awayScore.points != RacquetSportsScoreValues.ZERO
                     }
                 )
             }

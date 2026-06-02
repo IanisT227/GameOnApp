@@ -18,7 +18,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.gameonapp.data.local.model.VolleyballScore
 import com.example.gameonapp.data.local.model.VolleyballSet
 import com.example.gameonapp.presentation.viewModels.GameViewModel
 import com.example.gameonapp.utils.AWAY
@@ -28,19 +27,18 @@ import com.example.gameonapp.utils.getScoreItemBackground
 
 @Composable
 fun VolleyballScoreComponent(gameViewModel: GameViewModel, onGameFinished: (() -> Unit)) {
-    val scores: VolleyballScore by gameViewModel.volleyballScores.collectAsState()
+    val volleyballState: GameViewModel.VolleyballUiState by gameViewModel.volleyballState.collectAsState()
     var selectedTeam by rememberSaveable { mutableStateOf(HOME) }
-    val gameFinished: Boolean by gameViewModel.volleyballGameFinished.collectAsState()
+
     var showDialog by rememberSaveable { mutableStateOf(true) }
 
 
-    if (gameFinished && showDialog)
+    if (volleyballState.isFinished && showDialog)
         EndGameDialog(
             isVisible = true,
-            onDismiss = { showDialog = false },
+            onDismiss = { },
             onConfirmClick = {
                 onGameFinished()
-                showDialog = false
             })
     Box(
         modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
@@ -63,8 +61,8 @@ fun VolleyballScoreComponent(gameViewModel: GameViewModel, onGameFinished: (() -
                         .weight(1f)
                         .getScoreItemBackground(selectedTeam),
                     teamName = "Home",
-                    teamScore = scores.scoresPerSet[scores.currentSet].pointsHome,
-                    teamSetsWon = scores.setsHome,
+                    teamScore = volleyballState.score.scoresPerSet[volleyballState.score.currentSet].pointsHome,
+                    teamSetsWon = volleyballState.score.setsHome,
                     onClick = { selectedTeam = HOME })
                 Spacer(modifier = Modifier.width(10.dp))
                 VolleyTeamComponent(
@@ -72,14 +70,19 @@ fun VolleyballScoreComponent(gameViewModel: GameViewModel, onGameFinished: (() -
                         .weight(1f)
                         .getScoreItemBackground(!selectedTeam),
                     teamName = "Away",
-                    teamScore = scores.scoresPerSet[scores.currentSet].pointsAway,
-                    teamSetsWon = scores.setsAway,
+                    teamScore = volleyballState.score.scoresPerSet[volleyballState.score.currentSet].pointsAway,
+                    teamSetsWon = volleyballState.score.setsAway,
                     onClick = { selectedTeam = AWAY })
             }
             Spacer(modifier = Modifier.height(4.dp))
             ScoringRow(onClick = {
                 gameViewModel.adjustVolleyballScore(selectedTeam, if (it == INCREMENT) 1 else -1)
-            }, enabled = checkIfEnabled(selectedTeam, scores.scoresPerSet[scores.currentSet]))
+            },
+                enabled = checkIfEnabled(
+                    selectedTeam,
+                    volleyballState.score.scoresPerSet[volleyballState.score.currentSet]
+                )
+            )
         }
     }
 }

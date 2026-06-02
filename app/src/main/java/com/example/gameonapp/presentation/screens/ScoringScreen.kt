@@ -25,8 +25,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.intl.Locale
-import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.wear.compose.foundation.pager.HorizontalPager
@@ -36,7 +34,6 @@ import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.ScreenScaffold
 import androidx.wear.compose.material3.TimeText
 import androidx.wear.widget.ConfirmationOverlay
-import com.example.gameonapp.data.local.model.GameEntity
 import com.example.gameonapp.presentation.components.BasketballScoreComponent
 import com.example.gameonapp.presentation.components.ExitGameDialog
 import com.example.gameonapp.presentation.components.FitnessComponent
@@ -108,7 +105,7 @@ fun ScoringScreen(
 
         ExitGameDialog(
             isVisible = showExitDialog,
-            onDismiss = { showExitDialog = false },
+            onDismiss = { },
             onConfirmClick = { navController.popBackStack() }
         )
 
@@ -161,7 +158,6 @@ fun ScoringScreen(
                 FITNESS_COMPONENT -> FitnessComponent(
                     fitnessViewModel = fitnessViewModel, onConfirmClick = {
                         saveGame(gameViewModel, fitnessViewModel, sportName)
-                        showOverlay = true
                     })
             }
         }
@@ -214,22 +210,21 @@ fun saveGame(gameViewModel: GameViewModel, fitnessViewModel: FitnessViewModel, s
         fitnessViewModel.totalBPM.value, fitnessViewModel.timeInSeconds.value.toLong()
     )
     val date = Date()
-    val gameType = GameType.valueOf(sportName.toUpperCase(Locale.current))
-    val finishedGame: GameEntity = if (sportName == FOOTBALL || sportName == BASKETBALL) {
-        gameViewModel.buildEndGameEntity(
-            durationSeconds = durationSeconds,
-            averageBPM = averageBPM,
-            date = date,
-            gameType = gameType
-        )
-    } else {
-        gameViewModel.buildVolleyballEndGameEntity(
-            durationSeconds = durationSeconds,
-            averageBPM = averageBPM,
-            date = date,
-            gameType = gameType
-        )
+
+    // Map string to GameType enum safely
+    val gameType = try {
+        GameType.valueOf(sportName.uppercase(java.util.Locale.ROOT))
+    } catch (e: Exception) {
+        GameType.OTHER
     }
+
+    val finishedGame = gameViewModel.buildEndGameEntity(
+        durationSeconds = durationSeconds,
+        averageBPM = averageBPM,
+        date = date,
+        gameType = gameType
+    )
+
     gameViewModel.insertGame(finishedGame)
 }
 
@@ -239,5 +234,6 @@ fun showConfirmation(context: Context) {
 }
 
 fun computeAverageBPM(totalBPM: Long, timeInSeconds: Long): Int {
+    if (timeInSeconds == 0L) return 0
     return (totalBPM / timeInSeconds).toInt()
 }

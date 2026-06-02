@@ -2,8 +2,9 @@ package com.example.gameonapp.data.local.converter
 
 import androidx.room.TypeConverter
 import com.example.gameonapp.data.local.model.GameScore
+import com.example.gameonapp.data.local.model.PadelMatchState
 import com.example.gameonapp.data.local.model.SimpleScore
-import com.example.gameonapp.data.local.model.TennisScore
+import com.example.gameonapp.data.local.model.TennisMatchState
 import com.example.gameonapp.data.local.model.VolleyballScore
 import com.google.gson.Gson
 import com.google.gson.JsonParser
@@ -17,11 +18,12 @@ class GameScoreConverter {
     fun fromGameScore(score: GameScore?): String {
         if (score == null) return ""
         val json = gson.toJsonTree(score).asJsonObject
-        // Add a type field
         when (score) {
             is SimpleScore -> json.addProperty("type", "simple")
             is VolleyballScore -> json.addProperty("type", "volleyball")
-            is TennisScore -> json.addProperty("type", "tennis")
+            is TennisMatchState -> json.addProperty("type", "tennisMatch")
+            is PadelMatchState -> json.addProperty("type", "padelMatch")
+            else -> {}
         }
         return gson.toJson(json)
     }
@@ -35,6 +37,8 @@ class GameScoreConverter {
         return when (type) {
             "simple" -> gson.fromJson(jsonString, SimpleScore::class.java)
             "volleyball" -> gson.fromJson(jsonString, VolleyballScore::class.java)
+            "tennisMatch" -> gson.fromJson(jsonString, TennisMatchState::class.java)
+            "padelMatch" -> gson.fromJson(jsonString, PadelMatchState::class.java)
             else -> null
         }
     }

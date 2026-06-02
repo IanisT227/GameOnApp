@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gameonapp.data.local.model.GameEntity
 import com.example.gameonapp.data.local.model.GameHistoryState
+import com.example.gameonapp.data.local.model.GameScore
 import com.example.gameonapp.data.local.model.PadelMatchState
 import com.example.gameonapp.data.local.model.PadelPointWinner
 import com.example.gameonapp.data.local.model.PadelScore
@@ -31,62 +32,61 @@ import java.util.Date
 import kotlin.math.abs
 
 class GameViewModel(private val gameRepository: GameRepository) : ViewModel() {
-    private val _simpleScores = MutableStateFlow(SimpleScore())
-    val simpleScores: StateFlow<SimpleScore> = _simpleScores
 
-    private val _volleyballScores = MutableStateFlow(VolleyballScore())
-    val volleyballScores: StateFlow<VolleyballScore> = _volleyballScores
+    // region States
 
-    private val _volleyballGameFinished = MutableStateFlow(false)
-    val volleyballGameFinished: StateFlow<Boolean> = _volleyballGameFinished
-    private val _gameData = MutableStateFlow(
-        value = GameEntity()
-    )
-    val gameData: StateFlow<GameEntity> = _gameData
-    //todo: REWORK GAME MODEL INTO STATES FOR EACH TYPE OF GAME
-
-    private val _gameHistoryState = MutableStateFlow(
-        value = GameHistoryState(
-            gameList = emptyList(),
-            totalTime = 0
-        )
-    )
-
+    // --- General / History ---
+    private val _gameHistoryState = MutableStateFlow(GameHistoryState())
     val gameHistoryState: StateFlow<GameHistoryState> = _gameHistoryState.asStateFlow()
 
+    private val _gameData = MutableStateFlow(GameEntity())
+    val gameData: StateFlow<GameEntity> = _gameData.asStateFlow()
 
-    private val _tennisMatchState = MutableStateFlow(
-        TennisMatchState(
+    // --- Football ---
+    private val _footballScore = MutableStateFlow(SimpleScore())
+    val footballScore: StateFlow<SimpleScore> = _footballScore.asStateFlow()
+
+    // --- Basketball ---
+    private val _basketballScore = MutableStateFlow(SimpleScore())
+    val basketballScore: StateFlow<SimpleScore> = _basketballScore.asStateFlow()
+
+    // --- Volleyball ---
+    data class VolleyballUiState(
+        val score: VolleyballScore = VolleyballScore(),
+        val isFinished: Boolean = false
+    )
+
+    private val _volleyballState = MutableStateFlow(VolleyballUiState())
+    val volleyballState: StateFlow<VolleyballUiState> = _volleyballState.asStateFlow()
+
+    // --- Tennis ---
+    data class TennisUiState(
+        val matchState: TennisMatchState = TennisMatchState(
             homeScore = TennisScore(name = HOME),
             awayScore = TennisScore(name = AWAY),
             setsToWin = 2
-        )
+        ),
+        val history: List<TennisMatchState> = emptyList()
     )
-    val tennisMatchState: StateFlow<TennisMatchState> = _tennisMatchState.asStateFlow()
 
-    private val _tennisHistory = ArrayDeque<TennisMatchState>()
+    private val _tennisState = MutableStateFlow(TennisUiState())
+    val tennisState: StateFlow<TennisUiState> = _tennisState.asStateFlow()
 
-    private val _padelState = MutableStateFlow(
-        PadelMatchState(
+    // --- Padel ---
+    data class PadelUiState(
+        val matchState: PadelMatchState = PadelMatchState(
             homeScore = PadelScore(name = HOME, display = "HOME"),
             awayScore = PadelScore(name = AWAY, display = "AWAY")
-        )
+        ),
+        val history: List<PadelMatchState> = emptyList()
     )
-    val padelState: StateFlow<PadelMatchState> = _padelState.asStateFlow()
 
-    private val _padelHistory = ArrayDeque<PadelMatchState>()
+    private val _padelState = MutableStateFlow(PadelUiState())
+    val padelState: StateFlow<PadelUiState> = _padelState.asStateFlow()
 
+    // endregion
 
-
-    fun onPadelPoint(winner: PadelPointWinner) {
-        _padelHistory.addLast(_padelState.value)  // snapshot before every change
-        _padelState.update { PadelScoringEngine.scorePoint(it, winner) }
-    }
-
-    fun undoPadelPoint() {
-        if (_padelHistory.isEmpty()) return
-        _padelState.value = _padelHistory.removeLast()
-    }
+    // region Repository Operations
 
     fun insertGame(gameEntity: GameEntity) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -102,8 +102,9 @@ class GameViewModel(private val gameRepository: GameRepository) : ViewModel() {
 
     fun removeGame(gameId: Long) {
         viewModelScope.launch(Dispatchers.IO) {
-            val gameEntity = gameRepository.getGameById(gameId) ?: GameEntity()
-            gameRepository.removeGame(gameEntity)
+            gameRepository.getGameById(gameId)?.let {
+                gameRepository.removeGame(it)
+            }
         }
     }
 
@@ -113,10 +114,7 @@ class GameViewModel(private val gameRepository: GameRepository) : ViewModel() {
             val totalTime = gameRepository.getTotalTime().toInt()
             withContext(Dispatchers.Main) {
                 _gameHistoryState.update {
-                    GameHistoryState(
-                        gameList = list,
-                        totalTime = totalTime
-                    )
+                    it.copy(gameList = list, totalTime = totalTime)
                 }
             }
         }
@@ -124,70 +122,94 @@ class GameViewModel(private val gameRepository: GameRepository) : ViewModel() {
 
     fun getGameById(gameId: Long) {
         viewModelScope.launch(Dispatchers.IO) {
-            val gameData = gameRepository.getGameById(gameId) ?: GameEntity()
+            val data = gameRepository.getGameById(gameId) ?: GameEntity()
             withContext(Dispatchers.Main) {
-                _gameData.value = gameData
+                _gameData.value = data
             }
         }
     }
+
+    // endregion
+
+    // region Football Actions
 
     fun adjustFootballScore(team: Boolean, adjustType: Boolean) {
-        val current = _simpleScores.value
-        _simpleScores.value = when {
-            team == HOME && adjustType == INCREMENT -> current.copy(home = current.home + 1)
-            team == HOME && adjustType == DECREMENT -> current.copy(home = current.home - 1)
-            team == AWAY && adjustType == INCREMENT -> current.copy(away = current.away + 1)
-            team == AWAY && adjustType == DECREMENT -> current.copy(away = current.away - 1)
-            else -> current
-        }
-    }
+        _footballScore.update { current ->
+            when {
+                team == HOME && adjustType == INCREMENT -> current.copy(home = current.home + 1)
+                team == HOME && adjustType == DECREMENT -> current.copy(
+                    home = (current.home - 1).coerceAtLeast(
+                        0
+                    )
+                )
 
-    fun adjustBasketballScore(team: Boolean, scoreAmount: Int) {
-        val current = _simpleScores.value
-        _simpleScores.value = when (team) {
-            HOME -> current.copy(home = current.home + scoreAmount)
-            AWAY -> current.copy(away = current.away + scoreAmount)
-            else -> current
-        }
-    }
+                team == AWAY && adjustType == INCREMENT -> current.copy(away = current.away + 1)
+                team == AWAY && adjustType == DECREMENT -> current.copy(
+                    away = (current.away - 1).coerceAtLeast(
+                        0
+                    )
+                )
 
-    fun adjustVolleyballScore(team: Boolean, scoreAmount: Int) {
-        val current = _volleyballScores.value
-        if (_volleyballGameFinished.value) return
-
-        val updatedSets = current.scoresPerSet.mapIndexed { index, set ->
-            if (index == current.currentSet) {
-                if (team == HOME) {
-                    set.copy(pointsHome = (set.pointsHome + scoreAmount).coerceAtLeast(0))
-                } else {
-                    set.copy(pointsAway = (set.pointsAway + scoreAmount).coerceAtLeast(0))
-                }
-            } else {
-                set
+                else -> current
             }
         }
-        _volleyballScores.value = current.copy(scoresPerSet = updatedSets)
-        checkVolleyballSetFinished()
     }
 
-    private fun checkVolleyballSetFinished() {
-        val current = _volleyballScores.value
+    // endregion
+
+    // region Basketball Actions
+
+    fun adjustBasketballScore(team: Boolean, scoreAmount: Int) {
+        _basketballScore.update { current ->
+            if (team == HOME) {
+                current.copy(home = (current.home + scoreAmount).coerceAtLeast(0))
+            } else {
+                current.copy(away = (current.away + scoreAmount).coerceAtLeast(0))
+            }
+        }
+    }
+
+    // endregion
+
+    // region Volleyball Actions
+
+    fun adjustVolleyballScore(team: Boolean, scoreAmount: Int) {
+        if (_volleyballState.value.isFinished) return
+
+        _volleyballState.update { currentState ->
+            val score = currentState.score
+            val updatedSets = score.scoresPerSet.mapIndexed { index, set ->
+                if (index == score.currentSet) {
+                    if (team == HOME) {
+                        set.copy(pointsHome = (set.pointsHome + scoreAmount).coerceAtLeast(0))
+                    } else {
+                        set.copy(pointsAway = (set.pointsAway + scoreAmount).coerceAtLeast(0))
+                    }
+                } else {
+                    set
+                }
+            }
+            val updatedScore = score.copy(scoresPerSet = updatedSets)
+            checkVolleyballSetFinished(updatedScore)
+        }
+    }
+
+    private fun checkVolleyballSetFinished(current: VolleyballScore): VolleyballUiState {
         val currentSetIndex = current.currentSet
         val targetPointsPerSet = listOf(25, 25, 25, 25, 15)
 
-        if (currentSetIndex >= current.scoresPerSet.size) return
+        if (currentSetIndex >= current.scoresPerSet.size) {
+            return VolleyballUiState(current, isFinished = true)
+        }
 
         val currentSet = current.scoresPerSet[currentSetIndex]
         val diff = abs(currentSet.pointsHome - currentSet.pointsAway)
         val target = targetPointsPerSet.getOrElse(currentSetIndex) { 25 }
 
-        // Check if the current set is finished
         if ((currentSet.pointsHome >= target || currentSet.pointsAway >= target) && diff >= 2) {
-
-            // If either team has already won 3 sets, the match is finished
+            // Check if match finished
             if (current.setsHome >= 3 || current.setsAway >= 3) {
-                _volleyballGameFinished.value = true
-                return
+                return VolleyballUiState(current, isFinished = true)
             }
 
             val nextSetIndex = (currentSetIndex + 1).coerceAtMost(current.scoresPerSet.lastIndex)
@@ -195,56 +217,111 @@ class GameViewModel(private val gameRepository: GameRepository) : ViewModel() {
                 if (index == nextSetIndex) VolleyballSet(0, 0) else set
             }
 
-            _volleyballScores.value = current.copy(
+            val nextScore = current.copy(
                 currentSet = nextSetIndex,
                 scoresPerSet = updatedScoresPerSet
+            )
+
+            return VolleyballUiState(
+                nextScore,
+                isFinished = nextScore.setsHome >= 3 || nextScore.setsAway >= 3
+            )
+        }
+        return VolleyballUiState(current, isFinished = false)
+    }
+
+    // endregion
+
+    // region Tennis Actions
+
+    fun addTennisPoint(isHome: Boolean) {
+        if (_tennisState.value.matchState.matchWinner != null) return
+        _tennisState.update { currentState ->
+            val nextMatchState = TennisScoringEngine.scorePoint(currentState.matchState, isHome)
+            currentState.copy(
+                matchState = nextMatchState,
+                history = currentState.history + currentState.matchState
             )
         }
     }
 
-    fun resetScore() {
-        _simpleScores.value = SimpleScore(0, 0)
+    fun undoTennisPoint() {
+        _tennisState.update { currentState ->
+            if (currentState.history.isEmpty()) currentState
+            else {
+                val previousState = currentState.history.last()
+                currentState.copy(
+                    matchState = previousState,
+                    history = currentState.history.dropLast(1)
+                )
+            }
+        }
     }
+
+    // endregion
+
+    // region Padel Actions
+
+    fun onPadelPoint(winner: PadelPointWinner) {
+        if (_padelState.value.matchState.isFinished) return
+        _padelState.update { currentState ->
+            val nextMatchState = PadelScoringEngine.scorePoint(currentState.matchState, winner)
+            currentState.copy(
+                matchState = nextMatchState,
+                history = currentState.history + currentState.matchState
+            )
+        }
+    }
+
+    fun undoPadelPoint() {
+        _padelState.update { currentState ->
+            if (currentState.history.isEmpty()) currentState
+            else {
+                val previousState = currentState.history.last()
+                currentState.copy(
+                    matchState = previousState,
+                    history = currentState.history.dropLast(1)
+                )
+            }
+        }
+    }
+
+    // endregion
+
+    // region End Game Entity Builders
 
     fun buildEndGameEntity(
         durationSeconds: Int,
         averageBPM: Int,
         date: Date,
         gameType: GameType,
-    ): GameEntity = GameEntity(
-        gameType = gameType,
-        score = SimpleScore(home = simpleScores.value.home, away = simpleScores.value.away),
-        matchDate = date,
-        durationSeconds = durationSeconds,
-        averageBPM = averageBPM,
-        gameId = 0L
-    )
+    ): GameEntity {
+        val score: GameScore = when (gameType) {
+            GameType.FOOTBALL -> _footballScore.value
+            GameType.BASKETBALL -> _basketballScore.value
+            GameType.VOLLEYBALL -> _volleyballState.value.score
+            GameType.TENNIS -> _tennisState.value.matchState
+            GameType.PADEL -> _padelState.value.matchState
+            else -> SimpleScore()
+        }
 
-    fun buildVolleyballEndGameEntity(
-        durationSeconds: Int,
-        averageBPM: Int,
-        date: Date,
-        gameType: GameType,
-    ): GameEntity = GameEntity(
-        gameType = gameType,
-        score = volleyballScores.value,
-        matchDate = date,
-        durationSeconds = durationSeconds,
-        averageBPM = averageBPM,
-        gameId = 0L
-    )
-
-    fun addPoint(isHome: Boolean) {
-        if (_tennisMatchState.value.matchWinner != null) return
-        _tennisHistory.addLast(_tennisMatchState.value)
-        _tennisMatchState.update { TennisScoringEngine.scorePoint(it, isHome) }
+        return GameEntity(
+            gameType = gameType,
+            score = score,
+            matchDate = date,
+            durationSeconds = durationSeconds,
+            averageBPM = averageBPM,
+            gameId = 0L
+        )
     }
 
-    fun removePoint(isHome: Boolean) {
-        if (_tennisHistory.isEmpty()) return
-        _tennisMatchState.value = _tennisHistory.removeLast()
+    // endregion
+
+    fun resetAllScores() {
+        _footballScore.value = SimpleScore()
+        _basketballScore.value = SimpleScore()
+        _volleyballState.value = VolleyballUiState()
+        _tennisState.value = TennisUiState()
+        _padelState.value = PadelUiState()
     }
-
-    // ── Helper ────────────────────────────────────────────────────────────────
-
 }

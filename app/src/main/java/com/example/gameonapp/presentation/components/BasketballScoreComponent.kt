@@ -41,7 +41,7 @@ import java.util.Locale
 
 @Composable
 fun BasketballScoreComponent(gameViewModel: GameViewModel) {
-    val scores: SimpleScore by gameViewModel.simpleScores.collectAsState()
+    val scores: SimpleScore by gameViewModel.basketballScore.collectAsState()
     var selectedTeam by rememberSaveable { mutableStateOf(HOME) }
     val amounts = listOf(1, 2, 3)
     val isEnabled = if (selectedTeam == HOME) {
