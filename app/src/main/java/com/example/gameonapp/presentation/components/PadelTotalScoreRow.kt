@@ -55,7 +55,7 @@ fun PadelTotalScoreRow(
                 playerScore = padelMatchState.homeScore,
                 completedSets = padelMatchState.completedSets,
                 tiebreak = padelMatchState.tiebreak,
-                isGoldenPoint = padelMatchState.isGoldenPoint
+                isStarPoint = padelMatchState.isStarPoint
             )
             Spacer(
                 modifier = Modifier
@@ -69,7 +69,7 @@ fun PadelTotalScoreRow(
                 playerScore = padelMatchState.awayScore,
                 completedSets = padelMatchState.completedSets,
                 tiebreak = padelMatchState.tiebreak,
-                isGoldenPoint = padelMatchState.isGoldenPoint
+                isStarPoint = padelMatchState.isStarPoint
             )
         }
     }
@@ -81,7 +81,7 @@ fun PadelPlayerScoreComponent(
     playerScore: PadelScore,
     completedSets: List<SetResult>,
     tiebreak: PadelTiebreakState?,
-    isGoldenPoint: Boolean
+    isStarPoint: Boolean
 ) {
     val isHome = playerScore.name == HOME
 
@@ -132,7 +132,7 @@ fun PadelPlayerScoreComponent(
         // Current game points — tiebreak / golden point / normal
         val currentPointsText = when {
             tiebreak != null -> if (isHome) tiebreak.homePoints.toString() else tiebreak.awayPoints.toString()
-            isGoldenPoint -> "GP"
+            isStarPoint -> "SP"
             else -> ""
         }
         Text(
@@ -140,7 +140,7 @@ fun PadelPlayerScoreComponent(
             style = MaterialTheme.typography.labelMedium.copy(
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp,
-                color = if (isGoldenPoint) MaterialTheme.colorScheme.primary
+                color = if (isStarPoint) MaterialTheme.colorScheme.primary
                 else MaterialTheme.colorScheme.onSurface
             )
         )

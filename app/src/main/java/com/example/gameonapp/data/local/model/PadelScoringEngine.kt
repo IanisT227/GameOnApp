@@ -13,29 +13,54 @@ object PadelScoringEngine {
         val home = state.homeScore
         val away = state.awayScore
 
-        // Golden point — next point wins the game outright
-        if (state.isGoldenPoint) return handleGameWon(state, homeWon)
+        // Star Point logic: winner of this point takes the game immediately
+        if (state.isStarPoint) return handleGameWon(state, homeWon)
 
-        val newHomePoints = if (homeWon) home.points.next() else home.points
-        val newAwayPoints = if (!homeWon) away.points.next() else away.points
+        // Current points
+        val currentHome = home.points
+        val currentAway = away.points
 
-        // Both reach FORTY → golden point
-        if (newHomePoints == RacquetSportsScoreValues.FORTY && newAwayPoints == RacquetSportsScoreValues.FORTY) {
-            return state.copy(
-                homeScore = home.copy(points = RacquetSportsScoreValues.FORTY),
-                awayScore = away.copy(points = RacquetSportsScoreValues.FORTY),
-                isGoldenPoint = true
-            )
+        // Case: Someone currently has Advantage
+        if (currentHome == RacquetSportsScoreValues.ADVANTAGE || currentAway == RacquetSportsScoreValues.ADVANTAGE) {
+            val advantageForHome = currentHome == RacquetSportsScoreValues.ADVANTAGE
+
+            return if ((advantageForHome && homeWon) || (!advantageForHome && !homeWon)) {
+                // Team with advantage wins -> Win Game
+                handleGameWon(state, homeWon)
+            } else {
+                // Team with advantage loses -> Return to 40-40
+                val nextRounds = state.advantageRounds + 1
+                state.copy(
+                    homeScore = home.copy(points = RacquetSportsScoreValues.FORTY),
+                    awayScore = away.copy(points = RacquetSportsScoreValues.FORTY),
+                    advantageRounds = nextRounds,
+                    isStarPoint = nextRounds >= 2 // After losing 2 advantages, next deuce is Star Point
+                )
+            }
         }
 
-        // Game won
-        if (newHomePoints == RacquetSportsScoreValues.GAME) return handleGameWon(state, homeWon = true)
-        if (newAwayPoints == RacquetSportsScoreValues.GAME) return handleGameWon(state, homeWon = false)
+        // Standard scoring
+        return when {
+            // If they are at Deuce (40-40), winner gets Advantage
+            currentHome == RacquetSportsScoreValues.FORTY && currentAway == RacquetSportsScoreValues.FORTY -> {
+                state.copy(
+                    homeScore = home.copy(points = if (homeWon) RacquetSportsScoreValues.ADVANTAGE else RacquetSportsScoreValues.FORTY),
+                    awayScore = away.copy(points = if (!homeWon) RacquetSportsScoreValues.ADVANTAGE else RacquetSportsScoreValues.FORTY)
+                )
+            }
 
-        return state.copy(
-            homeScore = home.copy(points = newHomePoints),
-            awayScore = away.copy(points = newAwayPoints)
-        )
+            // Winning from 40-0, 40-15, 40-30 (Next point is Game)
+            homeWon && currentHome == RacquetSportsScoreValues.FORTY -> handleGameWon(state, true)
+            !homeWon && currentAway == RacquetSportsScoreValues.FORTY -> handleGameWon(state, false)
+
+            // Otherwise increment normally (e.g., 15 -> 30)
+            else -> {
+                state.copy(
+                    homeScore = home.copy(points = if (homeWon) currentHome.next() else currentHome),
+                    awayScore = away.copy(points = if (!homeWon) currentAway.next() else currentAway)
+                )
+            }
+        }
     }
 
     private fun handleGameWon(state: PadelMatchState, homeWon: Boolean): PadelMatchState {
@@ -45,7 +70,7 @@ object PadelScoringEngine {
         val newHomeGames = if (homeWon) home.games + 1 else home.games
         val newAwayGames = if (!homeWon) away.games + 1 else away.games
 
-        // Check if tiebreak should start (6-6)
+        // 1. Check if tiebreak should start (6-6)
         if (newHomeGames == GAMES_TO_WIN_SET && newAwayGames == GAMES_TO_WIN_SET) {
             val (newServingIsHome, _) = rotateServe(
                 state.servingIsHome, state.servePosition
@@ -53,7 +78,8 @@ object PadelScoringEngine {
             return state.copy(
                 homeScore = home.copy(points = RacquetSportsScoreValues.ZERO, games = newHomeGames),
                 awayScore = away.copy(points = RacquetSportsScoreValues.ZERO, games = newAwayGames),
-                isGoldenPoint = false,
+                advantageRounds = 0,  // Already correctly resetting here
+                isStarPoint = false,
                 servingIsHome = newServingIsHome,
                 tiebreak = PadelTiebreakState(
                     servingIsHome = newServingIsHome, servePosition = PadelServePosition.RIGHT
@@ -61,7 +87,7 @@ object PadelScoringEngine {
             )
         }
 
-        // Check if set is won
+        // 2. Check if set is won
         val homeWinsSet = newHomeGames >= GAMES_TO_WIN_SET && newHomeGames - newAwayGames >= 2
         val awayWinsSet = newAwayGames >= GAMES_TO_WIN_SET && newAwayGames - newHomeGames >= 2
 
@@ -69,14 +95,15 @@ object PadelScoringEngine {
             return handleSetWon(state, homeWon, newHomeGames, newAwayGames)
         }
 
-        // Game over, rotate serve position
+        // 3. Normal Game over: MUST reset advantageRounds
         val (newServingIsHome, _) = rotateServe(
             state.servingIsHome, state.servePosition
         )
         return state.copy(
             homeScore = home.copy(points = RacquetSportsScoreValues.ZERO, games = newHomeGames),
             awayScore = away.copy(points = RacquetSportsScoreValues.ZERO, games = newAwayGames),
-            isGoldenPoint = false,
+            advantageRounds = 0, // Fix: Reset for the next game
+            isStarPoint = false,
             servingIsHome = newServingIsHome,
         )
     }
@@ -84,19 +111,15 @@ object PadelScoringEngine {
     private fun handleSetWon(
         state: PadelMatchState, homeWon: Boolean, homeGames: Int, awayGames: Int
     ): PadelMatchState {
-        val newSet = SetResult(
-            homeGames = homeGames,
-            awayGames = awayGames,
-        )
+        val newSet = SetResult(homeGames = homeGames, awayGames = awayGames)
         val updatedSets = state.completedSets + newSet
 
         val newHomeSets = if (homeWon) state.homeScore.setsWon + 1 else state.homeScore.setsWon
         val newAwaySets = if (!homeWon) state.awayScore.setsWon + 1 else state.awayScore.setsWon
         val matchOver = newHomeSets >= SETS_TO_WIN_MATCH || newAwaySets >= SETS_TO_WIN_MATCH
 
-        val (newServingIsHome, _) = rotateServe(
-            state.servingIsHome, state.servePosition
-        )
+        val (newServingIsHome, _) = rotateServe(state.servingIsHome, state.servePosition)
+
         return state.copy(
             homeScore = state.homeScore.copy(
                 points = RacquetSportsScoreValues.ZERO, games = 0, setsWon = newHomeSets
@@ -105,7 +128,8 @@ object PadelScoringEngine {
                 points = RacquetSportsScoreValues.ZERO, games = 0, setsWon = newAwaySets
             ),
             completedSets = updatedSets,
-            isGoldenPoint = false,
+            advantageRounds = 0, // Fix: Reset for the next set
+            isStarPoint = false,
             isFinished = matchOver,
             servingIsHome = newServingIsHome,
         )
@@ -162,5 +186,4 @@ object PadelScoringEngine {
         }
     }
 
-    fun isMatchFinished(state: PadelMatchState): Boolean = state.isFinished
 }

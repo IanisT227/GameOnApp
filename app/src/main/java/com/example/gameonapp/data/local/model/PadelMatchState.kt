@@ -11,7 +11,8 @@ data class PadelMatchState(
     val completedSets: List<SetResult> = emptyList(),
     val servingIsHome: Boolean = true,
     val tiebreak: PadelTiebreakState? = null,   // non-null when tiebreak is active
-    val isGoldenPoint: Boolean = false,         // 40-40 reached, next point decides
+    val advantageRounds: Int = 0,               // Tracks how many deuce cycles have occurred
+    val isStarPoint: Boolean = false,
     val isFinished: Boolean = false
 ) : GameScore {
     val servePosition: PadelServePosition
@@ -30,7 +31,7 @@ data class PadelMatchState(
     }
 
     fun getSetScores(): String {
-        return completedSets.mapIndexed { index, set ->
+        return completedSets.mapIndexed { _, set ->
             "$set"
         }.joinToString("\n")
     }
