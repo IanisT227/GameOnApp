@@ -16,11 +16,19 @@ class SettingsViewModel(private val repository: SettingsRepository) : ViewModel(
     val uiState: StateFlow<SettingsUiState> = combine(
         repository.height,
         repository.weight,
+        repository.age,
         repository.gender,
         repository.units,
         repository.timeFormat
-    ) { height, weight, gender, units, timeFormat ->
-        SettingsUiState(height, weight, gender, units, timeFormat)
+    ) { flows ->
+        SettingsUiState(
+            height = flows[0] as String,
+            weight = flows[1] as String,
+            age = flows[2] as Int,
+            gender = flows[3] as Gender,
+            units = flows[4] as UnitSystem,
+            timeFormat = flows[5] as String
+        )
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
@@ -37,6 +45,10 @@ class SettingsViewModel(private val repository: SettingsRepository) : ViewModel(
 
     fun saveGender(value: Gender) = viewModelScope.launch {
         repository.saveGender(value)
+    }
+
+    fun saveAge(value: Int) = viewModelScope.launch {
+        repository.saveAge(value)
     }
 
     fun saveUnits(value: String) = viewModelScope.launch {

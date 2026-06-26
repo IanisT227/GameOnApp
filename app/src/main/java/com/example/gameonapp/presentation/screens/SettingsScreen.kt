@@ -32,7 +32,7 @@ import com.example.gameonapp.utils.fetchWeightList
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun SettingsScreen(modifier: Modifier = Modifier) {
+fun SettingsScreen() {
     val viewModel = koinViewModel<SettingsViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val scrollState = rememberScrollState()
@@ -85,6 +85,19 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
                     unit = if (uiState.units == UnitSystem.Metric) "kg" else "lb",
                     onValueConfirmed = { weight -> viewModel.saveWeight(weight) })
                 Spacer(modifier = Modifier.height(6.dp))
+                Text(
+                    text = "Age",
+                    style = MaterialTheme.typography.titleSmall,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(vertical = 12.dp)
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                HorizontalDrumRoller(
+                    values = (18..100).map { it.toString() },
+                    defaultValue = uiState.age.toString(),
+                    unit = "years",
+                    onValueConfirmed = { age -> viewModel.saveAge(age.toInt()) })
+                Spacer(modifier = Modifier.height(6.dp))
                 GenderSelector(
                     defaultGender = uiState.gender,
                     onGenderSelected = { gender -> viewModel.saveGender(gender) })
@@ -102,6 +115,7 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
                     entries = listOf("24h", "12h"),
                     onOptionSelected = { value -> viewModel.saveTimeFormat(value) })
             }
+            Spacer(modifier = Modifier.weight(1f))
         }
     }
 }

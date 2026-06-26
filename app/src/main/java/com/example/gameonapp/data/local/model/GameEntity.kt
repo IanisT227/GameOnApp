@@ -13,4 +13,6 @@ data class GameEntity(
     val matchDate: Date = Date(),
     val durationSeconds: Int = 0,
     val averageBPM: Int = 0,
+    val maxBPM: Int = 0,
+    val calories: Int = 0
 )

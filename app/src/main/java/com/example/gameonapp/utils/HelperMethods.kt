@@ -19,11 +19,6 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Date
 
-fun adjustFootballScore(adjustType: Boolean, update: (Int) -> Unit, currentValue: Int) {
-    val newValue = if (adjustType == INCREMENT) currentValue.plus(1) else currentValue.minus(1)
-    update(newValue)
-}
-
 fun formatTime(seconds: Int): String {
     val minutes = seconds / 60
     val secs = seconds % 60
@@ -61,7 +56,7 @@ fun formatDate(date: Date): String {
 
 @Composable
 fun Modifier.getScoreItemBackground(isSelected: Boolean): Modifier {
-    val shape = RoundedCornerShape(16.dp)
+    val shape = RoundedCornerShape(20.dp)
 
     return if (isSelected) {
         this
@@ -74,10 +69,9 @@ fun Modifier.getScoreItemBackground(isSelected: Boolean): Modifier {
 
 fun fetchHeightList(unitSystem: UnitSystem): List<String> =
     when (unitSystem) {
-        UnitSystem.Metric -> (50..250).map { "$it" }
+        UnitSystem.Metric -> (120..250).map { "$it" }
         UnitSystem.Imperial -> {
-            // 1'8" (20 inches) to 8'2" (98 inches)
-            (20..98).map { totalInches ->
+            (48..98).map { totalInches ->
                 val feet = totalInches / 12
                 val inches = totalInches % 12
                 "$feet′ $inches″"
@@ -88,7 +82,7 @@ fun fetchHeightList(unitSystem: UnitSystem): List<String> =
 fun fetchWeightList(unitSystem: UnitSystem): List<String> =
     when (unitSystem) {
         UnitSystem.Metric -> (20..300).map { "$it" }
-        UnitSystem.Imperial -> (44..660).map { "$it" } // 20kg–300kg converted
+        UnitSystem.Imperial -> (44..660).map { "$it" }
     }
 
 fun defaultHeight(unitSystem: UnitSystem): String =

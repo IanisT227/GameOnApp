@@ -26,7 +26,6 @@ import androidx.wear.compose.material3.lazy.rememberTransformationSpec
 import com.example.gameonapp.presentation.components.ActivitySummaryCard
 import com.example.gameonapp.presentation.components.SportSummaryCard
 import com.example.gameonapp.presentation.theme.backgroundGradient
-import com.example.gameonapp.presentation.viewModels.FitnessViewModel
 import com.example.gameonapp.presentation.viewModels.GameViewModel
 import com.google.android.horologist.compose.layout.responsivePaddingDefaults
 import org.koin.androidx.compose.koinViewModel
@@ -34,8 +33,6 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun SelectStatisticsScreen(navController: NavController) {
     val gameViewModel = koinViewModel<GameViewModel>()
-    val fitnessViewModel = koinViewModel<FitnessViewModel>()
-    val maxBpm by fitnessViewModel.maxBpmFlow.collectAsState()
     val listState = rememberTransformingLazyColumnState()
     val gameHistoryState by gameViewModel.gameHistoryState.collectAsState()
     val transformationSpec = rememberTransformationSpec()
@@ -78,7 +75,6 @@ fun SelectStatisticsScreen(navController: NavController) {
                 ActivitySummaryCard(
                     totalTime = gameHistoryState.totalTime,
                     totalGames = gameHistoryState.gameList.size,
-                    maxBpm = maxBpm
                 )
             }
             item {
@@ -95,6 +91,5 @@ fun SelectStatisticsScreen(navController: NavController) {
             }
             item { Spacer(modifier = Modifier.height(40.dp)) }
         }
-
     }
 }

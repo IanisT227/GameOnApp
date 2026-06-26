@@ -14,7 +14,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.sp
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
 import kotlinx.coroutines.delay
-import kotlin.math.roundToInt
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun HorizontalDrumRoller(
@@ -35,35 +35,44 @@ fun HorizontalDrumRoller(
     unit: String = "",
     onValueConfirmed: (String) -> Unit
 ) {
-    var selectedIndex by remember(defaultValue) {
-        mutableStateOf(values.indexOf(defaultValue).takeIf { it >= 0 } ?: 0)
+    var selectedIndex by remember {
+        mutableIntStateOf(values.indexOf(defaultValue).takeIf { it >= 0 } ?: 0)
     }
 
-    // Debounce: fire onValueConfirmed 600ms after the user stops dragging
     LaunchedEffect(selectedIndex) {
-        delay(400)
+        delay(400.milliseconds)
         onValueConfirmed(values[selectedIndex])
     }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
-        modifier = Modifier.fillMaxWidth()  // ensures Column itself is centered
+        modifier = Modifier.fillMaxWidth()
     ) {
         Box(
             modifier = Modifier
-                .fillMaxWidth()             // stretch to parent so centering works
+                .fillMaxWidth()
                 .height(40.dp)
                 .pointerInput(Unit) {
-                    detectHorizontalDragGestures { _, dragAmount ->
-                        val steps = (-dragAmount / 30f).roundToInt()
-                        selectedIndex = (selectedIndex + steps)
-                            .coerceIn(0, values.lastIndex)
+                    while (true) {
+                        var accumulated = 0f
+                        detectHorizontalDragGestures(
+                            onDragStart = { accumulated = 0f },
+                            onHorizontalDrag = { change, dragAmount ->
+                                change.consume()
+                                accumulated -= dragAmount
+                                val steps = (accumulated / 30f).toInt()
+                                if (steps != 0) {
+                                    accumulated -= steps * 30f
+                                    selectedIndex =
+                                        (selectedIndex + steps).coerceIn(0, values.lastIndex)
+                                }
+                            }
+                        )
                     }
                 },
-            contentAlignment = Alignment.Center  // centers the Row + highlight together
+            contentAlignment = Alignment.Center
         ) {
-            // Selection highlight — sits behind the Row
             Box(
                 modifier = Modifier
                     .size(width = 36.dp, height = 36.dp)
@@ -76,7 +85,7 @@ fun HorizontalDrumRoller(
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center  // Row itself is also centered
+                horizontalArrangement = Arrangement.Center
             ) {
                 for (offset in -2..2) {
                     val itemIdx = selectedIndex + offset

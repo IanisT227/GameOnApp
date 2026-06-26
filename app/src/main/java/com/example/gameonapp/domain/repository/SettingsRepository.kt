@@ -29,6 +29,10 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
             ?: Gender.Male
     }
 
+    val age: Flow<Int> = dataStore.data.map {
+        it[SettingsKeys.AGE] ?: 30
+    }
+
     val units: Flow<UnitSystem> = dataStore.data.map { prefs ->
         prefs[SettingsKeys.UNITS]?.let { runCatching { UnitSystem.valueOf(it) }.getOrNull() }
             ?: UnitSystem.Metric
@@ -42,6 +46,10 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
 
     suspend fun saveWeight(value: String) {
         dataStore.edit { it[SettingsKeys.WEIGHT] = value }
+    }
+
+    suspend fun saveAge(value: Int) {
+        dataStore.edit { it[SettingsKeys.AGE] = value }
     }
 
     suspend fun saveGender(value: Gender) {

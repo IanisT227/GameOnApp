@@ -12,9 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Remove
 import androidx.compose.runtime.Composable
@@ -61,11 +59,12 @@ fun BasketballScoreComponent(gameViewModel: GameViewModel) {
         ) {
             Spacer(Modifier.height(20.dp))
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceEvenly
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                Spacer(modifier = Modifier.width(4.dp))
                 TeamScoreComponent(
                     modifier = Modifier
                         .weight(1f)
@@ -74,7 +73,6 @@ fun BasketballScoreComponent(gameViewModel: GameViewModel) {
                     teamName = "Home",
                     onClick = { selectedTeam = HOME }
                 )
-                Spacer(modifier = Modifier.width(4.dp))
                 TeamScoreComponent(
                     modifier = Modifier
                         .weight(1f)
@@ -83,7 +81,6 @@ fun BasketballScoreComponent(gameViewModel: GameViewModel) {
                     teamName = "Away",
                     onClick = { selectedTeam = AWAY }
                 )
-                Spacer(modifier = Modifier.width(4.dp))
             }
             ScoreButtonsRow(valuesList = amounts, onClick = { amount ->
                 gameViewModel.adjustBasketballScore(selectedTeam, amount)
@@ -111,16 +108,17 @@ fun TeamScoreComponent(
     Column(
         modifier = modifier
             .clickable(enabled = true, onClick = { onClick() })
-            .padding(horizontal = 14.dp, vertical = 6.dp),
+            .padding(horizontal = 8.dp, vertical = 6.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
         Text(
             text = teamName.uppercase(Locale.ROOT),
-            style = MaterialTheme.typography.labelSmall,
+            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
         )
         Text(
-            text = teamScore.toString(), style = MaterialTheme.typography.displayMedium.copy(
+            text = teamScore.toString(),
+            style = MaterialTheme.typography.displayMedium.copy(
                 fontWeight = FontWeight.ExtraBold
             ),
         )
@@ -135,7 +133,7 @@ fun ScoreButtonsRow(valuesList: List<Int>, onClick: (Int) -> Unit) {
         horizontalArrangement = Arrangement.SpaceAround
     ) {
         valuesList.forEach { amount ->
-            Button(onClick = { onClick(amount) }, shape = RoundedCornerShape(10.dp)) {
+            Button(onClick = { onClick(amount) }, shape = CircleShape) {
                 Text(
                     modifier = Modifier.padding(6.dp),
                     text = "+ $amount", style = MaterialTheme.typography.titleMedium,

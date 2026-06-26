@@ -152,13 +152,13 @@ fun ExpandedStatisticsScreen(gameId: Long, navController: NavController) {
                         DetailsRow(
                             image = Icons.Outlined.LocalFireDepartment,
                             legendText = "Calories",
-                            valueText = gameData.averageBPM.toString()
+                            valueText = gameData.calories.toString()
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         DetailsRow(
                             image = Icons.Outlined.MonitorHeart,
                             legendText = "Max. BPM",
-                            valueText = gameData.averageBPM.toString()
+                            valueText = gameData.maxBPM.toString()
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         DetailsRow(

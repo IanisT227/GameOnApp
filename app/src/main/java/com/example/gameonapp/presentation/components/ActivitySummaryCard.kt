@@ -17,15 +17,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
-import com.composables.icons.lucide.Heart
-import com.composables.icons.lucide.Lucide
 import com.example.gameonapp.utils.formatTime
 
 @Composable
 fun ActivitySummaryCard(
     totalGames: Int,
     totalTime: Int,
-    maxBpm: Int,
 ) {
     Column(
         modifier = Modifier
@@ -60,10 +57,6 @@ fun ActivitySummaryCard(
             image = Icons.Outlined.LocalFireDepartment,
             legendText = "Total Calories",
             valueText = totalGames.toString()
-        )
-        Spacer(modifier = Modifier.height(4.dp))
-        DetailsRow(
-            image = Lucide.Heart, legendText = "Max BPM", valueText = maxBpm.toString()
         )
         Spacer(modifier = Modifier.height(4.dp))
     }

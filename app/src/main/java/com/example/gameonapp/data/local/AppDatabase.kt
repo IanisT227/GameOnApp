@@ -11,7 +11,7 @@ import com.example.gameonapp.data.local.model.GameEntity
 
 @Database(
     entities = [GameEntity::class],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 @TypeConverters(GameTypeConverter::class, DateConverter::class, GameScoreConverter::class)

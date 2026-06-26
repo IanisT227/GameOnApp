@@ -17,15 +17,15 @@ import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material.icons.rounded.LocalFireDepartment
 import androidx.compose.material.icons.rounded.MonitorHeart
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.gameonapp.data.local.model.Gender
 import com.example.gameonapp.presentation.viewModels.FitnessViewModel
+import com.example.gameonapp.presentation.viewModels.SettingsViewModel
 import com.example.gameonapp.utils.PULSE_METER
 import kotlin.math.roundToInt
 
@@ -33,22 +33,20 @@ import kotlin.math.roundToInt
 fun FitnessComponent(
     onConfirmClick: () -> Unit,
     fitnessViewModel: FitnessViewModel,
+    settingsViewModel: SettingsViewModel
 ) {
+    val settings by settingsViewModel.uiState.collectAsState()
     val hr by fitnessViewModel.heartRateBpm.collectAsState()
     val calories by fitnessViewModel.calories.collectAsState()
     val timeInSeconds by fitnessViewModel.timeInSeconds.collectAsState()
     val isTimerRunning by fitnessViewModel.isTimerRunning.collectAsState()
-    val totalBPM by fitnessViewModel.totalBPM.collectAsState()
-    var showDialog by rememberSaveable { mutableStateOf(false) }
 
-    if (showDialog)
-        SaveDialog(
-            isVisible = true,
-            onDismiss = { showDialog = false },
-            onConfirmClick = {
-                onConfirmClick()
-                showDialog = false
-            })
+    LaunchedEffect(settings.weight, settings.height, settings.gender) {
+        val weightKg = settings.weight.toDoubleOrNull()
+        val heightCm = settings.height.toDoubleOrNull()
+        val isMale = settings.gender == Gender.Male
+        fitnessViewModel.updateUserProfile(weightKg, heightCm, isMale)
+    }
 
     Box(
         modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
@@ -85,7 +83,7 @@ fun FitnessComponent(
                 Spacer(modifier = Modifier.width(4.dp))
                 FitnessChip(
                     modifier = Modifier.weight(1f),
-                    value = hr?.roundToInt() ?: 111,
+                    value = calories.roundToInt(),
                     icon = Icons.Rounded.LocalFireDepartment
                 )
             }
@@ -107,7 +105,7 @@ fun FitnessComponent(
                 FitnessButton(
                     modifier = Modifier.weight(1f),
                     onClick = {
-                        showDialog = true
+                        onConfirmClick()
                     }, buttonImage = Icons.Outlined.Check
                 )
             }

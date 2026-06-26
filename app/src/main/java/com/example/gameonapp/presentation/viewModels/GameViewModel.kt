@@ -94,12 +94,6 @@ class GameViewModel(private val gameRepository: GameRepository) : ViewModel() {
         }
     }
 
-    fun removeGame(gameEntity: GameEntity) {
-        viewModelScope.launch(Dispatchers.IO) {
-            gameRepository.removeGame(gameEntity)
-        }
-    }
-
     fun removeGame(gameId: Long) {
         viewModelScope.launch(Dispatchers.IO) {
             gameRepository.getGameById(gameId)?.let {
@@ -293,6 +287,8 @@ class GameViewModel(private val gameRepository: GameRepository) : ViewModel() {
     fun buildEndGameEntity(
         durationSeconds: Int,
         averageBPM: Int,
+        maxBPM: Int,
+        calories: Int,
         date: Date,
         gameType: GameType,
     ): GameEntity {
@@ -311,6 +307,8 @@ class GameViewModel(private val gameRepository: GameRepository) : ViewModel() {
             matchDate = date,
             durationSeconds = durationSeconds,
             averageBPM = averageBPM,
+            maxBPM = maxBPM,
+            calories = calories,
             gameId = 0L
         )
     }

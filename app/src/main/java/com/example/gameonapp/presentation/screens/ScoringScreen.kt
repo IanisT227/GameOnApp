@@ -33,17 +33,20 @@ import androidx.wear.compose.material3.HorizontalPageIndicator
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.ScreenScaffold
 import androidx.wear.compose.material3.TimeText
+import androidx.wear.compose.material3.TimeTextDefaults
 import androidx.wear.widget.ConfirmationOverlay
 import com.example.gameonapp.presentation.components.BasketballScoreComponent
 import com.example.gameonapp.presentation.components.ExitGameDialog
 import com.example.gameonapp.presentation.components.FitnessComponent
 import com.example.gameonapp.presentation.components.FootballScoreComponent
 import com.example.gameonapp.presentation.components.PadelScoreComponent
+import com.example.gameonapp.presentation.components.SaveDialog
 import com.example.gameonapp.presentation.components.TennisScoreComponent
 import com.example.gameonapp.presentation.components.VolleyballScoreComponent
 import com.example.gameonapp.presentation.theme.backgroundGradient
 import com.example.gameonapp.presentation.viewModels.FitnessViewModel
 import com.example.gameonapp.presentation.viewModels.GameViewModel
+import com.example.gameonapp.presentation.viewModels.SettingsViewModel
 import com.example.gameonapp.utils.BASKETBALL
 import com.example.gameonapp.utils.FITNESS_COMPONENT
 import com.example.gameonapp.utils.FOOTBALL
@@ -56,6 +59,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import java.util.Date
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun ScoringScreen(
@@ -64,17 +68,31 @@ fun ScoringScreen(
 ) {
     val pagerState = rememberPagerState { 2 }
     val fitnessViewModel = koinViewModel<FitnessViewModel>()
+    val settingsViewModel = koinViewModel<SettingsViewModel>()
     val gameViewModel = koinViewModel<GameViewModel>()
     var sensorsPermissionGranted by rememberSaveable { mutableStateOf(false) }
     val permissionToRequest = Manifest.permission.BODY_SENSORS
     val isTimerRunning by fitnessViewModel.isTimerRunning.collectAsState()
+    val settings by settingsViewModel.uiState.collectAsState()
+    val timeFormat = if (settings.timeFormat == "24h") "HH:mm" else "hh:mm a"
     var showExitDialog by rememberSaveable { mutableStateOf(false) }
     var showOverlay by rememberSaveable { mutableStateOf(false) }
+    var showSaveDialog by rememberSaveable { mutableStateOf(false) }
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
 
 
-
+    if (showSaveDialog) {
+        SaveDialog(
+            isVisible = true,
+            onDismiss = { showSaveDialog = false },
+            onConfirmClick = {
+                saveGame(gameViewModel, fitnessViewModel, sportName)
+                showSaveDialog = false
+                showOverlay = true
+            }
+        )
+    }
     BackHandler(enabled = true) {
         showExitDialog = true
     }
@@ -95,7 +113,7 @@ fun ScoringScreen(
 
         if (isTimerRunning) {
             while (true) {
-                delay(1000L)
+                delay(1000L.milliseconds)
                 fitnessViewModel.increaseTimer()
                 fitnessViewModel.increaseTotalBPM()
             }
@@ -105,7 +123,7 @@ fun ScoringScreen(
 
         ExitGameDialog(
             isVisible = showExitDialog,
-            onDismiss = { },
+            onDismiss = { showExitDialog = false },
             onConfirmClick = { navController.popBackStack() }
         )
 
@@ -128,8 +146,10 @@ fun ScoringScreen(
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .padding(top = 4.dp),
-            backgroundColor = MaterialTheme.colorScheme.tertiary
-
+            backgroundColor = MaterialTheme.colorScheme.tertiary,
+            timeSource = TimeTextDefaults.rememberTimeSource(
+                timeFormat
+            )
         )
         HorizontalPager(
             state = pagerState, modifier = Modifier
@@ -156,9 +176,13 @@ fun ScoringScreen(
                 }
 
                 FITNESS_COMPONENT -> FitnessComponent(
-                    fitnessViewModel = fitnessViewModel, onConfirmClick = {
-                        saveGame(gameViewModel, fitnessViewModel, sportName)
+                    fitnessViewModel = fitnessViewModel,
+                    settingsViewModel = settingsViewModel,
+                    onConfirmClick = {
+//                        saveGame(gameViewModel, fitnessViewModel, sportName)
+                        showSaveDialog = true
                     })
+
             }
         }
 
@@ -209,7 +233,9 @@ fun saveGame(gameViewModel: GameViewModel, fitnessViewModel: FitnessViewModel, s
     val averageBPM = computeAverageBPM(
         fitnessViewModel.totalBPM.value, fitnessViewModel.timeInSeconds.value.toLong()
     )
+    val maxBPM = fitnessViewModel.maxBpmFlow.value
     val date = Date()
+    val calories = fitnessViewModel.calories.value
 
     // Map string to GameType enum safely
     val gameType = try {
@@ -221,6 +247,8 @@ fun saveGame(gameViewModel: GameViewModel, fitnessViewModel: FitnessViewModel, s
     val finishedGame = gameViewModel.buildEndGameEntity(
         durationSeconds = durationSeconds,
         averageBPM = averageBPM,
+        maxBPM = maxBPM,
+        calories = calories.toInt(),
         date = date,
         gameType = gameType
     )
