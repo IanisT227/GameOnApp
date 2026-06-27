@@ -13,8 +13,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.addPathNodes
 import androidx.compose.ui.graphics.vector.group
 import androidx.compose.ui.unit.dp
-import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.example.gameonapp.R
 import com.example.gameonapp.utils.AppIcons.PadelIcon
 
 const val INCREMENT = true
@@ -32,11 +32,11 @@ const val HOME = true
 const val AWAY = false
 
 val sportsList = listOf(
-    Pair("Football", Icons.Outlined.SportsSoccer),
-    Pair("Volleyball", Icons.Outlined.SportsVolleyball),
-    Pair("Basketball", Icons.Outlined.SportsBasketball),
-    Pair("Tennis", Icons.Outlined.SportsTennis),
-    Pair("Padel", PadelIcon),
+    Pair(R.string.football, Icons.Outlined.SportsSoccer),
+    Pair(R.string.volleyball, Icons.Outlined.SportsVolleyball),
+    Pair(R.string.basketball, Icons.Outlined.SportsBasketball),
+    Pair(R.string.tennis, Icons.Outlined.SportsTennis),
+    Pair(R.string.padel, PadelIcon),
 )
 
 object AppIcons {
@@ -67,7 +67,3 @@ object AppIcons {
 
 
 val Context.dataStore by preferencesDataStore("statistics")
-
-object PreferencesKeys {
-    val MAX_BPM_KEY = intPreferencesKey("max_bpm_key")
-}

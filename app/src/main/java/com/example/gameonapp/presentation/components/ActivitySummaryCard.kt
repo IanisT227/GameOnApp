@@ -13,10 +13,12 @@ import androidx.compose.material.icons.outlined.SportsScore
 import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
+import com.example.gameonapp.R
 import com.example.gameonapp.utils.formatTime
 
 @Composable
@@ -38,25 +40,25 @@ fun ActivitySummaryCard(
         Text(
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center,
-            text = "Sports Summary",
+            text = stringResource(id = R.string.sports_summary),
             style = MaterialTheme.typography.titleSmall
         )
         Spacer(modifier = Modifier.height(6.dp))
         DetailsRow(
             image = Icons.Outlined.Timer,
-            legendText = "Total Time",
+            legendText = stringResource(R.string.total_time),
             valueText = formatTime(totalTime)
         )
         Spacer(modifier = Modifier.height(4.dp))
         DetailsRow(
             image = Icons.Outlined.SportsScore,
-            legendText = "Total Games",
+            legendText = stringResource(id = R.string.total_games),
             valueText = totalGames.toString()
         )
         Spacer(modifier = Modifier.height(4.dp))
         DetailsRow(
             image = Icons.Outlined.LocalFireDepartment,
-            legendText = "Total Calories",
+            legendText = stringResource(id = R.string.total_calories),
             valueText = totalCalories.toString()
         )
         Spacer(modifier = Modifier.height(4.dp))

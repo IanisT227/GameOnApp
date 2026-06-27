@@ -13,12 +13,14 @@ import androidx.compose.material.icons.outlined.EmojiEvents
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.wear.compose.material3.Icon
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
+import com.example.gameonapp.R
 import com.example.gameonapp.data.local.model.GameScore
 import com.example.gameonapp.data.local.model.PadelMatchState
 import com.example.gameonapp.data.local.model.SimpleScore
@@ -29,7 +31,7 @@ import com.example.gameonapp.utils.GameType
 import com.example.gameonapp.utils.toPascalCase
 
 @Composable
-fun ScoreColumn(modifier: Modifier = Modifier, gameType: GameType, gameScore: GameScore) {
+fun ScoreColumn(gameType: GameType, gameScore: GameScore) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -117,7 +119,7 @@ fun ScoreColumn(modifier: Modifier = Modifier, gameType: GameType, gameScore: Ga
                 )
             }
 
-            else -> Text("Unknown score")
+            else -> Text(text = stringResource(id = R.string.unknown_score))
         }
     }
 }

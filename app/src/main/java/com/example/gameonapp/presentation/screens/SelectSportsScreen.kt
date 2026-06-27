@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -28,6 +29,7 @@ import androidx.wear.compose.material3.ScreenScaffold
 import androidx.wear.compose.material3.SurfaceTransformation
 import androidx.wear.compose.material3.lazy.rememberTransformationSpec
 import androidx.wear.compose.material3.lazy.transformedHeight
+import com.example.gameonapp.R
 import com.example.gameonapp.presentation.components.SelectSportChip
 import com.example.gameonapp.presentation.theme.backgroundGradient
 import com.example.gameonapp.utils.sportsList
@@ -61,7 +63,8 @@ fun SelectSportsScreen(navController: NavController) {
             item {
                 ListHeader {
                     Text(
-                        "Select your sport", style = MaterialTheme.typography.titleMedium.copy(
+                        stringResource(id = R.string.select_sport),
+                        style = MaterialTheme.typography.titleMedium.copy(
                             fontWeight = FontWeight.Bold
                         )
                     )
@@ -72,20 +75,25 @@ fun SelectSportsScreen(navController: NavController) {
             }
             sportsList.forEach { listItem ->
                 item {
+                    val name = stringResource(id = listItem.first)
                     SelectSportChip(
                         modifier = Modifier
                             .fillMaxWidth(0.8f)
                             .transformedHeight(this, transformationSpec)
                             .padding(vertical = 4.dp),
                         transformation = SurfaceTransformation(transformationSpec),
-                        sportName = listItem.first,
+                        sportName = name,
                         sportImage = listItem.second,
                         action = {
                             try {
-                                navController.navigate("scoring/${listItem.first.lowercase()}")
+                                navController.navigate("scoring/${name.lowercase()}")
                             } catch (e: Exception) {
                                 Log.e(TAG, e.message ?: "")
-                                Toast.makeText(context, "Not available yet", Toast.LENGTH_SHORT)
+                                Toast.makeText(
+                                    context,
+                                    context.getString(R.string.not_available_yet),
+                                    Toast.LENGTH_SHORT
+                                )
                                     .show()
                             }
                         })

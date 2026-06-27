@@ -18,11 +18,13 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material3.MaterialTheme
+import com.example.gameonapp.R
 import com.example.gameonapp.data.local.model.SimpleScore
 import com.example.gameonapp.presentation.viewModels.GameViewModel
 import com.example.gameonapp.utils.AWAY
@@ -33,7 +35,7 @@ import com.example.gameonapp.utils.getScoreItemBackground
 import java.util.Locale
 
 @Composable
-fun FootballScoreComponent(modifier: Modifier = Modifier, gameViewModel: GameViewModel) {
+fun FootballScoreComponent(gameViewModel: GameViewModel) {
     val scores: SimpleScore by gameViewModel.footballScore.collectAsState()
     var selectedTeam by rememberSaveable { mutableStateOf(HOME) }
     Column(
@@ -53,7 +55,7 @@ fun FootballScoreComponent(modifier: Modifier = Modifier, gameViewModel: GameVie
                 modifier = Modifier
                     .weight(1f)
                     .getScoreItemBackground(selectedTeam),
-                teamName = "Home",
+                teamName = stringResource(id = R.string.home),
                 onClick = {
                     selectedTeam = HOME
                 },
@@ -64,7 +66,7 @@ fun FootballScoreComponent(modifier: Modifier = Modifier, gameViewModel: GameVie
                 modifier = Modifier
                     .weight(1f)
                     .getScoreItemBackground(!selectedTeam),
-                teamName = "Away", onClick = {
+                teamName = stringResource(id = R.string.away), onClick = {
                     selectedTeam = AWAY
                 },
                 score = scores.away

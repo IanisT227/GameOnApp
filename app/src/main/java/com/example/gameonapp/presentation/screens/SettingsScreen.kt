@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -20,6 +21,7 @@ import androidx.wear.compose.material.ListHeader
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.ScreenScaffold
+import com.example.gameonapp.R
 import com.example.gameonapp.data.local.model.UnitSystem
 import com.example.gameonapp.presentation.components.ExpandableSection
 import com.example.gameonapp.presentation.components.GenderSelector
@@ -60,7 +62,7 @@ fun SettingsScreen() {
             Spacer(modifier = Modifier.height(6.dp))
             ExpandableSection(title = "Personal Profile") {
                 Text(
-                    text = "Height",
+                    text = stringResource(id = R.string.height),
                     style = MaterialTheme.typography.titleSmall,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.padding(vertical = 12.dp)
@@ -73,7 +75,7 @@ fun SettingsScreen() {
                     onValueConfirmed = { height -> viewModel.saveHeight(height) })
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(
-                    text = "Weight",
+                    text = stringResource(id = R.string.weight),
                     style = MaterialTheme.typography.titleSmall,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.padding(vertical = 12.dp)
@@ -86,7 +88,7 @@ fun SettingsScreen() {
                     onValueConfirmed = { weight -> viewModel.saveWeight(weight) })
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(
-                    text = "Age",
+                    text = stringResource(id = R.string.age),
                     style = MaterialTheme.typography.titleSmall,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.padding(vertical = 12.dp)
@@ -102,15 +104,15 @@ fun SettingsScreen() {
                     defaultGender = uiState.gender,
                     onGenderSelected = { gender -> viewModel.saveGender(gender) })
             }
-            ExpandableSection(title = "Display & Units") {
+            ExpandableSection(title = stringResource(id = R.string.display_units)) {
                 SimpleOptionSelector(
-                    title = "Units",
+                    title = stringResource(id = R.string.units),
                     defaultOption = uiState.units.name,
                     entries = listOf(UnitSystem.Metric.name, UnitSystem.Imperial.name),
                     onOptionSelected = { value -> viewModel.saveUnits(value) })
                 Spacer(modifier = Modifier.height(4.dp))
                 SimpleOptionSelector(
-                    title = "Time format",
+                    title = stringResource(id = R.string.time_format),
                     defaultOption = uiState.timeFormat,
                     entries = listOf("24h", "12h"),
                     onOptionSelected = { value -> viewModel.saveTimeFormat(value) })

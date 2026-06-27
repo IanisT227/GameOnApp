@@ -16,10 +16,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
+import com.example.gameonapp.R
 import com.example.gameonapp.data.local.model.Gender
 
 @Composable
@@ -34,7 +36,7 @@ fun GenderSelector(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Gender",
+            text = stringResource(id = R.string.gender),
             style = MaterialTheme.typography.titleSmall,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(vertical = 12.dp)

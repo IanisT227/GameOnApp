@@ -10,14 +10,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.BarChart
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.wear.compose.foundation.lazy.TransformingLazyColumn
@@ -33,15 +34,24 @@ import com.google.android.horologist.compose.layout.responsivePaddingDefaults
 
 @Composable
 fun MainScreen(navController: NavController) {
-    val context = LocalContext.current
     val listState = rememberTransformingLazyColumnState()
     val transformationSpec = rememberTransformationSpec()
     val buttons = listOf(
-        Triple(Icons.Outlined.PlayArrow, "Start") { navController.navigate("selectSports") },
         Triple(
-            Icons.Outlined.BarChart, "Statistics"
+            Icons.Outlined.PlayArrow,
+            stringResource(id = R.string.start)
+        ) { navController.navigate("selectSports") },
+        Triple(
+            Icons.Outlined.BarChart, stringResource(id = R.string.statistics)
         ) { navController.navigate("selectStatistics") },
-        Triple(Icons.Outlined.Settings, "Settings") { navController.navigate("settings") })
+        Triple(
+            Icons.Outlined.Settings,
+            stringResource(id = R.string.settings)
+        ) { navController.navigate("settings") },
+        Triple(Icons.Outlined.Info, stringResource(id = R.string.about)) {
+            navController.navigate("about")
+        }
+    )
 
     ScreenScaffold(
         scrollState = listState,

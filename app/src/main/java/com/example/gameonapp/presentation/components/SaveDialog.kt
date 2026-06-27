@@ -11,12 +11,14 @@ import androidx.compose.material.icons.outlined.Save
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material3.AlertDialog
 import androidx.wear.compose.material3.Button
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
+import com.example.gameonapp.R
 
 @Composable
 fun SaveDialog(
@@ -27,11 +29,19 @@ fun SaveDialog(
     AlertDialog(
         visible = isVisible,
         onDismissRequest = { onDismiss() },
-        confirmButton = { DialogButton(buttonText = "Yes", onClickAction = { onConfirmClick() }) },
-        dismissButton = { DialogButton(buttonText = "No", onClickAction = { onDismiss() }) },
-        title = { Text("End game") },
+        confirmButton = {
+            DialogButton(
+                buttonText = stringResource(id = R.string.yes),
+                onClickAction = { onConfirmClick() })
+        },
+        dismissButton = {
+            DialogButton(
+                buttonText = stringResource(id = R.string.no),
+                onClickAction = { onDismiss() })
+        },
+        title = { Text(text = stringResource(id = R.string.end_game)) },
         icon = { Icons.Outlined.Save },
-        text = { Text("Are you sure you want to finish and save your session?") },
+        text = { Text(text = stringResource(id = R.string.end_game_alert)) },
         verticalArrangement = Arrangement.SpaceEvenly,
         content = {}
     )
@@ -46,11 +56,19 @@ fun DeleteGameDialog(
     AlertDialog(
         visible = isVisible,
         onDismissRequest = { onDismiss() },
-        confirmButton = { DialogButton(buttonText = "Yes", onClickAction = { onConfirmClick() }) },
-        dismissButton = { DialogButton(buttonText = "No", onClickAction = { onDismiss() }) },
-        title = { Text("Delete game") },
+        confirmButton = {
+            DialogButton(
+                buttonText = stringResource(id = R.string.yes),
+                onClickAction = { onConfirmClick() })
+        },
+        dismissButton = {
+            DialogButton(
+                buttonText = stringResource(id = R.string.no),
+                onClickAction = { onDismiss() })
+        },
+        title = { Text(text = stringResource(id = R.string.delete_game)) },
         icon = { Icons.Outlined.Save },
-        text = { Text("Are you sure you want to remove this session?") },
+        text = { Text(text = stringResource(id = R.string.remove_session_alert)) },
         verticalArrangement = Arrangement.SpaceEvenly,
         content = {}
     )
@@ -65,11 +83,19 @@ fun EndGameDialog(
     AlertDialog(
         visible = isVisible,
         onDismissRequest = { onDismiss() },
-        confirmButton = { DialogButton(buttonText = "Yes", onClickAction = { onConfirmClick() }) },
-        dismissButton = { DialogButton(buttonText = "No", onClickAction = { onDismiss()}) },
-        title = { Text("Game finished") },
+        confirmButton = {
+            DialogButton(
+                buttonText = stringResource(id = R.string.yes),
+                onClickAction = { onConfirmClick() })
+        },
+        dismissButton = {
+            DialogButton(
+                buttonText = stringResource(id = R.string.no),
+                onClickAction = { onDismiss() })
+        },
+        title = { Text(text = stringResource(id = R.string.game_finished)) },
         icon = { Icons.Outlined.Save },
-        text = { Text("The game has finished. Proceed to fitness screen to save your game?") },
+        text = { Text(text = stringResource(id = R.string.finished_game_alert)) },
         verticalArrangement = Arrangement.SpaceEvenly,
         content = {}
     )
@@ -84,11 +110,19 @@ fun ExitGameDialog(
     AlertDialog(
         visible = isVisible,
         onDismissRequest = { onDismiss() },
-        confirmButton = { DialogButton(buttonText = "Yes", onClickAction = { onConfirmClick() }) },
-        dismissButton = { DialogButton(buttonText = "No", onClickAction = { onDismiss() }) },
-        title = { Text("Cancel game") },
+        confirmButton = {
+            DialogButton(
+                buttonText = stringResource(id = R.string.yes),
+                onClickAction = { onConfirmClick() })
+        },
+        dismissButton = {
+            DialogButton(
+                buttonText = stringResource(id = R.string.no),
+                onClickAction = { onDismiss() })
+        },
+        title = { Text(text = stringResource(id = R.string.cancel_game)) },
         icon = { Icons.Outlined.Close },
-        text = { Text("Are you sure you want to cancel the game?") },
+        text = { Text(text = stringResource(id = R.string.cancel_game_alert)) },
         verticalArrangement = Arrangement.SpaceEvenly,
         content = {}
     )

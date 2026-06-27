@@ -26,6 +26,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -40,6 +41,7 @@ import androidx.wear.compose.material3.ScreenScaffold
 import androidx.wear.compose.material3.Text
 import com.composables.icons.lucide.Heart
 import com.composables.icons.lucide.Lucide
+import com.example.gameonapp.R
 import com.example.gameonapp.presentation.components.DeleteGameDialog
 import com.example.gameonapp.presentation.components.DetailsRow
 import com.example.gameonapp.presentation.components.ScoreColumn
@@ -98,7 +100,7 @@ fun ExpandedStatisticsScreen(gameId: Long, navController: NavController) {
                 item {
                     ListHeader {
                         Text(
-                            text = "Game Details",
+                            text = stringResource(id = R.string.game_details),
                             style = MaterialTheme.typography.titleMedium.copy(
                                 fontWeight = FontWeight.Bold,
                             )
@@ -127,13 +129,13 @@ fun ExpandedStatisticsScreen(gameId: Long, navController: NavController) {
                     ) {
                         DetailsRow(
                             image = Icons.Outlined.CalendarMonth,
-                            legendText = "Date",
+                            legendText = stringResource(id = R.string.date),
                             valueText = formatDate(gameData.matchDate)
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         DetailsRow(
                             image = Icons.Outlined.WatchLater,
-                            legendText = "Duration",
+                            legendText = stringResource(id = R.string.duration),
                             valueText = formatTime(gameData.durationSeconds)
                         )
                     }
@@ -151,19 +153,19 @@ fun ExpandedStatisticsScreen(gameId: Long, navController: NavController) {
                     ) {
                         DetailsRow(
                             image = Icons.Outlined.LocalFireDepartment,
-                            legendText = "Calories",
+                            legendText = stringResource(id = R.string.calories),
                             valueText = gameData.calories.toString()
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         DetailsRow(
                             image = Icons.Outlined.MonitorHeart,
-                            legendText = "Max. BPM",
+                            legendText = stringResource(id = R.string.max_bpm),
                             valueText = gameData.maxBPM.toString()
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         DetailsRow(
                             image = Lucide.Heart,
-                            legendText = "Avg. BPM",
+                            legendText = stringResource(id = R.string.avg_bpm),
                             valueText = gameData.averageBPM.toString()
                         )
                     }
@@ -181,7 +183,7 @@ fun ExpandedStatisticsScreen(gameId: Long, navController: NavController) {
                         )
                     ) {
                         Text(
-                            text = "Remove game",
+                            text = stringResource(id = R.string.remove_game),
                             modifier = Modifier.fillMaxWidth(),
                             textAlign = TextAlign.Center
                         )

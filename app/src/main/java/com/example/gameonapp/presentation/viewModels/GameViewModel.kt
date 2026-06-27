@@ -5,16 +5,15 @@ import androidx.lifecycle.viewModelScope
 import com.example.gameonapp.data.local.model.GameEntity
 import com.example.gameonapp.data.local.model.GameHistoryState
 import com.example.gameonapp.data.local.model.GameScore
-import com.example.gameonapp.data.local.model.PadelMatchState
 import com.example.gameonapp.data.local.model.PadelPointWinner
-import com.example.gameonapp.data.local.model.PadelScore
 import com.example.gameonapp.data.local.model.PadelScoringEngine
+import com.example.gameonapp.data.local.model.PadelUiState
 import com.example.gameonapp.data.local.model.SimpleScore
-import com.example.gameonapp.data.local.model.TennisMatchState
-import com.example.gameonapp.data.local.model.TennisScore
 import com.example.gameonapp.data.local.model.TennisScoringEngine
+import com.example.gameonapp.data.local.model.TennisUiState
 import com.example.gameonapp.data.local.model.VolleyballScore
 import com.example.gameonapp.data.local.model.VolleyballSet
+import com.example.gameonapp.data.local.model.VolleyballUiState
 import com.example.gameonapp.domain.repository.GameRepository
 import com.example.gameonapp.utils.AWAY
 import com.example.gameonapp.utils.DECREMENT
@@ -54,35 +53,16 @@ class GameViewModel(private val gameRepository: GameRepository) : ViewModel() {
     val basketballScore: StateFlow<SimpleScore> = _basketballScore.asStateFlow()
 
     // --- Volleyball ---
-    data class VolleyballUiState(
-        val score: VolleyballScore = VolleyballScore(),
-        val isFinished: Boolean = false
-    )
-
     private val _volleyballState = MutableStateFlow(VolleyballUiState())
     val volleyballState: StateFlow<VolleyballUiState> = _volleyballState.asStateFlow()
 
     // --- Tennis ---
-    data class TennisUiState(
-        val matchState: TennisMatchState = TennisMatchState(
-            homeScore = TennisScore(name = HOME),
-            awayScore = TennisScore(name = AWAY),
-            setsToWin = 2
-        ),
-        val history: List<TennisMatchState> = emptyList()
-    )
+
 
     private val _tennisState = MutableStateFlow(TennisUiState())
     val tennisState: StateFlow<TennisUiState> = _tennisState.asStateFlow()
 
     // --- Padel ---
-    data class PadelUiState(
-        val matchState: PadelMatchState = PadelMatchState(
-            homeScore = PadelScore(name = HOME, display = "HOME"),
-            awayScore = PadelScore(name = AWAY, display = "AWAY")
-        ),
-        val history: List<PadelMatchState> = emptyList()
-    )
 
     private val _padelState = MutableStateFlow(PadelUiState())
     val padelState: StateFlow<PadelUiState> = _padelState.asStateFlow()

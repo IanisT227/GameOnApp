@@ -14,6 +14,7 @@ import androidx.wear.compose.navigation.SwipeDismissableNavHost
 import androidx.wear.compose.navigation.composable
 import androidx.wear.compose.navigation.rememberSwipeDismissableNavController
 import androidx.wear.tooling.preview.devices.WearDevices
+import com.example.gameonapp.presentation.screens.AboutScreen
 import com.example.gameonapp.presentation.screens.ExpandedStatisticsScreen
 import com.example.gameonapp.presentation.screens.MainScreen
 import com.example.gameonapp.presentation.screens.ScoringScreen
@@ -55,6 +56,9 @@ fun WearApp() {
             }
             composable("settings") {
                 SettingsScreen()
+            }
+            composable("about") {
+                AboutScreen()
             }
             composable(
                 route = "scoring/{sportName}",

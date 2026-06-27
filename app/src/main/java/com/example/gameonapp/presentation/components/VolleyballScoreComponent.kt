@@ -17,7 +17,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.gameonapp.R
 import com.example.gameonapp.data.local.model.VolleyballSet
 import com.example.gameonapp.presentation.viewModels.GameViewModel
 import com.example.gameonapp.utils.AWAY
@@ -27,7 +29,7 @@ import com.example.gameonapp.utils.getScoreItemBackground
 
 @Composable
 fun VolleyballScoreComponent(gameViewModel: GameViewModel, onGameFinished: (() -> Unit)) {
-    val volleyballState: GameViewModel.VolleyballUiState by gameViewModel.volleyballState.collectAsState()
+    val volleyballState by gameViewModel.volleyballState.collectAsState()
     var selectedTeam by rememberSaveable { mutableStateOf(HOME) }
 
     var showDialog by rememberSaveable { mutableStateOf(true) }
@@ -60,7 +62,7 @@ fun VolleyballScoreComponent(gameViewModel: GameViewModel, onGameFinished: (() -
                     modifier = Modifier
                         .weight(1f)
                         .getScoreItemBackground(selectedTeam),
-                    teamName = "Home",
+                    teamName = stringResource(id = R.string.home),
                     teamScore = volleyballState.score.scoresPerSet[volleyballState.score.currentSet].pointsHome,
                     teamSetsWon = volleyballState.score.setsHome,
                     onClick = { selectedTeam = HOME })
@@ -69,7 +71,7 @@ fun VolleyballScoreComponent(gameViewModel: GameViewModel, onGameFinished: (() -
                     modifier = Modifier
                         .weight(1f)
                         .getScoreItemBackground(!selectedTeam),
-                    teamName = "Away",
+                    teamName = stringResource(id = R.string.away),
                     teamScore = volleyballState.score.scoresPerSet[volleyballState.score.currentSet].pointsAway,
                     teamSetsWon = volleyballState.score.setsAway,
                     onClick = { selectedTeam = AWAY })

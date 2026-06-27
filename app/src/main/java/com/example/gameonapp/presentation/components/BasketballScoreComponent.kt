@@ -23,6 +23,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material3.Button
@@ -30,6 +31,7 @@ import androidx.wear.compose.material3.ButtonDefaults
 import androidx.wear.compose.material3.Icon
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.Text
+import com.example.gameonapp.R
 import com.example.gameonapp.data.local.model.SimpleScore
 import com.example.gameonapp.presentation.viewModels.GameViewModel
 import com.example.gameonapp.utils.AWAY
@@ -70,7 +72,7 @@ fun BasketballScoreComponent(gameViewModel: GameViewModel) {
                         .weight(1f)
                         .getScoreItemBackground(selectedTeam),
                     teamScore = scores.home,
-                    teamName = "Home",
+                    teamName = stringResource(id = R.string.home),
                     onClick = { selectedTeam = HOME }
                 )
                 TeamScoreComponent(
@@ -78,7 +80,7 @@ fun BasketballScoreComponent(gameViewModel: GameViewModel) {
                         .weight(1f)
                         .getScoreItemBackground(!selectedTeam),
                     teamScore = scores.away,
-                    teamName = "Away",
+                    teamName = stringResource(id = R.string.away),
                     onClick = { selectedTeam = AWAY }
                 )
             }

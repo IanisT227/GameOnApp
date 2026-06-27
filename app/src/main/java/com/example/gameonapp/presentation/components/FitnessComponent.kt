@@ -76,7 +76,7 @@ fun FitnessComponent(
             ) {
                 FitnessChip(
                     modifier = Modifier.weight(1f),
-                    value = hr?.roundToInt() ?: 20,
+                    value = hr?.roundToInt() ?: 0,
                     icon = Icons.Rounded.MonitorHeart,
                     type = PULSE_METER
                 )
