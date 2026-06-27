@@ -36,7 +36,7 @@ import com.example.gameonapp.utils.toPascalCase
 
 @Composable
 fun SportSummaryCard(
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     contentData: GameEntity,
     navigateToDetails: () -> Unit,
     transformation: SurfaceTransformation,

@@ -42,6 +42,9 @@ class GameViewModel(private val gameRepository: GameRepository) : ViewModel() {
     private val _gameData = MutableStateFlow(GameEntity())
     val gameData: StateFlow<GameEntity> = _gameData.asStateFlow()
 
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+
     // --- Football ---
     private val _footballScore = MutableStateFlow(SimpleScore())
     val footballScore: StateFlow<SimpleScore> = _footballScore.asStateFlow()
@@ -104,6 +107,7 @@ class GameViewModel(private val gameRepository: GameRepository) : ViewModel() {
 
     fun getGamesHistory() {
         viewModelScope.launch(Dispatchers.IO) {
+            _isLoading.value = true
             val list = gameRepository.getGamesHistory()
             val totalTime = gameRepository.getTotalTime().toInt()
             withContext(Dispatchers.Main) {
@@ -111,6 +115,7 @@ class GameViewModel(private val gameRepository: GameRepository) : ViewModel() {
                     it.copy(gameList = list, totalTime = totalTime)
                 }
             }
+            _isLoading.value = false
         }
     }
 
