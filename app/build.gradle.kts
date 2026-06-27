@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.example.gameonapp"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.example.gameonapp"
@@ -39,6 +39,14 @@ android {
     }
 }
 
+configurations.all {
+    resolutionStrategy {
+        force("androidx.wear.compose:wear-compose-foundation:1.5.5")
+        force("androidx.wear.compose:wear-compose-material3:1.5.5")
+        force("androidx.wear.compose:wear-compose-navigation:1.5.5")
+    }
+}
+
 dependencies {
 
     implementation(libs.play.services.wearable)
@@ -46,7 +54,7 @@ dependencies {
     implementation(libs.ui)
     implementation(libs.ui.graphics)
     implementation(libs.ui.tooling.preview)
-    implementation(libs.compose.material)
+//    implementation(libs.compose.material)
     implementation(libs.compose.foundation)
     implementation(libs.wear.tooling.preview)
     implementation(libs.activity.compose)
@@ -74,7 +82,6 @@ dependencies {
     implementation(libs.horologist.compose.layout)
     implementation(libs.navigation.compose)
     implementation(libs.animation)
-    implementation(libs.core.splashscreen)
 
     //Room
     implementation(libs.room.ktx)
@@ -83,5 +90,4 @@ dependencies {
 
     //Icons
     implementation(libs.icons.lucide)
-
 }

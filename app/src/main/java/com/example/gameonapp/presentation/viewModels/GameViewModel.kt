@@ -110,9 +110,10 @@ class GameViewModel(private val gameRepository: GameRepository) : ViewModel() {
             _isLoading.value = true
             val list = gameRepository.getGamesHistory()
             val totalTime = gameRepository.getTotalTime().toInt()
+            val totalCalories = gameRepository.getTotalCalories()
             withContext(Dispatchers.Main) {
                 _gameHistoryState.update {
-                    it.copy(gameList = list, totalTime = totalTime)
+                    it.copy(gameList = list, totalTime = totalTime, totalCalories = totalCalories)
                 }
             }
             _isLoading.value = false

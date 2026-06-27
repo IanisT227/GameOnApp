@@ -21,6 +21,7 @@ import com.example.gameonapp.utils.formatTime
 
 @Composable
 fun ActivitySummaryCard(
+    totalCalories: Int,
     totalGames: Int,
     totalTime: Int,
 ) {
@@ -56,7 +57,7 @@ fun ActivitySummaryCard(
         DetailsRow(
             image = Icons.Outlined.LocalFireDepartment,
             legendText = "Total Calories",
-            valueText = totalGames.toString()
+            valueText = totalCalories.toString()
         )
         Spacer(modifier = Modifier.height(4.dp))
     }

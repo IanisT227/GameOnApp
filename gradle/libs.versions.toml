@@ -8,16 +8,13 @@ kotlin = "2.0.21"
 materialIconsExtended = "1.7.8"
 navigationCompose = "2.9.5"
 playServicesWearable = "18.0.0"
-composeBom = "2024.09.00"
-composeMaterial = "1.2.1"
-composeFoundation = "1.2.1"
+composeBom = "2024.12.01"
+wearCompose = "1.5.5"
 roomRuntime = "2.8.3"
 wearToolingPreview = "1.0.0"
 activityCompose = "1.10.1"
 coreSplashscreen = "1.0.1"
 koin = "3.5.6"
-composeNavigation = "1.5.3"
-composeMaterial3 = "1.5.3"
 horologist = "0.6.19"
 material3 = "1.4.0"
 roomKtx = "2.8.3"
@@ -45,13 +42,13 @@ ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
-compose-material = { group = "androidx.wear.compose", name = "compose-material", version.ref = "composeMaterial" }
-compose-foundation = { group = "androidx.wear.compose", name = "compose-foundation", version.ref = "composeFoundation" }
+#compose-material   = { group = "androidx.wear.compose", name = "compose-material",   version.ref = "wearCompose" }
+compose-foundation = { group = "androidx.wear.compose", name = "compose-foundation", version.ref = "wearCompose" }
+compose-navigation = { group = "androidx.wear.compose", name = "compose-navigation", version.ref = "wearCompose" }
+compose-material3 = { group = "androidx.wear.compose", name = "compose-material3", version.ref = "wearCompose" }
 wear-tooling-preview = { group = "androidx.wear", name = "wear-tooling-preview", version.ref = "wearToolingPreview" }
 activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
 core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "coreSplashscreen" }
-compose-navigation = { group = "androidx.wear.compose", name = "compose-navigation", version.ref = "composeNavigation" }
-compose-material3 = { group = "androidx.wear.compose", name = "compose-material3", version.ref = "composeMaterial3" }
 material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomKtx" }
 play-services-fitness = { group = "com.google.android.gms", name = "play-services-fitness", version.ref = "playServicesFitness" }
@@ -60,4 +57,3 @@ play-services-fitness = { group = "com.google.android.gms", name = "play-service
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-

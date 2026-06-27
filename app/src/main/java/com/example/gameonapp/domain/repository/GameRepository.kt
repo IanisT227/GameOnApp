@@ -17,4 +17,6 @@ class GameRepository(private val gameDao: GameDao) {
     suspend fun getGameById(gameId: Long) = gameDao.getGameById(gameId = gameId)
 
     suspend fun getTotalTime() = gameDao.getTotalTime()
+
+    suspend fun getTotalCalories() = gameDao.getTotalCalories()
 }

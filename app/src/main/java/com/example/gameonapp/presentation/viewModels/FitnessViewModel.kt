@@ -6,17 +6,11 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
-import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.gameonapp.utils.PreferencesKeys
-import com.example.gameonapp.utils.dataStore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -29,6 +23,9 @@ class FitnessViewModel(private val application: Application) :
     private val _calories = MutableStateFlow(0.0)
     val calories: StateFlow<Double> = _calories
 
+    private val _maxBpm = MutableStateFlow(0)
+    val maxBpm: StateFlow<Int> = _maxBpm
+
     private val _timeInSeconds = MutableStateFlow(0)
     val timeInSeconds: StateFlow<Int> = _timeInSeconds
 
@@ -38,7 +35,6 @@ class FitnessViewModel(private val application: Application) :
     private val _totalBPM = MutableStateFlow(0L)
     val totalBPM: StateFlow<Long> = _totalBPM
 
-    // Plain vars — only read internally, no need for StateFlow overhead
     private var weightKg: Double? = null
     private var heightCm: Double? = null
     private var isMale: Boolean? = null
@@ -49,15 +45,6 @@ class FitnessViewModel(private val application: Application) :
         this.isMale = isMale
     }
 
-    // FIX: Eagerly instead of WhileSubscribed — maxBpmFlow.value was returning
-    // stale/initial data when nobody was actively collecting it
-    val maxBpmFlow: StateFlow<Int> = application.dataStore.data
-        .map { it[PreferencesKeys.MAX_BPM_KEY] ?: 0 }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.Eagerly,
-            initialValue = 0
-        )
 
     private val sensorManager: SensorManager =
         application.getSystemService(SENSOR_SERVICE) as SensorManager
@@ -77,11 +64,9 @@ class FitnessViewModel(private val application: Application) :
 
     fun setMaxBpm(value: Int) {
         viewModelScope.launch(Dispatchers.IO) {
-            application.dataStore.edit { it[PreferencesKeys.MAX_BPM_KEY] = value }
+            _maxBpm.value = value
         }
     }
-
-    fun getMaxBpm() = maxBpmFlow.value
 
     fun registerHeartRateSensor() {
         if (isSensorRegistered) return
@@ -119,7 +104,7 @@ class FitnessViewModel(private val application: Application) :
             // change in between (race condition)
             val currentBpm = _heartRateBpm.value?.toInt() ?: return@launch
             _totalBPM.update { it + currentBpm }
-            if (currentBpm > maxBpmFlow.value) setMaxBpm(currentBpm)
+            if (currentBpm > maxBpm.value) setMaxBpm(currentBpm)
         }
     }
 
@@ -139,8 +124,6 @@ class FitnessViewModel(private val application: Application) :
         _calories.update { it + (calPerMin / 60.0).coerceAtLeast(0.0) }
     }
 
-    fun resetCalories() {
-        _calories.value = 0.0
-    }
 }
+
 const val TAG = "FitnessViewModel"

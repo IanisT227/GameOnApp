@@ -233,7 +233,7 @@ fun saveGame(gameViewModel: GameViewModel, fitnessViewModel: FitnessViewModel, s
     val averageBPM = computeAverageBPM(
         fitnessViewModel.totalBPM.value, fitnessViewModel.timeInSeconds.value.toLong()
     )
-    val maxBPM = fitnessViewModel.maxBpmFlow.value
+    val maxBPM = fitnessViewModel.maxBpm.value
     val date = Date()
     val calories = fitnessViewModel.calories.value
 

@@ -23,4 +23,7 @@ interface GameDao {
 
     @Query("SELECT COALESCE(SUM(durationSeconds), 0) FROM games")
     suspend fun getTotalTime(): Long
+
+    @Query("SELECT COALESCE(SUM(calories), 0) FROM games")
+    suspend fun getTotalCalories(): Int
 }

@@ -2,6 +2,7 @@ package com.example.gameonapp.presentation.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -36,69 +37,81 @@ fun SelectStatisticsScreen(navController: NavController) {
     val listState = rememberTransformingLazyColumnState()
     val gameHistoryState by gameViewModel.gameHistoryState.collectAsState()
     val transformationSpec = rememberTransformationSpec()
+    val isLoading by gameViewModel.isLoading.collectAsState()
 
     LaunchedEffect(Unit) {
         gameViewModel.getGamesHistory()
     }
-    if (gameHistoryState.gameList.isNotEmpty()) {
-        ScreenScaffold(
-            scrollState = listState, modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    brush = backgroundGradient
-                )
-        ) {
-            TransformingLazyColumn(
-                state = listState,
-                modifier = Modifier
+    if (isLoading) {
+        FullScreenMessage("Loading...")
+    } else {
+        if (gameHistoryState.gameList.isNotEmpty()) {
+            ScreenScaffold(
+                scrollState = listState, modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 2.dp, vertical = 2.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
-                contentPadding = responsivePaddingDefaults()
-            ) {
-                item {
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
-                item {
-                    ListHeader {
-                        Text(
-                            "Games History", style = MaterialTheme.typography.titleMedium.copy(
-                                fontWeight = FontWeight.Bold
-                            )
-                        )
-                    }
-                }
-                item {
-                    Spacer(modifier = Modifier.height(4.dp))
-                }
-                item {
-                    ActivitySummaryCard(
-                        totalTime = gameHistoryState.totalTime,
-                        totalGames = gameHistoryState.gameList.size,
+                    .background(
+                        brush = backgroundGradient
                     )
-                }
-                item {
-                    Spacer(modifier = Modifier.height(4.dp))
-                }
-                for (gameEntity in gameHistoryState.gameList) {
+            ) {
+                TransformingLazyColumn(
+                    state = listState,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 2.dp, vertical = 2.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
+                    contentPadding = responsivePaddingDefaults()
+                ) {
                     item {
-                        SportSummaryCard(
-                            modifier = Modifier, contentData = gameEntity, navigateToDetails = {
-                                navController.navigate("statisticsExpanded/${gameEntity.gameId}")
-                            }, SurfaceTransformation(transformationSpec)
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+                    item {
+                        ListHeader {
+                            Text(
+                                "Games History", style = MaterialTheme.typography.titleMedium.copy(
+                                    fontWeight = FontWeight.Bold
+                                )
+                            )
+                        }
+                    }
+                    item {
+                        Spacer(modifier = Modifier.height(4.dp))
+                    }
+                    item {
+                        ActivitySummaryCard(
+                            totalCalories = gameHistoryState.totalCalories,
+                            totalTime = gameHistoryState.totalTime,
+                            totalGames = gameHistoryState.gameList.size,
                         )
                     }
+                    item {
+                        Spacer(modifier = Modifier.height(4.dp))
+                    }
+                    for (gameEntity in gameHistoryState.gameList) {
+                        item {
+                            SportSummaryCard(
+                                modifier = Modifier, contentData = gameEntity, navigateToDetails = {
+                                    navController.navigate("statisticsExpanded/${gameEntity.gameId}")
+                                }, SurfaceTransformation(transformationSpec)
+                            )
+                        }
+                    }
+                    item { Spacer(modifier = Modifier.height(40.dp)) }
                 }
-                item { Spacer(modifier = Modifier.height(40.dp)) }
             }
+        } else {
+            FullScreenMessage("No games found")
         }
     }
-    //todo: add loading screen
-//    else
-//    {
-//        ScreenScaffold() {
-//            Text("No games found", style = MaterialTheme.typography.titleMedium)
-//        }
-//    }
+}
+
+
+@Composable
+private fun FullScreenMessage(message: String) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(text = message, style = MaterialTheme.typography.titleMedium)
+    }
 }
