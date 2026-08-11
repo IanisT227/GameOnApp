@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class FitnessViewModel(private val application: Application) :
+class FitnessViewModel(application: Application) :
     ViewModel(), SensorEventListener {
 
     private val _heartRateBpm = MutableStateFlow<Double?>(null)
@@ -36,13 +36,14 @@ class FitnessViewModel(private val application: Application) :
     val totalBPM: StateFlow<Long> = _totalBPM
 
     private var weightKg: Double? = null
-    private var heightCm: Double? = null
     private var isMale: Boolean? = null
+    private var ageYears: Int? = null
 
-    fun updateUserProfile(weightKg: Double?, heightCm: Double?, isMale: Boolean?) {
+
+    fun updateUserProfile(weightKg: Double?, isMale: Boolean?, ageYears: Int?) {
         this.weightKg = weightKg
-        this.heightCm = heightCm
         this.isMale = isMale
+        this.ageYears = ageYears
     }
 
 
@@ -76,7 +77,7 @@ class FitnessViewModel(private val application: Application) :
         }
     }
 
-    private fun unregisterHeartRateSensor() {
+    fun unregisterHeartRateSensor() {
         if (!isSensorRegistered) return
         sensorManager.unregisterListener(this)
         isSensorRegistered = false
@@ -112,7 +113,7 @@ class FitnessViewModel(private val application: Application) :
         val bpm = _heartRateBpm.value ?: return
         val weight = weightKg ?: return
         val male = isMale ?: return
-        val age = 30.0
+        val age = (ageYears ?: 30).toDouble()
 
         val calPerMin = if (male) {
             (-55.0969 + (0.6309 * bpm) + (0.1988 * weight) + (0.2017 * age)) / 4.184

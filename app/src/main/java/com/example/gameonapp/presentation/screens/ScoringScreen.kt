@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -26,6 +27,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavController
 import androidx.wear.compose.foundation.pager.HorizontalPager
 import androidx.wear.compose.foundation.pager.rememberPagerState
@@ -80,6 +84,8 @@ fun ScoringScreen(
     var showSaveDialog by rememberSaveable { mutableStateOf(false) }
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
+    val lifecycleOwner = LocalLifecycleOwner.current
+
 
 
     if (showSaveDialog) {
@@ -106,11 +112,22 @@ fun ScoringScreen(
         permissionLauncher.launch(permissionToRequest)
     }
 
-    LaunchedEffect(isTimerRunning, sensorsPermissionGranted) {
-        if (sensorsPermissionGranted) {
-            fitnessViewModel.registerHeartRateSensor()
-        }
+    DisposableEffect(lifecycleOwner, sensorsPermissionGranted) {
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_RESUME -> {
+                    if (sensorsPermissionGranted) fitnessViewModel.registerHeartRateSensor()
+                }
 
+                Lifecycle.Event.ON_PAUSE -> fitnessViewModel.unregisterHeartRateSensor()
+                else -> {}
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
+
+    LaunchedEffect(isTimerRunning) {
         if (isTimerRunning) {
             while (true) {
                 delay(1000L.milliseconds)

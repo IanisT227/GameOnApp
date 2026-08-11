@@ -24,9 +24,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.gameonapp.data.local.model.Gender
+import com.example.gameonapp.data.local.model.UnitSystem
 import com.example.gameonapp.presentation.viewModels.FitnessViewModel
 import com.example.gameonapp.presentation.viewModels.SettingsViewModel
 import com.example.gameonapp.utils.PULSE_METER
+import com.example.gameonapp.utils.poundsToKg
 import kotlin.math.roundToInt
 
 @Composable
@@ -41,11 +43,14 @@ fun FitnessComponent(
     val timeInSeconds by fitnessViewModel.timeInSeconds.collectAsState()
     val isTimerRunning by fitnessViewModel.isTimerRunning.collectAsState()
 
-    LaunchedEffect(settings.weight, settings.height, settings.gender) {
-        val weightKg = settings.weight.toDoubleOrNull()
-        val heightCm = settings.height.toDoubleOrNull()
+    LaunchedEffect(settings.weight, settings.gender, settings.age, settings.units) {
+        val rawWeight = settings.weight.toDoubleOrNull()
+        val weightKg = when (settings.units) {
+            UnitSystem.Imperial -> rawWeight?.let { poundsToKg(it) }
+            UnitSystem.Metric -> rawWeight
+        }
         val isMale = settings.gender == Gender.Male
-        fitnessViewModel.updateUserProfile(weightKg, heightCm, isMale)
+        fitnessViewModel.updateUserProfile(weightKg, isMale, settings.age)
     }
 
     Box(

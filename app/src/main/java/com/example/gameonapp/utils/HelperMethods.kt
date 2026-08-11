@@ -19,6 +19,9 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Date
 
+private const val KG_PER_LB = 0.45359237
+
+fun poundsToKg(lb: Double): Double = lb * KG_PER_LB
 fun formatTime(seconds: Int): String {
     val minutes = seconds / 60
     val secs = seconds % 60

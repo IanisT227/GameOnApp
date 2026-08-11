@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -39,7 +40,16 @@ fun HorizontalDrumRoller(
         mutableIntStateOf(values.indexOf(defaultValue).takeIf { it >= 0 } ?: 0)
     }
 
-    LaunchedEffect(selectedIndex) {
+    var isUserEdited by remember { mutableStateOf(false) }
+
+    LaunchedEffect(defaultValue, values) {
+        if (!isUserEdited) {
+            selectedIndex = values.indexOf(defaultValue).takeIf { it >= 0 } ?: 0
+        }
+    }
+
+    LaunchedEffect(selectedIndex, isUserEdited) {
+        if (!isUserEdited) return@LaunchedEffect
         delay(400.milliseconds)
         onValueConfirmed(values[selectedIndex])
     }

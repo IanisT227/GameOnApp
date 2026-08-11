@@ -38,7 +38,7 @@ fun VolleyballScoreComponent(gameViewModel: GameViewModel, onGameFinished: (() -
     if (volleyballState.isFinished && showDialog)
         EndGameDialog(
             isVisible = true,
-            onDismiss = { },
+            onDismiss = { showDialog = false },
             onConfirmClick = {
                 onGameFinished()
             })
